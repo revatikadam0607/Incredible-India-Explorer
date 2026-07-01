@@ -7,10 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     initThemeToggle();
     initRotatingText();
-    
+
     // Page detection routing
     const pathname = window.location.pathname;
-    
+
     if (pathname.includes('cuisine.html')) {
         initCuisinePage();
     } else if (pathname.includes('festivals.html')) {
@@ -105,7 +105,7 @@ function initRotatingText() {
     rotators.forEach(wrapper => {
         const wordsStr = wrapper.getAttribute('data-words');
         if (!wordsStr) return;
-        
+
         const words = wordsStr.split(',').map(w => w.trim());
         if (words.length === 0) return;
 
@@ -115,7 +115,7 @@ function initRotatingText() {
         setInterval(() => {
             const currentSpan = wrapper.querySelector('.rotating-text');
             currentSpan.style.animation = 'slideOutFade 0.5s ease-in forwards';
-            
+
             setTimeout(() => {
                 currentIndex = (currentIndex + 1) % words.length;
                 wrapper.innerHTML = `<span class="rotating-text">${words[currentIndex]}</span>`;
@@ -175,7 +175,7 @@ function initInteractiveMap() {
     const infoPanel = document.getElementById('quick-info-panel');
     const randomBtn = document.getElementById('btn-random-state');
     const viewMoreBtn = document.getElementById('btn-sidebar-view-more');
-    
+
     // Overlay Selectors
     const storyOverlay = document.getElementById('state-story-overlay');
     const overlayBackBtn = document.getElementById('state-story-back-btn');
@@ -185,7 +185,7 @@ function initInteractiveMap() {
     const overlayMainText = document.getElementById('state-story-main-text');
     const highlightsGrid = document.getElementById('state-story-highlights-grid');
     const svgContainer = document.getElementById('state-svg-container');
-    
+
     // Clear loader
     if (!mapContainer) return;
     mapContainer.innerHTML = '';
@@ -228,10 +228,10 @@ function initInteractiveMap() {
             document.querySelectorAll('.india-svg-map path').forEach(p => {
                 p.classList.remove('highlighted-active');
             });
-            
+
             // Highlight current
             pathElement.classList.add('highlighted-active');
-            
+
             // Open state modal
             showStateDetails(loc);
         });
@@ -261,12 +261,12 @@ function initInteractiveMap() {
         // Set Details
         overlayTitle.innerText = loc.name;
         overlayCapital.innerText = loc.capital;
-        
+
         // Format story text as paragraph lines
         const storyRaw = loc.story || loc.description;
         const paragraphs = storyRaw.split('\\n\\n').map(pText => `<p class="story-paragraph">${pText}</p>`).join('');
         overlayMainText.innerHTML = paragraphs;
-        
+
         // Reapply Drop Cap on first paragraph
         const firstPara = overlayMainText.querySelector('.story-paragraph');
         if (firstPara) firstPara.classList.add('drop-cap');
@@ -279,7 +279,7 @@ function initInteractiveMap() {
         `;
 
         // Render SVG in canvas
-svgContainer.innerHTML = `
+        svgContainer.innerHTML = `
              <svg viewBox="${mapData.viewBox}" style="width: 80%; height: auto; max-height: 50vh; filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.5)); fill: var(--primary-gold);">
                  <path d="${loc.path}"></path>
              </svg>
@@ -365,7 +365,7 @@ svgContainer.innerHTML = `
     randomBtn.addEventListener('click', () => {
         const randomIndex = Math.floor(Math.random() * mapData.locations.length);
         const randomLoc = mapData.locations[randomIndex];
-        
+
         // Remove previous highlight
         document.querySelectorAll('.india-svg-map path').forEach(p => {
             p.classList.remove('highlighted-active');
@@ -404,7 +404,7 @@ function initCuisineExplorer() {
             btn.classList.add('active');
 
             const region = btn.getAttribute('data-region');
-            
+
             // Fading grid animation
             cuisineGrid.style.opacity = '0';
             cuisineGrid.style.transform = 'translateY(15px)';
@@ -420,15 +420,15 @@ function initCuisineExplorer() {
 
     function renderCuisines(regionFilter) {
         cuisineGrid.innerHTML = '';
-        
-        const filteredList = regionFilter === 'all' 
-            ? cuisinesData 
+
+        const filteredList = regionFilter === 'all'
+            ? cuisinesData
             : cuisinesData.filter(item => item.region === regionFilter);
 
         filteredList.forEach(dish => {
             const card = document.createElement('div');
             card.className = 'cuisine-card glass-card';
-            
+
             // Determine region badge color
             let badgeClass = 'saffron-bg';
             if (dish.region === 'south') badgeClass = 'gold-bg';
@@ -460,7 +460,7 @@ function initCuisineExplorer() {
 function initFestivals() {
     const festivalTimeline = document.getElementById('festival-timeline');
     const stateModal = document.getElementById('state-modal');
-    
+
     if (!festivalTimeline) return;
     festivalTimeline.innerHTML = '';
 
@@ -494,9 +494,9 @@ function initCultureSlider() {
     const prevBtn = document.getElementById('slider-prev');
     const nextBtn = document.getElementById('slider-next');
     const dotsContainer = document.getElementById('slider-dots');
-    
+
     let currentSlide = 0;
-    
+
     // Render Culture Items
     if (!track) return;
     track.innerHTML = '';
@@ -517,7 +517,7 @@ function initCultureSlider() {
     // Render Navigation Dots
     dotsContainer.innerHTML = '';
     const totalCards = cultureData.length;
-    
+
     // Determine responsive slide count limits
     function getVisibleSlidesCount() {
         if (window.innerWidth <= 768) return 1;
@@ -532,7 +532,7 @@ function initCultureSlider() {
     function updateDots() {
         dotsContainer.innerHTML = '';
         const dotsCount = getMaxSlides() + 1;
-        
+
         for (let i = 0; i < dotsCount; i++) {
             const dot = document.createElement('span');
             dot.className = `dot ${i === currentSlide ? 'active' : ''}`;
@@ -552,10 +552,10 @@ function initCultureSlider() {
 
         const cardWidthPercent = 100 / getVisibleSlidesCount();
         const gapOffset = 30 * currentSlide / getVisibleSlidesCount(); // 30px is gap in CSS
-        
+
         // Dynamic track translation calculation
         const percentTranslation = currentSlide * cardWidthPercent;
-        
+
         // Apply styling transform
         track.style.transform = `translateX(calc(-${percentTranslation}% - ${currentSlide * 20}px))`;
 
@@ -581,6 +581,63 @@ function initCultureSlider() {
         moveSlider();
     });
 
+    // ------------------------------------------------------------------
+    // TOUCH SWIPE SUPPORT (mobile)
+    // Uses touchstart / touchmove / touchend — no external libraries.
+    // Minimum threshold of 50px filters out accidental micro-drags.
+    // The vertical guard prevents stealing vertical page-scroll gestures.
+    // { passive: false } on touchmove lets us call preventDefault() to
+    // stop page judder when a horizontal swipe is confirmed.
+    // ------------------------------------------------------------------
+    const sliderContainer = document.getElementById('slider-container');
+    if (!sliderContainer) return;
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSwiping = false; // true once we've committed to a horizontal drag
+
+    sliderContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+        isSwiping = false;
+    }, { passive: true });
+
+    sliderContainer.addEventListener('touchmove', (e) => {
+        const deltaX = e.changedTouches[0].screenX - touchStartX;
+        const deltaY = e.changedTouches[0].screenY - touchStartY;
+
+        // Commit to horizontal swipe only when horizontal movement is dominant
+        if (!isSwiping && Math.abs(deltaX) > Math.abs(deltaY)) {
+            isSwiping = true;
+        }
+
+        // Once committed to horizontal swipe, block vertical page scroll
+        if (isSwiping) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    sliderContainer.addEventListener('touchend', (e) => {
+        if (!isSwiping) return; // was a vertical scroll — do nothing
+
+        const deltaX = e.changedTouches[0].screenX - touchStartX;
+        const SWIPE_THRESHOLD = 50; // px — ignore accidental micro-drags
+
+        if (Math.abs(deltaX) >= SWIPE_THRESHOLD) {
+            if (deltaX < 0) {
+                // Swiped left → advance to next slide
+                currentSlide++;
+            } else {
+                // Swiped right → go back to previous slide
+                currentSlide--;
+            }
+            moveSlider();
+        }
+
+        isSwiping = false;
+    }, { passive: true });
+    // ------------------------------------------------------------------
+
     // Initialize layout dots
     updateDots();
 
@@ -604,12 +661,12 @@ function initQuiz() {
     const introScreen = document.getElementById('quiz-intro-screen');
     const questionScreen = document.getElementById('quiz-question-screen');
     const resultScreen = document.getElementById('quiz-result-screen');
-    
+
     // Buttons
     const startBtn = document.getElementById('btn-start-quiz');
     const restartBtn = document.getElementById('btn-restart-quiz');
     const heroStartBtn = document.getElementById('btn-start-quiz-hero');
-    
+
     // Gameplay fields
     const currentQNum = document.getElementById('current-q-num');
     const progressFill = document.getElementById('quiz-progress-fill');
@@ -620,7 +677,7 @@ function initQuiz() {
     const feedbackText = document.getElementById('feedback-text');
     const finalScore = document.getElementById('quiz-final-score');
     const resultMsg = document.getElementById('quiz-result-message');
-    
+
     let currentQuestionIndex = 0;
     let score = 0;
     let locked = false;
@@ -628,7 +685,7 @@ function initQuiz() {
     // Start triggers
     if (startBtn) startBtn.addEventListener('click', startQuiz);
     if (restartBtn) restartBtn.addEventListener('click', startQuiz);
-    
+
     if (heroStartBtn) {
         heroStartBtn.addEventListener('click', () => {
             // Scroll to quiz and start
@@ -642,25 +699,25 @@ function initQuiz() {
         currentQuestionIndex = 0;
         score = 0;
         locked = false;
-        
+
         introScreen.classList.add('hidden');
         resultScreen.classList.add('hidden');
         questionScreen.classList.remove('hidden');
-        
+
         loadQuestion();
     }
 
     function loadQuestion() {
         locked = false;
         feedback.classList.add('hidden');
-        
+
         const q = quizQuestions[currentQuestionIndex];
-        
+
         // Set texts and fills
         currentQNum.innerText = currentQuestionIndex + 1;
         progressFill.style.width = ((currentQuestionIndex + 1) / 8 * 100) + '%';
         questionText.innerText = q.question;
-        
+
         // Load Options buttons
         optionsGrid.innerHTML = '';
         q.options.forEach(opt => {
@@ -675,10 +732,10 @@ function initQuiz() {
     function selectOption(clickedBtn, selectedVal) {
         if (locked) return;
         locked = true;
-        
+
         const q = quizQuestions[currentQuestionIndex];
         const isCorrect = (selectedVal === q.answer);
-        
+
         const optionBtns = optionsGrid.querySelectorAll('.option-btn');
         optionBtns.forEach(btn => {
             btn.classList.add('disabled');
@@ -710,7 +767,7 @@ function initQuiz() {
 
     function showFeedback(isCorrect, correctAnswer) {
         feedback.classList.remove('hidden', 'correct', 'wrong');
-        
+
         if (isCorrect) {
             feedback.classList.add('correct');
             feedbackIcon.innerText = '✅';
@@ -725,9 +782,9 @@ function initQuiz() {
     function showResults() {
         questionScreen.classList.add('hidden');
         resultScreen.classList.remove('hidden');
-        
+
         finalScore.innerText = score;
-        
+
         // Select message matching rank
         if (score === 8) {
             resultMsg.innerText = "Incredible Mastermind! 🏆 You scored a perfect 8/8! You are an expert on India's vast culinary heritage!";
@@ -867,7 +924,7 @@ function initCuisinePage() {
     const cuisineGrid = document.getElementById('cuisine-grid');
     const tabBtns = document.querySelectorAll('.tab-btn');
     const searchInput = document.getElementById('cuisine-search-input');
-    
+
     const drawer = document.getElementById('cuisine-drawer');
     const drawerClose = document.getElementById('drawer-close');
     const dRegion = document.getElementById('drawer-region-text');
@@ -879,7 +936,7 @@ function initCuisinePage() {
     const dRich = document.getElementById('fill-richness');
     const dSweet = document.getElementById('fill-sweetness');
     const dIngredients = document.getElementById('drawer-ingredients');
-    
+
     let currentRegion = 'all';
     let searchQuery = '';
 
@@ -922,13 +979,13 @@ function initCuisinePage() {
 
     function render() {
         cuisineGrid.innerHTML = '';
-        
+
         let filtered = cuisinesData;
         if (currentRegion !== 'all') {
             filtered = filtered.filter(item => item.region === currentRegion);
         }
         if (searchQuery !== '') {
-            filtered = filtered.filter(item => 
+            filtered = filtered.filter(item =>
                 item.name.toLowerCase().includes(searchQuery) ||
                 item.state.toLowerCase().includes(searchQuery) ||
                 item.description.toLowerCase().includes(searchQuery)
@@ -943,7 +1000,7 @@ function initCuisinePage() {
         filtered.forEach(dish => {
             const card = document.createElement('div');
             card.className = 'cuisine-card glass-card';
-            
+
             let badgeClass = 'saffron-bg';
             if (dish.region === 'south') badgeClass = 'gold-bg';
             if (dish.region === 'east') badgeClass = 'green-bg';
@@ -975,11 +1032,11 @@ function initCuisinePage() {
                 dImg.src = dish.image;
                 dImg.alt = dish.name;
                 dDesc.innerText = details.story;
-                
+
                 dSpice.style.width = details.spice + '%';
                 dRich.style.width = details.richness + '%';
                 dSweet.style.width = details.sweetness + '%';
-                
+
                 dIngredients.innerHTML = '';
                 details.ingredients.forEach(ing => {
                     const li = document.createElement('li');
@@ -1004,14 +1061,14 @@ function initCuisinePage() {
         const stepInstruction = document.getElementById('step-instruction');
         const btnPrevStep = document.getElementById('btn-prev-step');
         const btnNextStep = document.getElementById('btn-next-step');
-        
+
         let currentRecipeSteps = [];
         let currentStepIndex = 0;
 
         if (btnTryRecipe) {
             btnTryRecipe.onclick = () => {
                 recipeTitle.innerText = dTitle.innerText;
-                
+
                 // Generate pseudo-steps based on ingredients
                 const ingredientsList = Array.from(dIngredients.querySelectorAll('li')).map(li => li.innerText);
                 currentRecipeSteps = [
@@ -1020,12 +1077,12 @@ function initCuisinePage() {
                     { title: "3. Simmer & Cook", text: `Add the main elements and let the dish simmer on low heat until fully cooked. Let the flavors meld.` },
                     { title: "4. Garnish & Serve", text: `Finish off with ${ingredientsList.length > 3 ? ingredientsList[3] : "fresh herbs"} and serve hot! Enjoy your authentic meal.` }
                 ];
-                
+
                 currentStepIndex = 0;
                 updateRecipeUI();
                 recipeOverlay.classList.add('active');
             };
-            
+
             btnExitRecipe.onclick = () => {
                 recipeOverlay.classList.remove('active');
             };
@@ -1051,13 +1108,13 @@ function initCuisinePage() {
                 const step = currentRecipeSteps[currentStepIndex];
                 stepTitle.innerText = step.title;
                 stepInstruction.innerText = step.text;
-                
+
                 const progress = ((currentStepIndex + 1) / currentRecipeSteps.length) * 100;
                 progressFill.style.width = `${progress}%`;
                 stepIndicator.innerText = `Step ${currentStepIndex + 1} of ${currentRecipeSteps.length}`;
-                
+
                 btnPrevStep.disabled = currentStepIndex === 0;
-                
+
                 if (currentStepIndex === currentRecipeSteps.length - 1) {
                     btnNextStep.innerText = "Finish 🎉";
                 } else {
@@ -1079,7 +1136,7 @@ function initFestivalsPage() {
     const overlay = document.getElementById('story-overlay');
     const backBtn = document.getElementById('story-back-btn');
     const audioBtn = document.getElementById('story-audio-btn');
-    
+
     const storyImg = document.getElementById('story-img');
     const particlesContainer = document.getElementById('canvas-particles');
     const shapeContainer = document.getElementById('canvas-shape-container');
@@ -1107,14 +1164,14 @@ function initFestivalsPage() {
             storyImg.alt = fest.name;
             storySubtitle.innerText = fest.subtitle;
             storyTitle.innerText = fest.name;
-            
+
             // Format story text as paragraph lines
             const paragraphs = (fest.story || fest.description)
                 .split('\n\n')
                 .map(pText => `<p class="story-paragraph">${pText}</p>`)
                 .join('');
             storyMainText.innerHTML = paragraphs;
-            
+
             // Reapply Drop Cap on first paragraph
             const firstPara = storyMainText.querySelector('.story-paragraph');
             if (firstPara) firstPara.classList.add('drop-cap');
@@ -1130,7 +1187,7 @@ function initFestivalsPage() {
                 { icon: "✨", text: "Joyous Decorations" },
                 { icon: "🫂", text: "Community Gatherings" }
             ];
-            
+
             highlights.forEach(hl => {
                 const div = document.createElement('div');
                 div.className = 'highlight-bullet';
@@ -1226,7 +1283,7 @@ function initFestivalsPage() {
                 } else {
                     audioBtn.classList.add('playing');
                     audioBtn.innerHTML = '<span class="audio-icon">🔇</span> Stop Soundscape';
-                    
+
                     let drumEl = null;
                     if (fest.name === "Bihu") {
                         drumEl = document.getElementById('bihu-dhol-drum');
@@ -1270,7 +1327,7 @@ function setupScrollReveals() {
 
 function spawnThemedParticles(festName, container) {
     container.innerHTML = '';
-    
+
     if (festName === "Diwali") {
         for (let i = 0; i < 20; i++) {
             const p = document.createElement('div');
@@ -1363,10 +1420,10 @@ function initAudioSynth() {
 function playSoundscape(festName, drumElement) {
     initAudioSynth();
     stopSoundscape();
-    
+
     soundscapeActive = true;
     currentFestivalPlaying = festName;
-    
+
     if (festName === "Diwali") {
         playDiwaliSoundscape(drumElement);
     } else if (festName === "Holi") {
@@ -1403,31 +1460,31 @@ function stopSoundscape() {
 // 1. Diwali Sparkler crackles & dynamic flame flickers
 function playDiwaliSoundscape(flameElement) {
     if (!soundscapeActive || currentFestivalPlaying !== "Diwali") return;
-    
+
     const time = audioCtx.currentTime;
     const bufferSize = audioCtx.sampleRate * 0.08;
     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
-    
+
     for (let i = 0; i < bufferSize; i++) {
         data[i] = Math.random() > 0.985 ? (Math.random() * 2 - 1) : 0;
     }
-    
+
     const noise = audioCtx.createBufferSource();
     noise.buffer = buffer;
-    
+
     const filter = audioCtx.createBiquadFilter();
     filter.type = "highpass";
     filter.frequency.value = 5000;
-    
+
     const gain = audioCtx.createGain();
     gain.gain.setValueAtTime(0.06, time);
-    
+
     noise.connect(filter);
     filter.connect(gain);
     gain.connect(audioCtx.destination);
     noise.start();
-    
+
     // Sparkle flicker visual sync
     if (flameElement && Math.random() > 0.5) {
         flameElement.style.transform = `scale(${Math.random() * 0.2 + 0.95}) rotate(${Math.random() * 4 - 2}deg)`;
@@ -1435,7 +1492,7 @@ function playDiwaliSoundscape(flameElement) {
             if (flameElement) flameElement.style.transform = '';
         }, 100);
     }
-    
+
     audioTimeout = setTimeout(() => playDiwaliSoundscape(flameElement), 80 + Math.random() * 150);
 }
 
@@ -1444,17 +1501,17 @@ function playHoliSoundscape() {
     let beatIndex = 0;
     const tempo = 120;
     const beatDuration = 60 / tempo;
-    
+
     function playBeatLoop() {
         if (!soundscapeActive || currentFestivalPlaying !== "Holi") return;
-        
+
         const pattern = [1, 0, 0.6, 1, 1, 0, 0.6, 0.4];
         const strength = pattern[beatIndex % pattern.length];
-        
+
         if (strength > 0) {
             synthesizeDholStrike(strength);
         }
-        
+
         beatIndex++;
         audioTimeout = setTimeout(playBeatLoop, (beatDuration * 1000) / 2);
     }
@@ -1463,32 +1520,32 @@ function playHoliSoundscape() {
 
 function synthesizeDholStrike(strength) {
     const time = audioCtx.currentTime;
-    
+
     // Low drum body
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = "sine";
     osc.frequency.setValueAtTime(strength >= 1 ? 65 : 85, time);
     osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.35);
-    
+
     gain.gain.setValueAtTime(strength * 0.45, time);
     gain.gain.exponentialRampToValueAtTime(0.01, time + 0.35);
-    
+
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start(time);
     osc.stop(time + 0.4);
-    
+
     // High head snap
     const snapOsc = audioCtx.createOscillator();
     const snapGain = audioCtx.createGain();
     snapOsc.type = "triangle";
     snapOsc.frequency.setValueAtTime(280, time);
     snapOsc.frequency.exponentialRampToValueAtTime(80, time + 0.07);
-    
+
     snapGain.gain.setValueAtTime(strength * 0.1, time);
     snapGain.gain.exponentialRampToValueAtTime(0.01, time + 0.07);
-    
+
     snapOsc.connect(snapGain);
     snapGain.connect(audioCtx.destination);
     snapOsc.start(time);
@@ -1498,51 +1555,51 @@ function synthesizeDholStrike(strength) {
 // 3. Eid Serene ambient drone & hanging chimes
 function playEidSoundscape() {
     let chimeIndex = 0;
-    
+
     // Continuous ambient drone oscillators
     const drone1 = audioCtx.createOscillator();
     const drone2 = audioCtx.createOscillator();
     const droneGain = audioCtx.createGain();
-    
+
     drone1.type = "sine";
     drone1.frequency.value = 110; // A2
     drone2.type = "triangle";
     drone2.frequency.value = 165; // E3
     droneGain.gain.value = 0.035;
-    
+
     drone1.connect(droneGain);
     drone2.connect(droneGain);
     droneGain.connect(audioCtx.destination);
-    
+
     drone1.start();
     drone2.start();
-    
+
     activeAudioNodes.push(drone1, drone2);
-    
+
     function playChimeLoop() {
         if (!soundscapeActive || currentFestivalPlaying !== "Eid") {
-            try { drone1.stop(); } catch (e) {}
-            try { drone2.stop(); } catch (e) {}
+            try { drone1.stop(); } catch (e) { }
+            try { drone2.stop(); } catch (e) { }
             return;
         }
-        
+
         const scale = [440, 494, 554, 659, 740]; // Pentatonic Major
         const freq = scale[chimeIndex % scale.length];
-        
+
         const time = audioCtx.currentTime;
         const chime = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        
+
         chime.type = "sine";
         chime.frequency.value = freq;
         gain.gain.setValueAtTime(0.12, time);
         gain.gain.exponentialRampToValueAtTime(0.001, time + 1.5);
-        
+
         chime.connect(gain);
         gain.connect(audioCtx.destination);
         chime.start(time);
         chime.stop(time + 1.6);
-        
+
         chimeIndex++;
         audioTimeout = setTimeout(playChimeLoop, 1500 + Math.random() * 2000);
     }
@@ -1554,17 +1611,17 @@ function playPongalSoundscape() {
     let beatIndex = 0;
     const tempo = 96;
     const beatDuration = 60 / tempo;
-    
+
     function playPongalLoop() {
         if (!soundscapeActive || currentFestivalPlaying !== "Pongal") return;
-        
+
         const pattern = [1, 0, 0, 1, 0.5, 0, 1, 0.4];
         const strength = pattern[beatIndex % pattern.length];
-        
+
         if (strength > 0) {
             synthesizeClap(strength);
         }
-        
+
         beatIndex++;
         audioTimeout = setTimeout(playPongalLoop, (beatDuration * 1000) / 2);
     }
@@ -1579,19 +1636,19 @@ function synthesizeClap(strength) {
     for (let i = 0; i < bufferSize; i++) {
         data[i] = Math.random() * 2 - 1;
     }
-    
+
     const noise = audioCtx.createBufferSource();
     noise.buffer = buffer;
-    
+
     const filter = audioCtx.createBiquadFilter();
     filter.type = "bandpass";
     filter.frequency.value = 1100;
     filter.Q.value = 3;
-    
+
     const gain = audioCtx.createGain();
     gain.gain.setValueAtTime(strength * 0.16, time);
     gain.gain.exponentialRampToValueAtTime(0.001, time + 0.07);
-    
+
     noise.connect(filter);
     filter.connect(gain);
     gain.connect(audioCtx.destination);
@@ -1603,13 +1660,13 @@ function playNavratriSoundscape(sticksElement) {
     let beatIndex = 0;
     const tempo = 124;
     const beatDuration = 60 / tempo;
-    
+
     function playNavratriLoop() {
         if (!soundscapeActive || currentFestivalPlaying !== "Navratri") return;
-        
+
         const pattern = [1, 1, 0.6, 1, 0, 1, 1, 0.6];
         const strength = pattern[beatIndex % pattern.length];
-        
+
         if (strength > 0) {
             synthesizeDandiyaStrike(strength);
             if (sticksElement) {
@@ -1617,7 +1674,7 @@ function playNavratriSoundscape(sticksElement) {
                 setTimeout(() => sticksElement.classList.remove('beat-pulse'), 150);
             }
         }
-        
+
         beatIndex++;
         audioTimeout = setTimeout(playNavratriLoop, (beatDuration * 1000) / 2);
     }
@@ -1628,14 +1685,14 @@ function synthesizeDandiyaStrike(strength) {
     const time = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    
+
     osc.type = "triangle";
     osc.frequency.setValueAtTime(1350, time);
     osc.frequency.exponentialRampToValueAtTime(750, time + 0.04);
-    
+
     gain.gain.setValueAtTime(strength * 0.14, time);
     gain.gain.exponentialRampToValueAtTime(0.001, time + 0.04);
-    
+
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start(time);
@@ -1647,13 +1704,13 @@ function playBihuSoundscape(drumElement) {
     let beatIndex = 0;
     const tempo = 142;
     const beatDuration = 60 / tempo;
-    
+
     function playBihuLoop() {
         if (!soundscapeActive || currentFestivalPlaying !== "Bihu") return;
-        
+
         const pattern = [1, 0.5, 1, 0.5, 1, 1, 0.5, 1];
         const strength = pattern[beatIndex % pattern.length];
-        
+
         if (strength > 0) {
             synthesizeDholStrike(strength * 1.1);
             if (drumElement) {
@@ -1661,7 +1718,7 @@ function playBihuSoundscape(drumElement) {
                 setTimeout(() => drumElement.classList.remove('beat-pulse'), 150);
             }
         }
-        
+
         beatIndex++;
         audioTimeout = setTimeout(playBihuLoop, (beatDuration * 1000) / 2);
     }
@@ -1672,7 +1729,7 @@ function playBihuSoundscape(drumElement) {
 function playStateSoundscape(stateName) {
     initAudioSynth();
     stopSoundscape();
-    
+
     soundscapeActive = true;
     currentFestivalPlaying = "State";
 
@@ -1680,45 +1737,45 @@ function playStateSoundscape(stateName) {
     const drone1 = audioCtx.createOscillator();
     const drone2 = audioCtx.createOscillator();
     const droneGain = audioCtx.createGain();
-    
+
     drone1.type = "sine";
     drone1.frequency.value = 146.83; // D3
     drone2.type = "triangle";
     drone2.frequency.value = 220.00; // A3
-    
+
     droneGain.gain.setValueAtTime(0.01, audioCtx.currentTime);
     droneGain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 2); // Fade in
-    
+
     drone1.connect(droneGain);
     drone2.connect(droneGain);
     droneGain.connect(audioCtx.destination);
-    
+
     drone1.start();
     drone2.start();
-    
+
     activeAudioNodes.push(drone1, drone2);
-    
+
     // Add occasional wind chimes/bells
     function playStateChime() {
         if (!soundscapeActive || currentFestivalPlaying !== "State") return;
-        
+
         const scale = [587.33, 659.25, 739.99, 880.00, 987.77]; // D Major Pentatonic
         const freq = scale[Math.floor(Math.random() * scale.length)];
-        
+
         const time = audioCtx.currentTime;
         const chime = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        
+
         chime.type = "sine";
         chime.frequency.value = freq;
         gain.gain.setValueAtTime(0.08, time);
         gain.gain.exponentialRampToValueAtTime(0.001, time + 2);
-        
+
         chime.connect(gain);
         gain.connect(audioCtx.destination);
         chime.start(time);
         chime.stop(time + 2.1);
-        
+
         audioTimeout = setTimeout(playStateChime, 2000 + Math.random() * 4000);
     }
     playStateChime();
@@ -1743,7 +1800,7 @@ function initCulturePage() {
             tabBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentCategory = btn.getAttribute('data-category');
-            
+
             gridContainer.style.opacity = '0';
             gridContainer.style.transform = 'translateY(15px)';
             gridContainer.style.transition = 'opacity 0.25s, transform 0.25s';
@@ -1772,7 +1829,7 @@ function initCulturePage() {
 
     function render() {
         gridContainer.innerHTML = '';
-        
+
         const filtered = currentCategory === 'all'
             ? cultureData
             : cultureData.filter(item => item.category === currentCategory);
@@ -1796,7 +1853,7 @@ function initCulturePage() {
                 mImg.src = item.image;
                 mImg.alt = item.title;
                 mDesc.innerText = item.description;
-                
+
                 modal.classList.add('open');
             });
 
@@ -1816,7 +1873,7 @@ function initBharatGuide() {
     const chatMessages = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');
     const btnSendMsg = document.getElementById('btn-send-msg');
-    
+
     if (!fabGuide) return; // Not on this page
 
     // Knowledge Graph is now loaded from chatbot-data.js
@@ -1856,7 +1913,7 @@ function initBharatGuide() {
 
         // Show typing indicator
         const typingId = showTypingIndicator();
-        
+
         setTimeout(() => {
             removeTypingIndicator(typingId);
             addMessage(response, 'bot-message');
@@ -1907,28 +1964,28 @@ function initBharatGuide() {
     // Web Speech API (Text-to-Speech)
     function speakResponse(text) {
         if (!('speechSynthesis' in window)) return;
-        
+
         window.speechSynthesis.cancel(); // Cancel any ongoing speech
-        
+
         const utterance = new SpeechSynthesisUtterance(text);
-        
+
         // Try to find an Indian English voice for authenticity
         const voices = window.speechSynthesis.getVoices();
         const indianVoice = voices.find(v => v.lang.includes('en-IN') || v.name.includes('India'));
-        
+
         if (indianVoice) {
             utterance.voice = indianVoice;
         }
-        
+
         utterance.rate = 0.95;
         utterance.pitch = 1.0;
-        
+
         isSynthesizing = true;
         utterance.onend = () => { isSynthesizing = false; };
-        
+
         window.speechSynthesis.speak(utterance);
     }
-    
+
     // Ensure voices are loaded (Chrome issue)
     if ('speechSynthesis' in window) {
         window.speechSynthesis.onvoiceschanged = () => {

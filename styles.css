@@ -815,6 +815,8 @@ button {
     width: 100%;
     overflow: hidden;
     padding: 10px 5px;
+    /* Allow vertical page scroll but let JS handle horizontal swipe gestures */
+    touch-action: pan-y;
 }
 
 .slider-track {
