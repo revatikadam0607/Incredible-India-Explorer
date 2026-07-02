@@ -1199,20 +1199,35 @@ button {
     max-width: 500px;
 }
 
+.footer-links {
+    display: flex;
+    flex-direction: column;
+}
+
 .footer-links h4 {
     font-size: 1.1rem;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
+    text-align: center;
 }
 
 .footer-links ul {
+    list-style: none;
+    padding: 0;
+    margin-left: 60px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(2, auto);
+    gap: 12px 35px;
+    justify-content: center;
+}
+
+.footer-links li {
+    margin: 0;
 }
 
 .footer-links a {
     color: var(--text-muted);
     font-size: 0.95rem;
+    text-decoration: none;
     transition: var(--transition-snappy);
 }
 
