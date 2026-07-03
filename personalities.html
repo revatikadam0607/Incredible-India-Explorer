@@ -309,13 +309,13 @@
         <section class="fade-in-section" style="padding: 40px 0;">
             <div class="section-container">
                 <div class="category-tabs">
-                    <button class="category-tab active">Historical Legends</button>
-                    <button class="category-tab">Freedom Fighters</button>
-                    <button class="category-tab">Modern Icons</button>
+                    <button class="category-tab active" data-category="historical">Historical Legends</button>
+                    <button class="category-tab" data-category="freedom-fighter">Freedom Fighters</button>
+                    <button class="category-tab" data-category="modern">Modern Icons</button>
                 </div>
 
                 <div class="person-grid">
-                    <div class="person-card">
+                    <div class="person-card" data-category="historical">
                         <div class="person-img-wrapper">
                             <img src="assets/Ashoka.png"alt="Ashoka the Great" class="person-img">
                         </div>
@@ -326,7 +326,7 @@
                         </div>
                     </div>
 
-                    <div class="person-card">
+                    <div class="person-card" data-category="historical">
                         <div class="person-img-wrapper">
                             <img src="assets/Chhatrapati_Shivaji.png"alt="Chhatrapati Shivaji Maharaj" class="person-img">
                         </div>
@@ -337,7 +337,7 @@
                         </div>
                     </div>
 
-                    <div class="person-card">
+                    <div class="person-card" data-category="freedom-fighter">
                         <div class="person-img-wrapper">
                             <img src="assets/Rani_Lakshmibai.png"alt="Rani Lakshmibai" class="person-img">
                         </div>
@@ -348,7 +348,95 @@
                         </div>
                     </div>
 
-                    <div class="person-card">
+                    <div class="person-card" data-category="freedom-fighter">
+                        <div class="person-img-wrapper">
+                            <img src="assets/Mahatma.png"alt="Mahatma Gandhi" class="person-img">
+                        </div>
+                        <div class="person-info">
+                            <h3 class="person-name">Mahatma Gandhi</h3>
+                            <div class="person-title">Father of the Nation</div>
+                            <p class="person-desc">Leader of India's independence movement who inspired millions through nonviolent resistance and civil disobedience.</p>
+                        </div>
+                    </div>
+
+                    <div class="person-card" data-category="freedom-fighter">
+                        <div class="person-img-wrapper">
+                            <img src="assets/Bhagat.png"alt="Bhagat Singh" class="person-img">
+                        </div>
+                        <div class="person-info">
+                            <h3 class="person-name">Bhagat Singh</h3>
+                            <div class="person-title">Revolutionary Freedom Fighter</div>
+                            <p class="person-desc">A fearless revolutionary who became a symbol of courage and sacrifice in India's struggle against British rule.</p>
+                        </div>
+                    </div>
+
+                    <div class="person-card" data-category="freedom-fighter">
+                        <div class="person-img-wrapper">
+                            <img src="assets/Subhas_Chandra.png"alt="Subhas Chandra Bose" class="person-img">
+                        </div>
+                        <div class="person-info">
+                            <h3 class="person-name">Subhas Chandra Bose</h3>
+                            <div class="person-title">Leader of the Indian National Army</div>
+                            <p class="person-desc">A visionary nationalist who led the Indian National Army to fight for India's independence from British rule.</p>
+                        </div>
+                    </div>
+
+                    <div class="person-card" data-category="historical">
+                        <div class="person-img-wrapper">
+                            <img src="assets/Maharana.png"alt="Maharana Pratap" class="person-img">
+                        </div>
+                        <div class="person-info">
+                            <h3 class="person-name">Maharana Pratap</h3>
+                            <div class="person-title">Rajput Warrior King of Mewar</div>
+                            <p class="person-desc">Renowned for his bravery and unwavering resistance against the Mughal Empire, becoming a lasting symbol of courage.</p>
+                        </div>
+                    </div>
+
+                    <div class="person-card" data-category="modern">
+                        <div class="person-img-wrapper">
+                            <img src="assets/Abdul_kalam.png"alt="Dr. A. P. J. Abdul Kalam" class="person-img">
+                        </div>
+                        <div class="person-info">
+                            <h3 class="person-name">Dr. A. P. J. Abdul Kalam</h3>
+                            <div class="person-title">Missile Man of India</div>
+                            <p class="person-desc">An eminent scientist and former President who inspired generations through innovation, education, and visionary leadership.</p>
+                        </div>
+                    </div>
+
+                    <div class="person-card" data-category="modern">
+                        <div class="person-img-wrapper">
+                            <img src="assets/Ratan_Tata.png"alt="Ratan Tata" class="person-img">
+                        </div>
+                       <div class="person-info">
+                            <h3 class="person-name">Ratan Tata</h3>
+                            <div class="person-title">Industrialist and Philanthropist</div>
+                            <p class="person-desc">A respected business leader whose vision, ethics, and philanthropy have shaped modern India's industrial and social progress.</p>
+                        </div>
+                    </div>
+
+                    <div class="person-card" data-category="modern">
+                        <div class="person-img-wrapper">
+                            <img src="assets/Sachin.png"alt="Sachin Tendulkar" class="person-img">
+                        </div>
+                        <div class="person-info">
+                            <h3 class="person-name">Sachin Tendulkar</h3>
+                            <div class="person-title">Master Blaster</div>
+                            <p class="person-desc">One of cricket's greatest legends, inspiring millions through exceptional achievements, humility, and dedication to the sport.</p>
+                        </div>
+                    </div>
+
+                    <div class="person-card" data-category="modern">
+                        <div class="person-img-wrapper">
+                            <img src="assets/Narayan.png"alt="N. R. Narayana Murthy" class="person-img">
+                        </div>
+                        <div class="person-info">
+                            <h3 class="person-name">N. R. Narayana Murthy</h3>
+                            <div class="person-title">Co-founder of Infosys</div>
+                            <p class="person-desc">A pioneering entrepreneur whose leadership and vision helped establish India as a global hub for information technology.</p>
+                        </div>
+                    </div>
+
+                    <div class="person-card" data-category="historical">
                         <div class="person-img-wrapper">
                             <img src="assets/Akbar.png"alt="Akbar the Great" class="person-img">
                         </div>
