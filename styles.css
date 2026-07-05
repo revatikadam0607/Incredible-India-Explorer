@@ -2454,6 +2454,792 @@ button {
     font-size: 0.95rem;
 }
 
+/* ==========================================================================
+   MUSIC PAGE STYLES
+   ========================================================================== */
+.music-page-body {
+    background:
+        radial-gradient(circle at 14% 10%, rgba(255, 176, 31, 0.09) 0%, transparent 26%),
+        radial-gradient(circle at 84% 16%, rgba(18, 136, 7, 0.08) 0%, transparent 24%),
+        radial-gradient(circle at 52% 94%, rgba(255, 153, 51, 0.08) 0%, transparent 30%),
+        var(--bg-dark-deep);
+}
+
+.music-hero {
+    position: relative;
+    min-height: 430px;
+    height: auto;
+    padding: 100px 0 62px;
+    background:
+        radial-gradient(circle at 18% 24%, rgba(255, 176, 31, 0.22) 0%, transparent 22%),
+        radial-gradient(circle at 82% 28%, rgba(18, 136, 7, 0.16) 0%, transparent 22%),
+        radial-gradient(circle at 50% 84%, rgba(255, 153, 51, 0.14) 0%, transparent 26%),
+        linear-gradient(160deg, #10182a 0%, #09111d 50%, #071410 100%);
+}
+
+.music-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(180deg, transparent 0 18%, rgba(255, 255, 255, 0.035) 18% 19%, transparent 19% 36%, rgba(255, 255, 255, 0.035) 36% 37%, transparent 37% 54%, rgba(255, 255, 255, 0.035) 54% 55%, transparent 55% 72%, rgba(255, 255, 255, 0.035) 72% 73%, transparent 73% 100%);
+    background-size: 84px 84px, 84px 84px, 100% 100%;
+    opacity: 0.34;
+    z-index: 0;
+}
+
+.music-hero .sub-hero-overlay {
+    background: linear-gradient(180deg, rgba(7, 13, 23, 0.22) 0%, rgba(7, 13, 23, 0.92) 100%);
+}
+
+.music-hero .sub-hero-content {
+    max-width: 940px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+}
+
+.music-hero h1 {
+    max-width: 13ch;
+    line-height: 1.04;
+    margin-bottom: 8px;
+}
+
+.music-hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.music-tabs-section {
+    background: linear-gradient(to bottom, rgba(7, 13, 23, 0.96) 0%, rgba(9, 13, 22, 1) 100%);
+}
+
+.music-filters-bar {
+    align-items: flex-end;
+}
+
+.music-filters-bar .tab-container {
+    margin-bottom: 0;
+}
+
+.music-filters-bar .search-box-wrapper {
+    width: min(100%, 340px);
+}
+
+.music-genre-summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(220px, 0.9fr);
+    gap: 24px;
+    padding: 28px;
+    margin-bottom: 28px;
+}
+
+.music-genre-summary-copy h3 {
+    font-size: clamp(1.7rem, 2vw, 2.1rem);
+    margin-bottom: 10px;
+}
+
+.music-genre-summary-copy p {
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 18px;
+}
+
+.music-summary-badge {
+    margin-bottom: 12px;
+}
+
+.music-chips,
+.music-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.music-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.music-summary-stats {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+}
+
+.music-summary-stat {
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.music-summary-stat strong {
+    display: block;
+    font-size: 1.45rem;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.music-summary-stat span {
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.music-artist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.music-artist-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    min-height: 100%;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    overflow: hidden;
+}
+
+.music-artist-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 4px;
+    background: var(--music-accent, var(--primary-gold));
+}
+
+.music-artist-card.classical {
+    --music-accent: var(--primary-gold);
+}
+
+.music-artist-card.folk {
+    --music-accent: var(--primary-saffron);
+}
+
+.music-artist-card.modern {
+    --music-accent: var(--primary-green);
+}
+
+.music-artist-card:hover,
+.music-artist-card:focus-visible {
+    transform: translateY(-7px);
+    box-shadow: var(--shadow-glow-active);
+    border-color: rgba(255, 176, 31, 0.28);
+}
+
+.music-artist-card:focus-visible {
+    outline: 2px solid rgba(255, 176, 31, 0.45);
+    outline-offset: 3px;
+}
+
+.music-artist-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.music-avatar {
+    width: 84px;
+    aspect-ratio: 1 / 1;
+    border-radius: 24px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 10px 26px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.18) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+}
+
+.music-avatar-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center center;
+}
+
+.music-avatar.classical {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.15) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 176, 31, 0.18), rgba(255, 153, 51, 0.12));
+}
+
+.music-avatar.folk {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.15) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 153, 51, 0.18), rgba(18, 136, 7, 0.12));
+}
+
+.music-avatar.modern {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.15) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(18, 136, 7, 0.18), rgba(255, 176, 31, 0.1));
+}
+
+.music-artist-title h3 {
+    font-size: 1.45rem;
+    margin: 10px 0 6px;
+}
+
+.music-artist-title p {
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.music-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.music-badge.classical {
+    color: var(--primary-gold);
+    background: rgba(255, 176, 31, 0.12);
+    border-color: rgba(255, 176, 31, 0.22);
+}
+
+.music-badge.folk {
+    color: var(--primary-saffron);
+    background: rgba(255, 153, 51, 0.12);
+    border-color: rgba(255, 153, 51, 0.22);
+}
+
+.music-badge.modern {
+    color: var(--primary-green);
+    background: rgba(18, 136, 7, 0.12);
+    border-color: rgba(18, 136, 7, 0.22);
+}
+
+.music-artist-contribution {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    line-height: 1.7;
+}
+
+.music-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 4px;
+}
+
+.music-meta-label {
+    color: var(--primary-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.music-meta-value {
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+.music-audio-placeholder {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: var(--transition-snappy);
+}
+
+.music-audio-placeholder[data-audio-state="playing"] {
+    background: rgba(255, 176, 31, 0.08);
+    border-color: rgba(255, 176, 31, 0.22);
+    box-shadow: 0 0 0 1px rgba(255, 176, 31, 0.08);
+}
+
+.music-play-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-light);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-snappy);
+    white-space: nowrap;
+}
+
+.music-play-btn:hover,
+.music-play-btn:focus-visible {
+    background: rgba(255, 176, 31, 0.12);
+    border-color: rgba(255, 176, 31, 0.24);
+}
+
+.music-play-icon {
+    font-size: 0.85rem;
+    width: 14px;
+    display: inline-block;
+    text-align: center;
+}
+
+.music-audio-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.music-audio-label {
+    color: var(--primary-gold);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.music-audio-status {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.music-audio-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    width: 28px;
+    height: 24px;
+}
+
+.music-audio-bars span {
+    width: 5px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 176, 31, 0.55);
+    transform-origin: bottom center;
+}
+
+.music-artist-card.is-playing .music-audio-bars span {
+    animation: musicBars 1.05s ease-in-out infinite;
+}
+
+.music-artist-card.is-playing .music-audio-bars span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.music-artist-card.is-playing .music-audio-bars span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.music-card-footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.music-card-note {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.music-details-btn {
+    padding: 10px 18px;
+    font-size: 0.92rem;
+}
+
+.music-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 34px 24px;
+}
+
+.music-empty-state h3 {
+    font-size: 1.7rem;
+    margin-bottom: 10px;
+}
+
+.music-empty-state p {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.music-instruments-section {
+    background: linear-gradient(to bottom, rgba(9, 13, 22, 1) 0%, rgba(7, 13, 23, 0.96) 100%);
+}
+
+.music-instrument-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.music-instrument-card {
+    position: relative;
+    padding: 22px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.music-instrument-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 4px;
+    background: var(--music-accent, var(--primary-gold));
+}
+
+.music-instrument-card.classical {
+    --music-accent: var(--primary-gold);
+}
+
+.music-instrument-card.folk {
+    --music-accent: var(--primary-saffron);
+}
+
+.music-instrument-card.modern {
+    --music-accent: var(--primary-green);
+}
+
+.music-instrument-visual {
+    width: 96px;
+    aspect-ratio: 1 / 1;
+    border-radius: 22px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.15) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 176, 31, 0.16), rgba(255, 153, 51, 0.1));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.music-instrument-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center center;
+    transform: scale(1.18);
+    transform-origin: center center;
+}
+
+.music-instrument-card.folk .music-instrument-visual {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.15) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 153, 51, 0.16), rgba(18, 136, 7, 0.1));
+}
+
+.music-instrument-card.modern .music-instrument-visual {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.15) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(18, 136, 7, 0.16), rgba(255, 176, 31, 0.1));
+}
+
+.music-instrument-symbol {
+    font-size: 1.05rem;
+}
+
+.music-instrument-body h3 {
+    font-size: 1.4rem;
+    margin: 10px 0 8px;
+}
+
+.music-instrument-body p {
+    color: var(--text-muted);
+    line-height: 1.68;
+    font-size: 0.95rem;
+}
+
+.music-instrument-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.music-modal .modal-card {
+    max-width: 860px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.music-modal-layout {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    min-height: 100%;
+}
+
+.music-modal-hero {
+    padding: 42px 34px;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.1) 0%, transparent 28%),
+        linear-gradient(160deg, rgba(17, 27, 45, 1) 0%, rgba(7, 17, 29, 1) 55%, rgba(6, 20, 15, 1) 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+}
+
+.music-modal-avatar {
+    width: 118px;
+    aspect-ratio: 1 / 1;
+    border-radius: 30px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 176, 31, 0.2), rgba(255, 153, 51, 0.12));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.music-modal-avatar.classical {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 176, 31, 0.2), rgba(255, 153, 51, 0.12));
+}
+
+.music-modal-avatar.folk {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 153, 51, 0.2), rgba(18, 136, 7, 0.12));
+}
+
+.music-modal-avatar.modern {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(18, 136, 7, 0.2), rgba(255, 176, 31, 0.12));
+}
+
+.music-modal-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center center;
+}
+
+.music-modal-hero h3 {
+    font-size: 2.1rem;
+    margin: 6px 0 0;
+}
+
+.music-modal-hero p {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.music-modal-body {
+    padding: 42px 34px;
+}
+
+.music-modal-section {
+    margin-bottom: 28px;
+}
+
+.music-modal-section h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary-gold);
+    margin-bottom: 10px;
+}
+
+.music-modal-section p {
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+.music-highlight-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--text-muted);
+    display: grid;
+    gap: 10px;
+}
+
+.music-modal-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.music-modal-meta-item {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.music-modal-meta-label {
+    display: block;
+    color: var(--primary-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.music-modal-meta-value {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+@keyframes musicBars {
+    0%,
+    100% {
+        height: 8px;
+        opacity: 0.45;
+    }
+
+    50% {
+        height: 22px;
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .music-hero {
+        min-height: 390px;
+        padding: 92px 0 56px;
+    }
+
+    .music-hero h1 {
+        max-width: 11ch;
+        font-size: 2.9rem;
+    }
+
+    .music-hero-actions {
+        width: min(100%, 360px);
+    }
+
+    .music-hero-actions .btn {
+        width: 100%;
+    }
+
+    .music-genre-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .music-summary-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .music-artist-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .music-instrument-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .music-modal-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .music-modal-hero,
+    .music-modal-body {
+        padding: 28px 20px;
+    }
+
+    .music-modal-hero {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .music-modal-meta {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .music-hero {
+        min-height: 360px;
+        padding: 88px 0 50px;
+    }
+
+    .music-hero h1 {
+        font-size: 2.45rem;
+    }
+
+    .music-genre-summary,
+    .music-artist-card,
+    .music-instrument-card {
+        padding: 20px;
+    }
+
+    .music-audio-placeholder {
+        grid-template-columns: 1fr;
+        justify-items: start;
+    }
+
+    .music-audio-bars {
+        width: 44px;
+    }
+
+    .music-card-footer {
+        align-items: flex-start;
+    }
+
+    .music-instrument-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ========================================================================== 
    SCIENCE PAGE STYLES
    ========================================================================== */
@@ -6113,6 +6899,65 @@ body.light-theme .science-badge.physics,
 body.light-theme .science-badge.medicine,
 body.light-theme .science-badge.biology {
     background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .music-page-body {
+    background:
+        radial-gradient(circle at 12% 8%, rgba(255, 176, 31, 0.08) 0%, transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(18, 136, 7, 0.06) 0%, transparent 25%),
+        radial-gradient(circle at 50% 100%, rgba(255, 153, 51, 0.06) 0%, transparent 30%),
+        var(--bg-dark-deep);
+}
+
+body.light-theme .music-hero {
+    background:
+        radial-gradient(circle at 18% 24%, rgba(255, 176, 31, 0.16) 0%, transparent 22%),
+        radial-gradient(circle at 82% 28%, rgba(18, 136, 7, 0.1) 0%, transparent 22%),
+        radial-gradient(circle at 50% 84%, rgba(255, 153, 51, 0.08) 0%, transparent 26%),
+        linear-gradient(160deg, hsl(0, 0%, 99%) 0%, hsl(210, 22%, 94%) 48%, hsl(210, 22%, 90%) 100%);
+}
+
+body.light-theme .music-hero .sub-hero-overlay {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.84) 100%);
+}
+
+body.light-theme .music-hero::before {
+    opacity: 0.18;
+}
+
+body.light-theme .music-tabs-section {
+    background: linear-gradient(to bottom, hsl(0, 0%, 99%) 0%, hsl(210, 22%, 94%) 100%);
+}
+
+body.light-theme .music-instruments-section {
+    background: linear-gradient(to bottom, hsl(210, 22%, 94%) 0%, hsl(0, 0%, 99%) 100%);
+}
+
+body.light-theme .music-chip,
+body.light-theme .music-instrument-badge {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .music-audio-placeholder,
+body.light-theme .music-summary-stat {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .music-modal-hero {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.15) 0%, transparent 28%),
+        linear-gradient(160deg, hsl(220, 24%, 18%) 0%, hsl(220, 35%, 14%) 55%, hsl(170, 35%, 13%) 100%);
+}
+
+body.light-theme .music-modal-body {
+    background: rgba(255, 255, 255, 0.98);
+}
+
+body.light-theme .music-modal-meta-item {
+    background: rgba(15, 23, 42, 0.03);
     border-color: rgba(15, 23, 42, 0.08);
 }
 
