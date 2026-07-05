@@ -6650,16 +6650,36 @@ button {
    LIGHT THEME OVERRIDES
    ========================================================================== */
 body.light-theme {
-    --bg-dark-deep: hsl(0, 0%, 98%);
-    --bg-dark-card: rgba(255, 255, 255, 0.85);
-    --bg-dark-modal: hsl(0, 0%, 100%);
+    /* Backgrounds */
+    --bg-dark-deep: #FFFFFF;
+    --bg-secondary: #F8FAFC;
+    --bg-dark-card: #FFFFFF;
+    --bg-dark-modal: #FFFFFF;
 
-    --text-light: hsl(222, 47%, 12%);
-    --text-muted: hsl(215, 15%, 40%);
+    /* Text */
+    --text-light: #111827;
+    --text-secondary: #374151;
+    --text-muted: #6B7280;
+    --text-disabled: #9CA3AF;
 
-    --gradient-card-border: linear-gradient(135deg, rgba(255, 153, 51, 0.3) 0%, rgba(18, 136, 7, 0.3) 100%);
-    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
-    --shadow-glow: 0 0 20px rgba(255, 176, 31, 0.3);
+    /* Primary Accent */
+    --primary: #F59E0B;
+
+    /* Borders & Inputs */
+    --border-color: #E5E7EB;
+    --input-bg: #FFFFFF;
+    --input-border: #D1D5DB;
+
+    /* Buttons & Links */
+    --btn-primary-text: #FFFFFF;
+    --btn-secondary-text: #111827;
+    --link-color: #1D4ED8;
+    --link-hover: #1E40AF;
+
+    /* Gradients and Shadows */
+    --gradient-card-border: linear-gradient(135deg, rgba(229, 231, 235, 1) 0%, rgba(209, 213, 219, 1) 100%);
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-glow: 0 0 20px rgba(245, 158, 11, 0.3);
 }
 
 body.light-theme .navbar {
@@ -7353,4 +7373,273 @@ body.light-theme .story-content h3 {
     font-size: 0.8rem;
     cursor: pointer;
     color: var(--text-light);
+}
+
+/* ==========================================================================
+   COMPREHENSIVE LIGHT THEME OVERRIDES (WCAG AA Compliance Fixes)
+   ========================================================================== */
+
+/* Hero Section */
+body.light-theme .hero-overlay,
+body.light-theme .sub-hero-overlay {
+    background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)) !important;
+}
+body.light-theme .hero-title,
+body.light-theme .hero-tagline,
+body.light-theme .science-hero h1,
+body.light-theme .music-hero h1 {
+    color: #FFFFFF !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+body.light-theme .hero-description,
+body.light-theme .science-hero p,
+body.light-theme .music-hero p {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Navigation */
+body.light-theme .navbar {
+    background: #FFFFFF !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+body.light-theme .nav-link,
+body.light-theme .nav-logo .explorer {
+    color: var(--text-light) !important;
+}
+body.light-theme .dropdown-menu {
+    background: #FFFFFF !important;
+    border: 1px solid var(--border-color) !important;
+}
+body.light-theme .dropdown-item {
+    color: var(--text-secondary) !important;
+}
+body.light-theme .dropdown-item:hover {
+    background: var(--bg-secondary) !important;
+    color: var(--text-light) !important;
+}
+
+/* Search Bar */
+body.light-theme .search-input {
+    background: var(--input-bg) !important;
+    border: 1px solid var(--input-border) !important;
+    color: var(--text-light) !important;
+}
+body.light-theme .search-input::placeholder {
+    color: var(--text-muted) !important;
+}
+body.light-theme .search-input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
+}
+
+/* Category Filter Buttons */
+body.light-theme .tab-btn,
+body.light-theme .filter-btn,
+body.light-theme .science-chip,
+body.light-theme .music-chip {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+}
+body.light-theme .tab-btn.active,
+body.light-theme .filter-btn.active,
+body.light-theme .science-chip.active,
+body.light-theme .music-chip.active {
+    background: var(--primary) !important;
+    color: #FFFFFF !important;
+    border-color: var(--primary) !important;
+}
+body.light-theme .tab-btn:hover:not(.active),
+body.light-theme .filter-btn:hover:not(.active) {
+    background: #FFFFFF !important;
+    border-color: var(--text-muted) !important;
+    color: var(--text-light) !important;
+}
+
+/* Cards */
+body.light-theme .glass-card,
+body.light-theme .info-card,
+body.light-theme .state-card,
+body.light-theme .science-modal-card {
+    background: var(--bg-dark-card) !important;
+    border: 1px solid var(--border-color) !important;
+}
+body.light-theme .card-title,
+body.light-theme .glass-card h3,
+body.light-theme .info-card h3 {
+    color: var(--text-light) !important;
+}
+body.light-theme .card-description,
+body.light-theme .glass-card p,
+body.light-theme .info-card p,
+body.light-theme .story-content p {
+    color: var(--text-secondary) !important;
+}
+body.light-theme .card-meta {
+    color: var(--text-muted) !important;
+}
+body.light-theme .story-content h3 {
+    color: var(--text-light) !important;
+}
+
+/* Buttons */
+body.light-theme .btn-primary {
+    color: var(--btn-primary-text) !important;
+}
+body.light-theme .btn-secondary {
+    background: #FFFFFF !important;
+    color: var(--btn-secondary-text) !important;
+    border: 1px solid var(--input-border) !important;
+}
+body.light-theme .btn-secondary:hover {
+    background: var(--bg-secondary) !important;
+    border-color: var(--text-muted) !important;
+}
+
+/* Forms & Chat */
+body.light-theme .chat-input-wrapper {
+    background: var(--bg-secondary) !important;
+    border-top: 1px solid var(--border-color) !important;
+}
+body.light-theme .chat-input {
+    background: var(--input-bg) !important;
+    border: 1px solid var(--input-border) !important;
+    color: var(--text-light) !important;
+}
+body.light-theme .chat-input::placeholder {
+    color: var(--text-muted) !important;
+}
+body.light-theme .chat-message.user {
+    background: var(--bg-secondary) !important;
+    color: var(--text-light) !important;
+    border: 1px solid var(--border-color) !important;
+}
+body.light-theme .chat-message.bot {
+    background: #FFFFFF !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+body.light-theme .chat-chip {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+}
+body.light-theme .chat-chip:hover {
+    background: #FFFFFF !important;
+    border-color: var(--primary) !important;
+    color: var(--text-light) !important;
+}
+
+/* Footer */
+body.light-theme .footer {
+    background: var(--bg-secondary) !important;
+    border-top: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+}
+body.light-theme .footer h4 {
+    color: var(--text-light) !important;
+}
+body.light-theme .footer a {
+    color: var(--link-color) !important;
+}
+body.light-theme .footer a:hover {
+    color: var(--link-hover) !important;
+}
+body.light-theme .footer p {
+    color: var(--text-secondary) !important;
+}
+body.light-theme .footer-credits {
+    border-top: 1px solid var(--border-color) !important;
+    color: var(--text-muted) !important;
+}
+
+
+/* Additional Specific Page Fixes (Cuisine, Festivals, Culture, Travel, Sports, Spiritual) */
+
+/* Sub Hero Sections */
+body.light-theme .sub-hero h1,
+body.light-theme .sub-hero p {
+    color: #FFFFFF !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Cuisine Cards */
+body.light-theme .cuisine-card-body,
+body.light-theme .cuisine-card {
+    background: var(--bg-dark-card) !important;
+    border: 1px solid var(--border-color) !important;
+}
+body.light-theme .cuisine-card-body h3 {
+    color: var(--text-light) !important;
+}
+body.light-theme .cuisine-origin {
+    color: var(--text-secondary) !important;
+}
+
+/* Festival Cards */
+body.light-theme .festival-card-content,
+body.light-theme .festival-card {
+    background: var(--bg-dark-card) !important;
+    border: 1px solid var(--border-color) !important;
+}
+body.light-theme .festival-card-content h3 {
+    color: var(--text-light) !important;
+}
+body.light-theme .festival-card-content .subtitle {
+    color: var(--text-secondary) !important;
+}
+
+/* Slider Cards (Culture, Travel) */
+body.light-theme .slider-card-body,
+body.light-theme .slider-card {
+    background: var(--bg-dark-card) !important;
+    border: 1px solid var(--border-color) !important;
+}
+body.light-theme .slider-card-body h3 {
+    color: var(--text-light) !important;
+}
+body.light-theme .slider-card-body p {
+    color: var(--text-secondary) !important;
+}
+body.light-theme .slider-card-category {
+    color: var(--primary) !important;
+}
+
+/* Sports/Athlete Cards */
+body.light-theme .athlete-card,
+body.light-theme .athlete-card-header,
+body.light-theme .athlete-card-footer {
+    background: var(--bg-dark-card) !important;
+    border-color: var(--border-color) !important;
+}
+body.light-theme .athlete-card-title h3 {
+    color: var(--text-light) !important;
+}
+body.light-theme .card-sport-note {
+    color: var(--text-muted) !important;
+}
+
+/* Spiritual Cards */
+body.light-theme .spiritual-card-overlay {
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7)) !important;
+}
+body.light-theme .spiritual-card-overlay h4 {
+    color: var(--text-light) !important;
+}
+body.light-theme .spiritual-card-loc,
+body.light-theme .spiritual-card-rating {
+    color: var(--text-secondary) !important;
+}
+
+
+/* Fix Rotating Text in Hero */
+body.light-theme .hero-title .highlight,
+body.light-theme .hero-title .rotating-text {
+    background: var(--gradient-saffron-gold) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+    text-shadow: none !important; /* text-shadow can mess with text-fill-color */
 }
