@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    INCREDIBLE INDIA EXPLORER - APPLICATION LOGIC
    Pure Vanilla JavaScript for dynamic content, modals, sliders, and games.
    ========================================================================== */
@@ -5037,4 +5037,16 @@ function initSpiritualCarousel() {
     prevBtn.addEventListener('click', goPrev);
 
     render();
+}
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(registration => {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, err => {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+  });
 }
