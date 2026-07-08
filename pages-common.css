@@ -1,0 +1,906 @@
+/* ==========================================================================
+   TRIBES & INDIGENOUS CULTURE PAGE - PAGE SPECIFIC STYLES
+   Uses global variables/reset/navbar/footer from styles.css
+   ========================================================================== */
+
+body.tribes-page-body {
+    background: var(--bg-dark-deep);
+}
+
+.tribes-page-body .section-container {
+    padding: 60px 24px;
+}
+
+/* ---------- Shared bits ---------- */
+.tribes-section-label {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: var(--primary-gold);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+}
+
+.tribes-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 22px 0;
+}
+
+.tribes-divider::before,
+.tribes-divider::after {
+    content: "";
+    height: 1px;
+    width: 70px;
+    background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
+}
+
+.tribes-divider span {
+    color: var(--primary-gold);
+    font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   1. HERO SECTION
+   ========================================================================== */
+.tribes-hero {
+    position: relative;
+    width: 100%;
+    min-height: 640px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.tribes-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.tribes-hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% center;
+}
+
+.tribes-hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg,
+            hsl(222, 47%, 4%) 0%,
+            hsla(222, 47%, 4%, 0.92) 28%,
+            hsla(222, 47%, 4%, 0.55) 52%,
+            hsla(222, 47%, 4%, 0.25) 72%,
+            hsla(222, 47%, 4%, 0.35) 100%);
+}
+
+.tribes-hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 90px 40px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.tribes-hero-content {
+    max-width: 620px;
+}
+
+.tribes-eyebrow {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--primary-gold);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+}
+
+.tribes-hero-content h1 {
+    font-family: var(--font-heading);
+    font-size: 3.4rem;
+    line-height: 1.15;
+    color: var(--text-light);
+    font-weight: 700;
+    margin: 0;
+}
+
+.tribes-hero-content .tribes-divider {
+    margin: 24px 0;
+}
+
+.tribes-hero-content .tribes-divider::before,
+.tribes-hero-content .tribes-divider::after {
+    width: 50px;
+}
+
+.tribes-hero-content p {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    max-width: 480px;
+}
+
+/* .tribes-hero-map {
+    flex-shrink: 0;
+    text-align: right;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+} */
+
+.india-outline-svg {
+    width: 150px;
+    height: 165px;
+}
+
+.map-dot {
+    fill: var(--primary-gold);
+    filter: drop-shadow(0 0 4px var(--primary-gold));
+    animation: mapDotPulse 2.4s ease-in-out infinite;
+}
+
+.map-dot:nth-child(odd) {
+    animation-delay: 0.6s;
+}
+
+@keyframes mapDotPulse {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        r: 2.2;
+    }
+
+    50% {
+        opacity: 1;
+        r: 3;
+    }
+}
+
+.tribes-hero-map-caption {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    line-height: 1.6;
+    color: var(--text-light);
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
+   2. FILTER / SEARCH BAR
+   ========================================================================== */
+.tribes-filter-section .section-container {
+    padding-top: 36px;
+    padding-bottom: 36px;
+}
+
+.tribes-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-dark-card);
+    border: 1px solid rgba(255, 176, 31, 0.18);
+    border-radius: var(--border-radius-lg);
+    padding: 14px 18px;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-soft);
+    flex-wrap: wrap;
+}
+
+.tribes-search-box {
+    flex: 1 1 280px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: hsla(222, 40%, 10%, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius-sm);
+    padding: 10px 16px;
+}
+
+.tribes-search-box .search-icon {
+    opacity: 0.6;
+    font-size: 0.95rem;
+}
+
+.tribes-search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-light);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+}
+
+.tribes-search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+.tribes-select-wrap select {
+    appearance: none;
+    background: hsla(222, 40%, 10%, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-light);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    padding: 10px 34px 10px 16px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1L5 5L9 1' stroke='%23FFB01F' stroke-width='1.4' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    transition: var(--transition-snappy);
+}
+
+.tribes-select-wrap select:hover,
+.tribes-select-wrap select:focus {
+    border-color: var(--primary-gold);
+    outline: none;
+}
+
+.tribes-select-wrap select option {
+    background: var(--bg-dark-modal);
+    color: var(--text-light);
+}
+
+.tribes-reset-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid rgba(255, 176, 31, 0.3);
+    color: var(--primary-gold);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: var(--transition-snappy);
+    white-space: nowrap;
+}
+
+.tribes-reset-btn:hover {
+    background: rgba(255, 176, 31, 0.12);
+    border-color: var(--primary-gold);
+}
+
+.reset-icon {
+    font-size: 1rem;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   3. EXPLORE BY REGION
+   ========================================================================== */
+.tribes-region-section .section-container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.tribes-region-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 18px;
+}
+
+.tribes-region-card {
+    position: relative;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    cursor: pointer;
+    border: 1px solid rgba(255, 176, 31, 0.35);
+    transition: var(--transition-smooth);
+}
+
+.tribes-region-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: var(--transition-smooth);
+}
+
+.tribes-region-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--primary-gold);
+    box-shadow: var(--shadow-glow-active);
+}
+
+.tribes-region-card:hover img {
+    transform: scale(1.06);
+}
+
+.tribes-region-card.active {
+    border-color: var(--primary-gold);
+    box-shadow: var(--shadow-glow-active);
+}
+
+/* ==========================================================================
+   4. TRIBAL COMMUNITIES
+   ========================================================================== */
+.tribes-communities-section .section-container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.tribes-communities-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+}
+
+.tribes-communities-header .tribes-section-label {
+    margin-bottom: 0;
+}
+
+.tribes-sort-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.tribes-sort-wrap select {
+    appearance: none;
+    background: hsla(222, 40%, 10%, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-light);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    padding: 8px 30px 8px 14px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1L5 5L9 1' stroke='%23FFB01F' stroke-width='1.4' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.tribes-row-wrapper {
+    position: relative;
+    margin-top: 24px;
+}
+
+/* Fixed 5-card grid carousel (desktop) */
+.tribes-cards-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.tribes-row-arrow {
+    position: absolute;
+    top: 40%;
+    right: -18px;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--bg-dark-modal);
+    border: 1.5px solid var(--primary-gold);
+    color: var(--primary-gold);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-glow);
+    transition: var(--transition-snappy);
+    z-index: 3;
+}
+
+.tribes-row-arrow:hover {
+    background: var(--primary-gold);
+    color: var(--bg-dark-deep);
+}
+
+.tribes-row-arrow.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.tribe-card {
+    position: relative;
+    background: var(--bg-dark-card);
+    border: 1px solid rgba(255, 176, 31, 0.35);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.tribe-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--primary-gold);
+    box-shadow: var(--shadow-glow-active);
+}
+
+/* Slide-in animation for the newly revealed card on carousel shift */
+.tribe-card.card-enter {
+    animation: cardSlideIn 0.45s ease;
+}
+
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.tribe-card-img-wrap {
+    position: relative;
+    width: 100%;
+    height: 190px;
+    overflow: hidden;
+}
+
+.tribe-card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-smooth);
+}
+
+.tribe-card:hover .tribe-card-img-wrap img {
+    transform: scale(1.06);
+}
+
+.tribe-card-fav {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: hsla(222, 47%, 6%, 0.65);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    cursor: pointer;
+    z-index: 2;
+    transition: var(--transition-snappy);
+}
+
+.tribe-card-fav:hover,
+.tribe-card-fav.active {
+    color: var(--primary-saffron);
+    background: hsla(222, 47%, 6%, 0.9);
+}
+
+.tribe-card-body {
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.tribe-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tribe-card-title-row h3 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: var(--text-light);
+    font-weight: 700;
+}
+
+.tribe-card-desc {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    flex: 1;
+}
+
+.tribe-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tribe-card-meta-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.tribe-card-meta-row .meta-icon {
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+
+.tribe-card-view-btn {
+    margin-top: 6px;
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid rgba(255, 176, 31, 0.35);
+    color: var(--primary-gold);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: var(--transition-snappy);
+}
+
+.tribe-card-view-btn:hover {
+    background: var(--primary-gold);
+    color: var(--bg-dark-deep);
+}
+
+/* ==========================================================================
+   5. DETAIL POPUP (hidden by default, shown as a modal on card click)
+   ========================================================================== */
+.tribes-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: hsla(222, 47%, 4%, 0.78);
+    backdrop-filter: blur(6px);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.tribes-modal-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tribes-detail-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -46%);
+    width: min(1100px, 92vw);
+    max-height: 80vh;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 0;
+    background: var(--bg-dark-card);
+    border: 1px solid var(--primary-gold);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: 0 25px 70px hsla(222, 47%, 2%, 0.6), var(--shadow-glow-active);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tribes-detail-panel.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%);
+    overflow-y: auto;
+}
+
+.tribes-detail-img-col {
+    position: relative;
+    min-height: 320px;
+}
+
+.tribes-detail-img-col img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+}
+
+.tribes-detail-content-col {
+    padding: 26px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+}
+
+.tribes-detail-close {
+    position: absolute;
+    top: 22px;
+    right: 24px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: transparent;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-snappy);
+    z-index: 2;
+}
+
+.tribes-detail-close:hover {
+    border-color: var(--primary-gold);
+    color: var(--primary-gold);
+}
+
+.tribes-detail-title-row {
+    padding-right: 36px;
+}
+
+.tribes-detail-title-row h2 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-light);
+}
+
+.tribes-detail-desc {
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.tribes-detail-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tribes-detail-stat {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.tribes-detail-stat .stat-icon {
+    font-size: 1rem;
+    color: var(--primary-gold);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.tribes-detail-stat-label {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+}
+
+.tribes-detail-stat-value {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--text-light);
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.tribes-detail-tabs {
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-wrap: wrap;
+}
+
+.tribes-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 2px 10px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: var(--transition-snappy);
+    white-space: nowrap;
+}
+
+.tribes-tab-btn:hover {
+    color: var(--text-light);
+}
+
+.tribes-tab-btn.active {
+    color: var(--primary-saffron);
+    border-bottom-color: var(--primary-saffron);
+}
+
+.tribes-tab-panel {
+    display: none;
+}
+
+.tribes-tab-panel.active {
+    display: block;
+}
+
+.tribes-tab-text {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.tribes-tab-checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tribes-tab-checklist li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.tribes-tab-checklist li .check-icon {
+    color: var(--primary-green);
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   6. QUOTE SECTION
+   ========================================================================== */
+.tribes-quote-section {
+    position: relative;
+    text-align: center;
+    padding: 70px 24px 60px;
+    overflow: hidden;
+}
+
+.tribes-quote {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 1.5rem;
+    line-height: 1.6;
+    color: var(--primary-gold);
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.quote-mark {
+    font-size: 2rem;
+    vertical-align: -8px;
+    opacity: 0.7;
+}
+
+.tribes-divider-quote {
+    justify-content: center;
+    margin-top: 26px;
+    position: relative;
+    z-index: 2;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1100px) {
+    .tribes-region-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Below desktop, fall back to horizontal scroll instead of a fixed 5-col grid */
+    .tribes-cards-row {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        padding-bottom: 6px;
+    }
+
+    .tribes-cards-row::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tribes-cards-row .tribe-card {
+        flex: 0 0 240px;
+    }
+
+    .tribes-row-arrow {
+        display: none;
+    }
+
+    .tribes-detail-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .tribes-detail-img-col {
+        min-height: 220px;
+    }
+}
+
+@media (max-width: 900px) {
+    .tribes-hero-inner {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .tribes-hero-map {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .tribes-hero-content h1 {
+        font-size: 2.4rem;
+    }
+
+    .tribes-detail-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .tribes-region-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tribes-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tribes-detail-content-col {
+        padding: 22px 20px;
+    }
+
+    .tribes-detail-tabs {
+        gap: 14px;
+        overflow-x: auto;
+    }
+}
