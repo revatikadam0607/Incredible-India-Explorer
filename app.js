@@ -39,6 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('âœ… Monuments page loaded successfully');
     } else if (pathname.includes('hidden-gems.html')) {
         console.log('âœ… Hidden Gems page loaded successfully');
+    } else if (pathname.includes('railways.html')) {
+        console.log('âœ… Railways Explorer page loaded successfully');
+    } else if (pathname.includes('adventure.html')) {
+        console.log('Adventure page loaded successfully');
     } else {
         // Main landing page (index.html or root)
         initScrollEffects();
