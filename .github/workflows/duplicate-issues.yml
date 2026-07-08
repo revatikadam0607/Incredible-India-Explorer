@@ -1,4 +1,4 @@
-name: NSOC Label + Duplicate Handler
+name: ECSoC26 Label + Duplicate Handler
 
 on:
   issues:
