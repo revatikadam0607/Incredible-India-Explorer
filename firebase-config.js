@@ -86,6 +86,49 @@ function readRuntimeFirebaseConfig() {
   return sanitizeFirebaseConfig(defaultFirebaseConfig);
 }
 
+function getFirebaseConfigEndpointCandidates() {
+  const candidates = [];
+  const globalScope = typeof globalThis !== "undefined" ? globalThis : {};
+
+  if (globalScope.__FIREBASE_CONFIG_ENDPOINT__) {
+    candidates.push(globalScope.__FIREBASE_CONFIG_ENDPOINT__);
+  }
+
+  if (globalScope.__FIREBASE_CONFIG_URL__) {
+    candidates.push(globalScope.__FIREBASE_CONFIG_URL__);
+  }
+
+  if (typeof window !== "undefined") {
+    candidates.push(new URL("./api/firebase-config", window.location.href).toString());
+    candidates.push(new URL("/api/firebase-config", window.location.origin).toString());
+  }
+
+  candidates.push("/api/firebase-config");
+  return [...new Set(candidates)];
+}
+
+async function loadRemoteFirebaseConfig() {
+  const candidates = getFirebaseConfigEndpointCandidates();
+
+  for (const endpoint of candidates) {
+    try {
+      const response = await fetch(endpoint, { cache: "no-store" });
+      if (!response.ok) continue;
+
+      const remoteConfig = await response.json();
+      const sanitizedConfig = sanitizeFirebaseConfig(remoteConfig);
+      if (sanitizedConfig?.apiKey && sanitizedConfig.apiKey !== "YOUR_API_KEY") {
+        globalThis.__FIREBASE_CONFIG__ = sanitizedConfig;
+        return sanitizedConfig;
+      }
+    } catch (error) {
+      console.warn(`Firebase config could not be loaded from ${endpoint}.`, error);
+    }
+  }
+
+  return null;
+}
+
 async function loadFirebaseConfig() {
   const runtimeConfig = readRuntimeFirebaseConfig();
   const hasPlaceholderValues =
@@ -98,19 +141,8 @@ async function loadFirebaseConfig() {
     return runtimeConfig;
   }
 
-  try {
-    const response = await fetch("/api/firebase-config", { cache: "no-store" });
-    if (response.ok) {
-      const remoteConfig = await response.json();
-      if (remoteConfig?.apiKey && remoteConfig.apiKey !== "YOUR_API_KEY") {
-        return sanitizeFirebaseConfig(remoteConfig);
-      }
-    }
-  } catch (error) {
-    console.warn("Firebase config could not be loaded from /api/firebase-config.", error);
-  }
-
-  return runtimeConfig;
+  const remoteConfig = await loadRemoteFirebaseConfig();
+  return remoteConfig || runtimeConfig;
 }
 
 const firebaseConfig = await loadFirebaseConfig();
