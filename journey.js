@@ -151,21 +151,44 @@
     /* ---------------------------------------------------------------- */
     /* Cross-explorer search index                                      */
     /* ---------------------------------------------------------------- */
-
     function registerSearchItems(page, items) {
-        if (!Array.isArray(items)) return;
+       if (!Array.isArray(items)) return;
 
-        // Drop any previously registered items for this page (route
-        // changes re-register fresh data) then add the new set.
-        searchIndex = searchIndex.filter((entry) => entry.page !== page);
+       // Remove old registrations for this page
+       searchIndex = searchIndex.filter((entry) => entry.page !== page);
 
-        items.forEach((item) => {
-            searchIndex.push({
-                page,
-                id: item.id,
-                title: item.title || item.name || 'Untitled',
-                description: item.description || '',
-                link: item.link || page
+       items.forEach((item) => {
+         searchIndex.push({
+            page,
+            id: item.id,
+
+            title:
+                item.title ||
+                item.name ||
+                item.place ||
+                item.monument ||
+                "Untitled",
+
+            description:
+                item.description ||
+                item.summary ||
+                item.about ||
+                item.location ||
+                "",
+
+            category:
+                item.category ||
+                page.replace(".html", ""),
+
+            image:
+                item.image ||
+                item.thumbnail ||
+                item.logo ||
+                "",
+
+            link:
+                item.link ||
+                `${page}#${item.id}`
             });
         });
     }
@@ -175,7 +198,9 @@
         if (!q) return [];
 
         return searchIndex.filter((entry) => {
-            const haystack = `${entry.title} ${entry.description}`.toLowerCase();
+            const haystack =
+            `${entry.title} ${entry.description} ${entry.category}`
+            .toLowerCase();
             return haystack.includes(q);
         });
     }
@@ -206,7 +231,12 @@
             results.hidden = false;
             results.innerHTML = matches.length
                 ? matches
-                    .map((m) => `<a class="journey-search-result" href="${m.link}"><span class="journey-search-result-title">${m.title}</span><span class="journey-search-result-page">${m.page}</span></a>`)
+                    .map((m) => `<a class="journey-search-result" href="${m.link}">
+                     <span class="journey-search-result-title">${m.title}</span>
+                     <span class="journey-search-result-page">
+                        ${m.category} • ${m.page.replace(".html", "")}
+<                    /span>
+                    </a>`)
                     .join('')
                 : '<p class="journey-search-empty">No matches across the explorers yet.</p>';
         }
