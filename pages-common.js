@@ -542,3 +542,227 @@ function initTribesPage() {
     renderRegions();
     applyFilters();
 }
+
+/* ==========================================================================
+   2. EVOLUTION OF CURRENCY (COINS) PAGE
+   Appended for coin.html. Rendered independently of the app:route-changed
+   dispatcher above (this site's real navbar/footer come from app.js, which
+   does not fire that event) — coin.html calls initCoinsPage() itself on
+   DOMContentLoaded.
+   ========================================================================== */
+ 
+const COINS_DATA = [
+    {
+        id: 'ancient',
+        number: '01',
+        title: 'Ancient Coinage',
+        date: '~600 BCE – 300 BCE',
+        desc: 'The earliest form of Indian currency were punch-marked coins made of silver. These coins were issued by various Mahajanapadas and were symbols of trade, trust and authority.',
+        dyk: 'Some punch-marked coins have up to 5 different symbols!',
+        side: 'left',
+        theme: 'default',
+        circleImage: 'assets/coin1.png',
+        thumbs: [
+            { img: 'assets/coin1.png', label: 'Punch-marked Coin' },
+            { img: 'assets/coin2.png', label: 'Kahapana' },
+            { img: 'assets/coin3.png', label: 'Silver Shatamana' },
+            { img: 'assets/coin4.png', label: 'Copper Coin' }
+        ]
+    },
+    {
+        id: 'mauryan-gupta',
+        number: '02',
+        title: 'Mauryan & Gupta Era',
+        date: '300 BCE – 550 CE',
+        desc: 'Coins became more standardized during the Mauryan Empire. The Gupta Era introduced gold dinars with exquisite craftsmanship and inscriptions.',
+        dyk: 'The gold dinar of Samudragupta is considered one of the finest ancient coins in the world.',
+        side: 'right',
+        theme: 'default',
+        circleImage: 'assets/coin2.png',
+        thumbs: [
+            { img: 'assets/coin4.png', label: 'Kahapana' },
+            { img: 'assets/coin3.png', label: 'Mauryan Punch Marked' },
+            { img: 'assets/coin2.png', label: 'Gold Dinar' },
+            { img: 'assets/coin1.png', label: 'Gupta Gold Coin' }
+        ]
+    },
+    {
+        id: 'medieval',
+        number: '03',
+        title: 'Medieval / Sultanate & Mughal Era',
+        date: '1200 CE – 1700 CE',
+        desc: 'The silver \u2018Rupiya\u2019 was introduced by Sher Shah Suri in the 16th century, laying the foundation of India\u2019s monetary system.',
+        dyk: 'The word \u2018Rupee\u2019 comes from the Sanskrit word \u2018Rupya\u2019 meaning silver.',
+        side: 'left',
+        theme: 'default',
+        circleImage: 'assets/coin3.png',
+        thumbs: [
+            { img: 'assets/coin1.png', label: 'Sher Shah Rupee' },
+            { img: 'assets/coin4.png', label: 'Akbar Silver Rupee' },
+            { img: 'assets/coin3.png', label: 'Jahangir Coin' },
+            { img: 'assets/coin2.png', label: 'Aurangzeb Coin' }
+        ]
+    },
+    {
+        id: 'colonial',
+        number: '04',
+        title: 'British Colonial Era',
+        date: '1757 – 1947',
+        desc: 'The East India Company introduced uniform coinage. In 1861, the first paper notes were issued, marking a major shift in India\u2019s financial history.',
+        dyk: 'The first paper notes were issued by the Bank of Hindustan, Bengal & Bombay.',
+        side: 'right',
+        theme: 'blue',
+        circleImage: 'assets/coin4.png',
+        thumbs: [
+            { img: 'assets/coin3.png', label: 'Company Rupee' },
+            { img: 'assets/coin2.png', label: 'Victoria Coin' },
+            { img: 'assets/coin4.png', label: '1877 Rupee' },
+            { img: 'assets/coin1.png', label: 'First Paper Note (1861)' }
+        ]
+    },
+    {
+        id: 'independent',
+        number: '05',
+        title: 'Independent India (1947–1990s)',
+        date: '1947 – 1990s',
+        desc: 'India adopted the Ashoka Pillar as the national emblem on currency. The decimalization in 1957 simplified the system to rupees and paise.',
+        dyk: 'The \u20b9 symbol was not there then, but the value of the rupee grew stronger.',
+        side: 'left',
+        theme: 'green',
+        circleImage: 'assets/coin5.png',
+        thumbs: [
+            { img: 'assets/coin4.png', label: 'Ashoka Pillar Note' },
+            { img: 'assets/coin1.png', label: '\u20b91 Note (1967)' },
+            { img: 'assets/coin3.png', label: '\u20b910 Note (1970s)' },
+            { img: 'assets/coin2.png', label: '\u20b9100 Note (1985)' }
+        ]
+    },
+    {
+        id: 'modern',
+        number: '06',
+        title: 'Modern India (1990s–2016)',
+        date: '1990s – 2016',
+        desc: 'New designs, security features and the Mahatma Gandhi Series gave currency a modern identity. Demonetization in 2016 brought a bold economic reform.',
+        dyk: 'The \u20b9500 and \u20b92000 notes introduced in 2016 were part of India\u2019s clean currency mission.',
+        side: 'right',
+        theme: 'purple',
+        circleImage: 'assets/coin6.png',
+        thumbs: [
+            { img: 'assets/coin6-3.png', label: '\u20b9100 Note (1996)' },
+            { img: 'assets/coin6-5.png', label: 'Mahatma Gandhi Series' },
+            { img: 'assets/coin6-1.png', label: '\u20b9500 Note (2016)' },
+            { img: 'assets/coin6-2.png', label: '\u20b92000 Note (2016)' }
+        ]
+    },
+    {
+        id: 'digital',
+        number: '07',
+        title: 'Digital Era (2016–Present)',
+        date: '2016 – Present',
+        desc: 'India is embracing the future with UPI, digital payments and the e-Rupee (CBDC). From coins to code - the rupee is now just a tap away.',
+        dyk: 'The e-Rupee is launched by RBI as a Digital Currency (CBDC).',
+        side: 'left',
+        theme: 'digital',
+        circleImage: 'assets/coin7.png',
+        thumbs: [
+            { img: 'assets/coin1.png', label: 'UPI Payments' },
+            { img: 'assets/coin2.png', label: 'Mobile Wallets' },
+            { img: 'assets/coin3.png', label: 'e-Rupee (CBDC)' },
+            { img: 'assets/coin4.png', label: 'Digital India' }
+        ]
+    }
+];
+ 
+function initCoinsPage() {
+    const timelineMain = document.getElementById('coins-timeline-main');
+    const progressList = document.getElementById('coins-progress-list');
+ 
+    if (!timelineMain || !progressList) return;
+ 
+    /* ---------- Render progress sidebar ---------- */
+    progressList.innerHTML = COINS_DATA.map((era, idx) => `
+        <li class="coins-progress-item${idx === 0 ? ' active' : ''}" data-target="era-${era.id}">
+            <span class="dot"></span>${era.title}
+        </li>
+    `).join('');
+ 
+    /* ---------- Render timeline rows ---------- */
+    const rowsHtml = COINS_DATA.map(era => {
+        const themeClass = era.theme && era.theme !== 'default' ? ` theme-${era.theme}` : '';
+        const thumbsHtml = era.thumbs.map(t => `
+            <div class="coins-thumb">
+                <div class="coins-thumb-swatch">
+                    <img src="${t.img}" alt="${t.label}"
+                        onerror="this.replaceWith(Object.assign(document.createElement('i'), {className: 'fa-solid fa-coins fallback-icon'}))">
+                </div>
+                <span>${t.label}</span>
+            </div>
+        `).join('');
+ 
+        return `
+            <div class="coins-era-row era-${era.side}" id="era-${era.id}" data-era="${era.id}">
+                <div class="coins-era-card${themeClass}">
+                    <span class="coins-era-number">${era.number}</span>
+                    <h3>${era.title}</h3>
+                    <span class="coins-era-date">${era.date}</span>
+                    <p class="coins-era-desc">${era.desc}</p>
+                    <div class="coins-dyk">
+                        <span class="coins-dyk-icon"><i class="fa-solid fa-lightbulb"></i></span>
+                        <div class="coins-dyk-text">
+                            <strong>Did you know?</strong>
+                            <p>${era.dyk}</p>
+                        </div>
+                    </div>
+                    <div class="coins-thumb-row">${thumbsHtml}</div>
+                </div>
+                <div class="coins-era-node">
+                    <span class="coins-era-node-dot"></span>
+                    <span class="coins-era-node-connector"></span>
+                    <div class="coins-era-node-circle">
+                        <img src="${era.circleImage}" alt="${era.title} coin"
+                            onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+ 
+    timelineMain.insertAdjacentHTML('beforeend', rowsHtml);
+ 
+    const eraRows = Array.from(timelineMain.querySelectorAll('.coins-era-row'));
+    const progressItems = Array.from(progressList.querySelectorAll('.coins-progress-item'));
+ 
+    /* ---------- Reveal-on-scroll + active progress step ---------- */
+    if ('IntersectionObserver' in window) {
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                }
+            });
+        }, { threshold: 0.15 });
+        eraRows.forEach(row => revealObserver.observe(row));
+ 
+        const activeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const eraId = entry.target.id;
+                progressItems.forEach(item => {
+                    item.classList.toggle('active', item.dataset.target === eraId);
+                });
+            });
+        }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+        eraRows.forEach(row => activeObserver.observe(row));
+    } else {
+        eraRows.forEach(row => row.classList.add('in-view'));
+    }
+ 
+    /* ---------- Click a progress step to jump to that era ---------- */
+    progressItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const target = document.getElementById(item.dataset.target);
+            target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    });
+}
+ 

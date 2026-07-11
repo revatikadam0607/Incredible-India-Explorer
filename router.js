@@ -191,6 +191,7 @@ class Router {
     }
 
     processHead(doc) {
+        const promises = [];
         // Extract and inject new stylesheets
         doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
             const href = link.getAttribute('href');
@@ -198,10 +199,18 @@ class Router {
                 const newLink = document.createElement('link');
                 newLink.rel = 'stylesheet';
                 newLink.href = href;
+                
+                const p = new Promise(resolve => {
+                    newLink.onload = () => resolve();
+                    newLink.onerror = () => resolve();
+                });
+                promises.push(p);
+
                 document.head.appendChild(newLink);
                 this.loadedStyles.add(href);
             }
         });
+        return Promise.all(promises);
     }
 
     processBodyScripts(doc) {

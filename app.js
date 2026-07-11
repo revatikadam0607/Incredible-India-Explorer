@@ -4397,6 +4397,7 @@ function initStartupPage() {
     let searchQuery = '';
 
     renderAll();
+    registerStartupSearchIndex();
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -4624,28 +4625,42 @@ function initStartupPage() {
     function toggleFavorite(startupId) {
         if (favorites.has(startupId)) {
             favorites.delete(startupId);
+            window.Journey?.removeFromJourney(`startup-${startupId}`);
         } else {
             favorites.add(startupId);
+            const item = startupData.find((s) => s.id === startupId);
+            window.Journey?.saveToJourney({
+                id: `startup-${startupId}`,
+                explorerPage: 'startup.html',
+                title: item ? item.name : `Startup #${startupId}`,
+                thumbnail: item ? (item.logo || '') : '',
+                category: item ? (item.category || 'startup') : 'startup'
+            });
         }
 
-        saveFavorites(Array.from(favorites));
         renderAll();
     }
 
+    // Favorites now live in the shared "My Journey" store (see journey.js).
+    // This reads that shared store and pulls out just the startup ids so
+    // the rest of this page's logic (Set of ids) doesn't have to change.
     function loadFavorites() {
-        try {
-            const stored = JSON.parse(localStorage.getItem('startup-favorites') || '[]');
-            if (Array.isArray(stored)) {
-                return stored;
-            }
-        } catch (error) {
-            // Ignore malformed storage and fall back to an empty set.
-        }
-        return [];
+        if (!window.Journey) return [];
+        return window.Journey.getJourney()
+            .filter((item) => item.explorerPage === 'startup.html')
+            .map((item) => item.id.replace(/^startup-/, ''));
     }
 
-    function saveFavorites(items) {
-        localStorage.setItem('startup-favorites', JSON.stringify(items));
+    // Registers this page's bookmarkable items with the site-wide,
+    // cross-explorer search index (see journey.js / Journey.search).
+    function registerStartupSearchIndex() {
+        if (!window.Journey) return;
+        window.Journey.registerSearchItems('startup.html', startupData.map((item) => ({
+            id: `startup-${item.id}`,
+            title: item.name,
+            description: item.description || item.focus || '',
+            link: 'startup.html'
+        })));
     }
 
     function setupCompactBadge(imgEl, mediaEl, fallbackEl, options = {}) {

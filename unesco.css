@@ -386,3 +386,25 @@ body.gallery-open { overflow: hidden; }
     .gallery-modal { padding: 10px; }
     .gallery-actions { flex-direction: column; }
 }
+
+.journey-bookmark-btn {
+    position: absolute;
+    z-index: 3;
+    left: 14px;
+    bottom: 14px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 50%;
+    background: rgba(4,8,12,.68);
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform .2s ease, background .2s ease;
+}
+.journey-bookmark-btn:hover { transform: scale(1.08); }
+.journey-bookmark-btn.is-saved { background: var(--unesco-accent, #ff9933); }

@@ -1897,6 +1897,36 @@ button {
     }
 }
 
+@media (max-height: 750px) {
+  .hero-content {
+    padding-top: calc(var(--navbar-height) + 10px);
+  }
+
+  .hero-tagline {
+    margin-bottom: 10px;
+  }
+
+  .hero-title {
+    font-size: 2.6rem;
+    margin-bottom: 14px;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+
+  .hero-scroll-indicator {
+    bottom: 14px;
+  }
+}
+
+@media (max-height: 600px) {
+  .hero-scroll-indicator {
+    display: none; /* not enough room for it at all */
+  }
+}
+
 /* ==========================================================================
    SUB-PAGES GENERAL STYLES
    ========================================================================== */
@@ -7429,6 +7459,8 @@ button {
     left: 0;
     background-color: var(--bg-dark-modal);
     min-width: 220px;
+    max-height: 70vh;
+    overflow-y: auto;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
@@ -7436,6 +7468,23 @@ button {
     border-radius: 8px;
     z-index: 1000;
     padding: 0.5rem 0;
+}
+
+.dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: rgba(255, 176, 31, 0.3);
+    border-radius: 10px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-saffron);
 }
 
 .nav-dropdown:last-of-type .dropdown-menu {
@@ -7469,6 +7518,10 @@ button {
 }
 
 @media (max-width: 1024px) {
+    .nav-menu {
+        overflow-y: auto;
+    }
+
     .dropdown-menu {
         position: static;
         display: none;
@@ -7476,6 +7529,8 @@ button {
         border: none;
         background: transparent;
         padding-left: 1rem;
+        max-height: none;
+        overflow-y: visible;
     }
 
     .nav-dropdown.active .dropdown-menu {

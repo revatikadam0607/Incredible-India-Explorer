@@ -564,6 +564,16 @@ document.addEventListener("app:route-changed", () => {
                 >
                     ◫ Gallery
                 </button>
+
+                <button
+                    type="button"
+                    class="journey-bookmark-btn"
+                    data-bookmark-id="unesco-${escapeHtml(site.id)}"
+                    aria-pressed="false"
+                    aria-label="Save ${escapeHtml(site.name)} to My Journey"
+                >
+                    ♡
+                </button>
             </div>
 
             <div class="site-body">
@@ -616,6 +626,52 @@ document.addEventListener("app:route-changed", () => {
         );
 
         grid.replaceChildren(...cards);
+        initJourneyIntegration();
+    }
+
+    // ============================================================
+    // MY JOURNEY: bookmarks + cross-explorer search index
+    // ============================================================
+
+    function initJourneyIntegration() {
+        if (!window.Journey) return;
+
+        grid.querySelectorAll(".journey-bookmark-btn").forEach((btn) => {
+            const id = btn.dataset.bookmarkId;
+            const card = btn.closest(".site-card");
+            const site = sites.find((s) => `unesco-${s.id}` === id);
+
+            const setPressed = () => {
+                const saved = window.Journey.isSaved(id);
+                btn.classList.toggle("is-saved", saved);
+                btn.setAttribute("aria-pressed", String(saved));
+                btn.textContent = saved ? "♥" : "♡";
+            };
+
+            setPressed();
+
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                window.Journey.toggle({
+                    id,
+                    explorerPage: "unesco.html",
+                    title: site ? site.name : card?.querySelector("h3")?.textContent.trim(),
+                    thumbnail: site ? site.image : "",
+                    category: site ? site.category : "unesco"
+                });
+                setPressed();
+            });
+        });
+
+        window.Journey.registerSearchItems(
+            "unesco.html",
+            sites.map((site) => ({
+                id: `unesco-${site.id}`,
+                title: site.name,
+                description: site.significance || "",
+                link: "unesco.html"
+            }))
+        );
     }
 
     // ============================================================

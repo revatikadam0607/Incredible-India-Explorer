@@ -69,7 +69,45 @@ The app will read these values at runtime via the /api/firebase-config endpoint.
 ## Demo Link
 https://incredible-india-explorer.vercel.app/
 
-## 🤝 Contributing
+## 🧭 My India Journey - adding a new explorer page
+
+Every explorer page can plug into the shared "My Journey" bookmarks + cross-explorer
+search (see `journey.js`) with two small additions instead of inventing a new
+`localStorage` key or a page-local search box:
+
+1. **Bookmark button.** For each bookmarkable card, add a button
+   (see the pattern in `museums.js` / `unesco.js`) and wire it to the shared API:
+
+   ```js
+   window.Journey.toggle({
+     id: 'yourpage-someid',      // unique across the whole site
+     explorerPage: 'yourpage.html',
+     title: 'Card title',
+     thumbnail: 'assets/your-image.png',
+     category: 'your-category'
+   });
+
+   // Check saved state: window.Journey.isSaved(id)
+   ```
+
+2. **Searchable items.** Once your page's cards are rendered, register them with the
+   cross-explorer search index so they show up in the shared nav search bar:
+
+   ```js
+   window.Journey.registerSearchItems('yourpage.html', [
+     { id: 'yourpage-someid', title: 'Card title', description: 'Short description', link: 'yourpage.html' }
+   ]);
+   ```
+
+Also include `<script src="journey.js"></script>` before your page's own script
+(same load order as `data.js`/`app.js`), and add the shared nav search box + a
+"🧭 My Journey" link to your page's nav (copy the `.journey-nav-search` block
+from `unesco.html` or `museums.html`).
+
+No build step or bundler is required — `journey.js` is a plain script include,
+consistent with `app.js`/`pages-common.js`/`router.js`.
+
+
 We welcome contributions! Please see our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and use the provided Issue and PR templates.
 
 ## 📄 License

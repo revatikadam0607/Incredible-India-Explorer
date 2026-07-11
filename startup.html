@@ -61,6 +61,11 @@
                 </div>
                 <button id="theme-toggle" class="btn-theme-toggle" aria-label="Toggle Dark/Light Mode"
                     title="Toggle Light Mode">☀️</button>
+                <div class="journey-nav-search">
+                    <input type="search" id="journey-search-input" class="journey-search-input" placeholder="Search all explorers…" aria-label="Search across all explorers" autocomplete="off">
+                    <div id="journey-search-results" class="journey-search-results" hidden></div>
+                </div>
+                <a href="journey.html" class="nav-link" id="link-journey">🧭 My Journey</a>
                 <a href="premium.html" class="nav-link premium-link">★ Premium</a>
                 <a href="login.html" class="nav-link" id="link-login">Login</a>
             </nav>
@@ -226,6 +231,7 @@
     <button class="btn-scroll-top" id="btn-scroll-top" aria-label="Scroll to Top">&#8593;</button>
 
     <script src="data.js"></script>
+    <script src="journey.js"></script>
     <script src="app.js"></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="auth.js"></script>

@@ -15,7 +15,54 @@ document.addEventListener("app:route-changed", () => {
   const modalDescription = document.getElementById("modal-description");
 
   const detailButtons = [...document.querySelectorAll(".details-button")];
+  const bookmarkButtons = [...document.querySelectorAll(".journey-bookmark-btn")];
   const menuToggle = document.getElementById("menu-toggle");
+
+  // --- My Journey: bookmarks + cross-explorer search index -------------
+  function initJourneyIntegration() {
+    if (!window.Journey) return;
+
+    bookmarkButtons.forEach((btn) => {
+      const card = btn.closest(".museum-card");
+      const id = btn.dataset.bookmarkId;
+      const title = card?.querySelector("h3")?.textContent.trim() || "Museum";
+      const thumbnail = card?.querySelector("img")?.getAttribute("src") || "";
+      const category = (card?.dataset.category || "museum").split(" ")[0];
+
+      const setPressed = () => {
+        const saved = window.Journey.isSaved(id);
+        btn.classList.toggle("is-saved", saved);
+        btn.setAttribute("aria-pressed", String(saved));
+        btn.textContent = saved ? "♥" : "♡";
+      };
+
+      setPressed();
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        window.Journey.toggle({
+          id,
+          explorerPage: "museums.html",
+          title,
+          thumbnail,
+          category
+        });
+        setPressed();
+      });
+    });
+
+    window.Journey.registerSearchItems(
+      "museums.html",
+      cards.map((card) => ({
+        id: card.dataset.id,
+        title: card.querySelector("h3")?.textContent.trim() || "Museum",
+        description: card.querySelector(".museum-description")?.textContent.trim() || "",
+        link: "museums.html"
+      }))
+    );
+  }
+
+  initJourneyIntegration();
 
   let activeCategory = "all";
   let lastFocusedElement = null;

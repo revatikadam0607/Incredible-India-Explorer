@@ -24,6 +24,11 @@
                 <a href="index.html#map" class="nav-link">Interactive Map</a>
                 <a href="heritage.html" class="nav-link">Heritage</a>
                 <a href="unesco.html" class="nav-link" style="color: var(--saffron)">UNESCO Sites</a>
+                <div class="journey-nav-search">
+                    <input type="search" id="journey-search-input" class="journey-search-input" placeholder="Search all explorers…" aria-label="Search across all explorers" autocomplete="off">
+                    <div id="journey-search-results" class="journey-search-results" hidden></div>
+                </div>
+                <a href="journey.html" class="nav-link" id="link-journey">🧭 My Journey</a>
                 <button id="theme-toggle" class="btn-theme-toggle" aria-label="Toggle Dark/Light Mode">☀️</button>
             </nav>
         </div>
@@ -126,6 +131,7 @@
     </footer>
 
     <script src="app.js"></script>
+    <script src="journey.js"></script>
     <script src="unesco.js"></script>
     <script src="router.js"></script>
 </body>
