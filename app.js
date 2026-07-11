@@ -424,9 +424,9 @@ function initInteractiveMap() {
 
         // Set up highlights
         highlightsGrid.innerHTML = `
-            <div class="highlight-bullet"><span class="bullet-icon">ðŸ“</span><span>Capital: ${loc.capital}</span></div>
-            <div class="highlight-bullet"><span class="bullet-icon">ðŸ›</span><span>Famous Food: ${loc.food}</span></div>
-            <div class="highlight-bullet"><span class="bullet-icon">ðŸŽ‰</span><span>Major Festival: ${loc.festival}</span></div>
+            <div class="highlight-bullet"><span class="bullet-icon">&#127963;</span><span>Capital: ${loc.capital}</span></div>
+            <div class="highlight-bullet"><span class="bullet-icon">&#127835;</span><span>Famous Food: ${loc.food}</span></div>
+            <div class="highlight-bullet"><span class="bullet-icon">&#127881;</span><span>Major Festival: ${loc.festival}</span></div>
         `;
 
         // Render SVG in canvas
@@ -448,7 +448,7 @@ function initInteractiveMap() {
         if (infoContent) {
             infoContent.innerHTML = `
                 <div class="info-card-header">
-                    <div class="icon-circle">ðŸ“</div>
+                    <div class="icon-circle">IN</div>
                     <h3>${loc.name}</h3>
                 </div>
                 <p class="info-card-text">
@@ -469,17 +469,17 @@ function initInteractiveMap() {
 
         // Bind audio button
         overlayAudioBtn.classList.remove('playing');
-        overlayAudioBtn.innerHTML = '<span class="audio-icon">ðŸ”Š</span> Listen to Soundscape';
+        overlayAudioBtn.innerHTML = '<span class="audio-icon">&#128266;</span> Listen to Soundscape';
         stopSoundscape();
 
         overlayAudioBtn.onclick = () => {
             if (overlayAudioBtn.classList.contains('playing')) {
                 overlayAudioBtn.classList.remove('playing');
-                overlayAudioBtn.innerHTML = '<span class="audio-icon">ðŸ”Š</span> Listen to Soundscape';
+                overlayAudioBtn.innerHTML = '<span class="audio-icon">&#128266;</span> Listen to Soundscape';
                 stopSoundscape();
             } else {
                 overlayAudioBtn.classList.add('playing');
-                overlayAudioBtn.innerHTML = '<span class="audio-icon">ðŸ”‡</span> Stop Soundscape';
+                overlayAudioBtn.innerHTML = '<span class="audio-icon">&#128263;</span> Stop Soundscape';
                 playStateSoundscape(loc.name);
             }
         };
@@ -926,11 +926,11 @@ function initQuiz() {
 
         if (isCorrect) {
             feedback.classList.add('correct');
-            feedbackIcon.innerText = 'âœ…';
+            feedbackIcon.innerText = '✅';
             feedbackText.innerText = 'Correct! Great job!';
         } else {
             feedback.classList.add('wrong');
-            feedbackIcon.innerText = 'âŒ';
+            feedbackIcon.innerText = '❌';
             feedbackText.innerText = `Incorrect. The answer is ${correctAnswer}`;
         }
     }
@@ -943,14 +943,14 @@ function initQuiz() {
 
         // Select message matching rank
         if (score === 8) {
-            resultMsg.innerText = "Incredible Mastermind! ðŸ† You scored a perfect 8/8! You are an expert on India's vast culinary heritage!";
-            document.getElementById('quiz-result-icon').innerText = 'ðŸ†';
+            resultMsg.innerText = "Incredible Mastermind!  🥳 You scored a perfect 8/8! You are an expert on India's vast culinary heritage!";
+            document.getElementById('quiz-result-icon').innerText = '🎉';
         } else if (score >= 5) {
-            resultMsg.innerText = `Great score! ðŸŒŸ You got ${score}/8 correct. You have a solid grasp of Indian cuisine!`;
-            document.getElementById('quiz-result-icon').innerText = 'ðŸŒŸ';
+            resultMsg.innerText = `Great score! 👍 You got ${score}/8 correct. You have a solid grasp of Indian cuisine!`;
+            document.getElementById('quiz-result-icon').innerText = '🎉';
         } else {
-            resultMsg.innerText = `You scored ${score}/8. Keep exploring the interactive map and food lists to discover more flavors! ðŸ›`;
-            document.getElementById('quiz-result-icon').innerText = 'ðŸ›';
+            resultMsg.innerText = `You scored ${score}/8. Keep exploring the interactive map and food lists to discover more flavors! 🍛`;
+            document.getElementById('quiz-result-icon').innerText = '🍛';
         }
     }
 }
