@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Explore the diverse, rich, and mouth-watering cuisines of India. Discover recipes, regional spices, and the story of each traditional dish.">
+    <meta name="description"
+        content="Explore the diverse, rich, and mouth-watering cuisines of India. Discover recipes, regional spices, and the story of each traditional dish.">
     <title>Indian Cuisine Explorer | Incredible India</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
     <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body class="cuisine-page-body">
 
     <!-- Sticky Navigation Bar -->
@@ -57,7 +62,8 @@
                         <a href="learn.html" class="dropdown-item">Learn & Quiz</a>
                     </div>
                 </div>
-                <button id="theme-toggle" class="btn-theme-toggle" aria-label="Toggle Dark/Light Mode" title="Toggle Light Mode">☀️</button>
+                <button id="theme-toggle" class="btn-theme-toggle" aria-label="Toggle Dark/Light Mode"
+                    title="Toggle Light Mode">☀️</button>
                 <a href="premium.html" class="nav-link" style="color: var(--gold); font-weight: bold;">★ Premium</a>
                 <a href="login.html" class="nav-link" id="link-login">Login</a>
             </nav>
@@ -68,13 +74,16 @@
         <!-- Sub-page Hero Section -->
         <section class="sub-hero">
             <video autoplay muted loop playsinline class="hero-video">
-                <source src="https://assets.mixkit.co/videos/preview/mixkit-preparing-a-salad-with-fresh-vegetables-889-large.mp4" type="video/mp4">
+                <source
+                    src="https://assets.mixkit.co/videos/preview/mixkit-preparing-a-salad-with-fresh-vegetables-889-large.mp4"
+                    type="video/mp4">
             </video>
             <div class="sub-hero-overlay"></div>
             <div class="sub-hero-content animate-slide-up">
                 <span class="sub-hero-badge saffron-bg">Flavors & Spices</span>
                 <h1>Culinary Heritage</h1>
-                <p>Taste the diversity of India through a catalog of regional delicacies, slow-cooked curries, sweet street bites, and ancestral recipes.</p>
+                <p>Taste the diversity of India through a catalog of regional delicacies, slow-cooked curries, sweet
+                    street bites, and ancestral recipes.</p>
             </div>
         </section>
 
@@ -91,9 +100,10 @@
                         <button class="tab-btn" data-region="west" id="tab-west">West India</button>
                         <button class="tab-btn" data-region="northeast" id="tab-northeast">Northeast</button>
                     </div>
-                    
+
                     <div class="search-box-wrapper">
-                        <input type="text" id="cuisine-search-input" placeholder="Search delicacies (e.g. Biryani)..." class="search-input">
+                        <input type="text" id="cuisine-search-input" placeholder="Search delicacies (e.g. Biryani)..."
+                            class="search-input">
                         <span class="search-icon">🔍</span>
                     </div>
                 </div>
@@ -119,30 +129,36 @@
                 <div class="drawer-img-container">
                     <img id="drawer-img" src="assets/cuisine_default.png" alt="Cuisine Name">
                 </div>
-                
+
                 <div class="drawer-section">
                     <h4>About the Dish</h4>
                     <p id="drawer-description">Detailed description of the dish goes here.</p>
                 </div>
-                
+
                 <div class="drawer-section">
                     <h4>Flavor Profile</h4>
                     <div class="flavor-profiles-grid">
                         <div class="flavor-item">
                             <span class="flavor-label">Spice Level</span>
-                            <div class="flavor-bar-bg"><div class="flavor-bar-fill" id="fill-spice" style="width: 40%;"></div></div>
+                            <div class="flavor-bar-bg">
+                                <div class="flavor-bar-fill" id="fill-spice" style="width: 40%;"></div>
+                            </div>
                         </div>
                         <div class="flavor-item">
                             <span class="flavor-label">Richness</span>
-                            <div class="flavor-bar-bg"><div class="flavor-bar-fill" id="fill-richness" style="width: 80%;"></div></div>
+                            <div class="flavor-bar-bg">
+                                <div class="flavor-bar-fill" id="fill-richness" style="width: 80%;"></div>
+                            </div>
                         </div>
                         <div class="flavor-item">
                             <span class="flavor-label">Sweetness</span>
-                            <div class="flavor-bar-bg"><div class="flavor-bar-fill" id="fill-sweetness" style="width: 20%;"></div></div>
+                            <div class="flavor-bar-bg">
+                                <div class="flavor-bar-fill" id="fill-sweetness" style="width: 20%;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="drawer-section">
                     <h4>Key Ingredients</h4>
                     <ul class="ingredients-list" id="drawer-ingredients">
@@ -152,9 +168,10 @@
                         <li>Aromatic Garam Masala</li>
                     </ul>
                 </div>
-                
+
                 <div class="drawer-action">
-                    <button class="btn btn-primary" id="btn-try-recipe" style="width: 100%; margin-top: 15px;">👨‍🍳 Try Recipe Mode</button>
+                    <button class="btn btn-primary" id="btn-try-recipe" style="width: 100%; margin-top: 15px;">👨‍🍳 Try
+                        Recipe Mode</button>
                 </div>
             </div>
 
@@ -164,7 +181,7 @@
                     <button class="btn-icon" id="btn-exit-recipe" aria-label="Exit Recipe Mode">&larr; Back</button>
                     <h4>Cooking: <span id="recipe-title" class="saffron">Butter Chicken</span></h4>
                 </div>
-                
+
                 <div class="recipe-progress-container">
                     <div class="recipe-progress-bar">
                         <div class="recipe-progress-fill" id="recipe-progress-fill" style="width: 33%;"></div>
@@ -174,7 +191,8 @@
 
                 <div class="recipe-step-card animate-slide-up" id="recipe-step-card">
                     <h3 class="step-title" id="step-title">1. Marination</h3>
-                    <p class="step-instruction" id="step-instruction">Mix yogurt, ginger-garlic paste, and spices. Coat the chicken thoroughly and let it rest.</p>
+                    <p class="step-instruction" id="step-instruction">Mix yogurt, ginger-garlic paste, and spices. Coat
+                        the chicken thoroughly and let it rest.</p>
                 </div>
 
                 <div class="recipe-controls">
@@ -204,7 +222,7 @@
                     <li><a href="index.html#quiz">Quiz</a></li>
                 </ul>
             </div>
-            
+
         </div>
         <div class="footer-credits" style="align-self: center;">
             <p>&copy; 2026 Incredible India Explorer. Created with Vanilla HTML, CSS & JavaScript.</p>
@@ -221,6 +239,5 @@
     <script type="module" src="auth.js"></script>
     <script src="router.js"></script>
 </body>
+
 </html>
-
-

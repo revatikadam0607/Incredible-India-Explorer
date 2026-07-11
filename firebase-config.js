@@ -111,24 +111,8 @@ function getFirebaseConfigEndpointCandidates() {
 }
 
 async function loadRemoteFirebaseConfig() {
-  const candidates = getFirebaseConfigEndpointCandidates();
-
-  for (const endpoint of candidates) {
-    try {
-      const response = await fetch(endpoint, { cache: "no-store" });
-      if (!response.ok) continue;
-
-      const remoteConfig = await response.json();
-      const sanitizedConfig = sanitizeFirebaseConfig(remoteConfig);
-      if (sanitizedConfig?.apiKey && sanitizedConfig.apiKey !== "YOUR_API_KEY") {
-        globalThis.__FIREBASE_CONFIG__ = sanitizedConfig;
-        return sanitizedConfig;
-      }
-    } catch (error) {
-      console.warn(`Firebase config could not be loaded from ${endpoint}.`, error);
-    }
-  }
-
+  // Remote fetching is disabled to prevent 404 console errors when running locally.
+  // If you add a real backend or firebase-config.json, you can restore this logic.
   return null;
 }
 
