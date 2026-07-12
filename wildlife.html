@@ -4,17 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Nature & Wildlife - Explore National Parks, Biodiversity, and majestic animals of India.">
+    <meta name="description"
+        content="Nature & Wildlife - Explore National Parks, Biodiversity, and majestic animals of India.">
     <title>Nature & Wildlife | Incredible India</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
         .wildlife-hero {
-            background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%), linear-gradient(-45deg, #FF9933, #138808, #000080) center/cover;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%), linear-gradient(-45deg, #FF9933, #138808, #000080) center/cover;
             height: 60vh;
             display: flex;
             align-items: center;
@@ -41,7 +44,7 @@
         .park-card:hover {
             transform: translateY(-5px);
             border-color: var(--green);
-            box-shadow: 0 10px 20px rgba(0,200,83,0.1);
+            box-shadow: 0 10px 20px rgba(0, 200, 83, 0.1);
         }
 
         .park-img {
@@ -103,9 +106,11 @@
 
         .animal-overlay {
             position: absolute;
-            bottom: 0; left: 0; right: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
             padding: 25px 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
             color: white;
         }
 
@@ -163,6 +168,48 @@
             color: var(--green);
             font-family: 'Playfair Display', serif;
         }
+
+        /* National Park Action Buttons */
+        .park-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .park-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            transition: all .3s ease;
+        }
+
+        .park-btn:hover {
+            transform: translateY(-2px);
+            background: var(--primary-green);
+            border-color: var(--primary-green);
+            color: white;
+            box-shadow: 0 8px 18px rgba(18, 136, 7, .25);
+        }
+
+        .park-btn.website:hover {
+            background: var(--primary-saffron);
+            border-color: var(--primary-saffron);
+            color: white;
+        }
+
+        .park-btn i {
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 
@@ -186,10 +233,12 @@
                 <a href="festivals.html" class="nav-link" id="link-festivals">Festivals</a>
                 <a href="culture.html" class="nav-link" id="link-culture">Culture</a>
                 <div class="nav-dropdown">
-                    <button class="nav-link dropdown-toggle" id="link-explore-more" style="color: var(--saffron)">Explore More ▾</button>
+                    <button class="nav-link dropdown-toggle" id="link-explore-more"
+                        style="color: var(--saffron)">Explore More ▾</button>
                     <div class="dropdown-menu">
                         <a href="travel.html" class="dropdown-item">Travel & Destinations</a>
-                        <a href="wildlife.html" class="dropdown-item" style="color: var(--saffron)">Nature & Wildlife</a>
+                        <a href="wildlife.html" class="dropdown-item" style="color: var(--saffron)">Nature &
+                            Wildlife</a>
                         <a href="personalities.html" class="dropdown-item">Famous Personalities</a>
                         <a href="spiritual.html" class="dropdown-item">Spiritual India</a>
                         <a href="arts-crafts.html" class="dropdown-item">Arts & Crafts</a>
@@ -205,7 +254,8 @@
                         <a href="learn.html" class="dropdown-item">Learn & Quiz</a>
                     </div>
                 </div>
-                <button id="theme-toggle" class="btn-theme-toggle" aria-label="Toggle Dark/Light Mode" title="Toggle Light Mode">☀️</button>
+                <button id="theme-toggle" class="btn-theme-toggle" aria-label="Toggle Dark/Light Mode"
+                    title="Toggle Light Mode">☀️</button>
                 <a href="premium.html" class="nav-link" style="color: var(--gold); font-weight: bold;">★ Premium</a>
                 <a href="login.html" class="nav-link" id="link-login">Login</a>
             </nav>
@@ -216,14 +266,16 @@
         <section class="wildlife-hero scroll-section">
             <div class="hero-content" style="text-align: left; max-width: 600px; margin: 0;">
                 <span class="hero-tagline animate-fade-in" style="color: var(--green);">🌿 Into The Wild</span>
-                <h1 class="hero-title animate-slide-up" style="color: white; font-size: 4rem;">Nature & <br><span style="color: var(--green);">Wildlife</span></h1>
+                <h1 class="hero-title animate-slide-up" style="color: white; font-size: 4rem;">Nature & <br><span
+                        style="color: var(--green);">Wildlife</span></h1>
                 <p class="hero-description animate-fade-in-delayed" style="color: #eee;">
-                    Home to some of the world's most magnificent creatures. Explore the lush ecosystems and biodiversity hotspots of India.
+                    Home to some of the world's most magnificent creatures. Explore the lush ecosystems and biodiversity
+                    hotspots of India.
                 </p>
             </div>
         </section>
 
-        
+
         <!-- A Day in the Jungle Storyline -->
         <section class="fade-in-section" style="padding: 20px 0;">
             <div class="section-container">
@@ -231,37 +283,49 @@
                     <span class="section-badge">Narrative</span>
                     <h2>A Day in the Indian Jungle</h2>
                 </div>
-                
+
                 <div class="narrative-storyline">
                     <div class="story-step scroll-section">
                         <span class="story-time">Dawn • 06:00 AM</span>
                         <div class="story-content">
                             <h3>The Forest Awakens</h3>
-                            <p>As the first rays of sunlight pierce through the thick canopy of Jim Corbett National Park, the forest floor is painted in golden hues. The air is crisp, and the silence is suddenly broken by the alarm call of a spotted deer, warning the jungle that a predator is on the move.</p>
+                            <p>As the first rays of sunlight pierce through the thick canopy of Jim Corbett National
+                                Park, the forest floor is painted in golden hues. The air is crisp, and the silence is
+                                suddenly broken by the alarm call of a spotted deer, warning the jungle that a predator
+                                is on the move.</p>
                         </div>
                     </div>
-                    
+
                     <div class="story-step scroll-section">
                         <span class="story-time">Morning • 09:00 AM</span>
                         <div class="story-content">
                             <h3>The Royal Walk</h3>
-                            <p>Emerging from the tall elephant grass in Kaziranga, the magnificent one-horned rhinoceros grazes peacefully. Meanwhile, in the mangroves of the Sundarbans, a Royal Bengal Tiger glides silently across a muddy creek, its majestic orange and black stripes shimmering in the morning sun.</p>
+                            <p>Emerging from the tall elephant grass in Kaziranga, the magnificent one-horned rhinoceros
+                                grazes peacefully. Meanwhile, in the mangroves of the Sundarbans, a Royal Bengal Tiger
+                                glides silently across a muddy creek, its majestic orange and black stripes shimmering
+                                in the morning sun.</p>
                         </div>
                     </div>
-                    
+
                     <div class="story-step scroll-section">
                         <span class="story-time">Afternoon • 02:00 PM</span>
                         <div class="story-content">
                             <h3>Heat of the Day</h3>
-                            <p>The scorching midday heat settles over the dry deciduous forests of Gir. Here, a pride of rare Asiatic lions rests in the shade of a large acacia tree. Above them, in the branches, Langur monkeys lazily groom each other, keeping a watchful eye on the sleeping kings below.</p>
+                            <p>The scorching midday heat settles over the dry deciduous forests of Gir. Here, a pride of
+                                rare Asiatic lions rests in the shade of a large acacia tree. Above them, in the
+                                branches, Langur monkeys lazily groom each other, keeping a watchful eye on the sleeping
+                                kings below.</p>
                         </div>
                     </div>
-                    
+
                     <div class="story-step scroll-section">
                         <span class="story-time">Dusk • 06:30 PM</span>
                         <div class="story-content">
                             <h3>The Nocturnal Shift</h3>
-                            <p>As the sun sets over the Western Ghats, the jungle completely transforms. The diurnal animals retreat to safety, and the nocturnal creatures emerge. The elusive Indian Leopard begins its stealthy hunt, and the forest comes alive with the symphony of millions of crickets and frogs.</p>
+                            <p>As the sun sets over the Western Ghats, the jungle completely transforms. The diurnal
+                                animals retreat to safety, and the nocturnal creatures emerge. The elusive Indian
+                                Leopard begins its stealthy hunt, and the forest comes alive with the symphony of
+                                millions of crickets and frogs.</p>
                         </div>
                     </div>
                 </div>
@@ -276,7 +340,6 @@
                     <h2>National Parks</h2>
                     <p class="section-subtitle">Venture into the heart of India's dense forests and savannas.</p>
                 </div>
-
                 <div class="park-grid">
                     <div class="park-card">
                         <div class="animated-placeholder park-img">Jim Corbett</div>
@@ -286,7 +349,19 @@
                                 <span>📍 Uttarakhand</span>
                                 <span>🐯 Tigers</span>
                             </div>
-                            <p style="font-size: 0.9rem; color: var(--text-muted);">The oldest national park in India, famous for its Bengal Tiger population.</p>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">The oldest national park in India,
+                                famous for its Bengal Tiger population.</p>
+                            <div class="park-actions">
+                                <a href="https://maps.google.com/?q=Jim+Corbett+National+Park" target="_blank"
+                                    rel="noopener noreferrer" class="park-btn">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span>Map</span>
+                                </a>
+                                <a href="https://corbettgov.org/" target="_blank" rel="noopener noreferrer"
+                                    class="park-btn website">
+                                    🌐 Website
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -298,7 +373,19 @@
                                 <span>📍 Assam</span>
                                 <span>🦏 Rhinos</span>
                             </div>
-                            <p style="font-size: 0.9rem; color: var(--text-muted);">A World Heritage Site hosting two-thirds of the world's one-horned rhinoceroses.</p>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">A World Heritage Site hosting
+                                two-thirds of the world's one-horned rhinoceroses.</p>
+                            <div class="park-actions">
+                                <a href="https://maps.google.com/?q=Kaziranga+National+Park" target="_blank"
+                                    rel="noopener noreferrer" class="park-btn">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span>Map</span>
+                                </a>
+                                <a href="https://kazirangasafari.in/" target="_blank" rel="noopener noreferrer"
+                                    class="park-btn website">
+                                    🌐 Website
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -310,9 +397,23 @@
                                 <span>📍 Rajasthan</span>
                                 <span>🏰 Ruins & Tigers</span>
                             </div>
-                            <p style="font-size: 0.9rem; color: var(--text-muted);">A unique mix of nature and history, with ancient ruins scattered inside the jungle.</p>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">A unique mix of nature and history,
+                                with ancient ruins scattered inside the jungle.</p>
+                            <div class="park-actions">
+                                <a href="https://maps.google.com/?q=Ranthambore+National+Park" target="_blank"
+                                    rel="noopener noreferrer" class="park-btn">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span>Map</span>
+                                </a>
+
+                                <a href="https://www.ranthamborenationalpark.com/" target="_blank"
+                                    rel="noopener noreferrer" class="park-btn website">
+                                    🌐 Website
+                                </a>
+                            </div>
                         </div>
                     </div>
+
 
                     <div class="park-card">
                         <div class="animated-placeholder park-img">Gir</div>
@@ -322,7 +423,19 @@
                                 <span>📍 Gujarat</span>
                                 <span>🦁 Asiatic Lions</span>
                             </div>
-                            <p style="font-size: 0.9rem; color: var(--text-muted);">The only natural habitat of the majestic Asiatic Lion in the world.</p>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">The only natural habitat of the
+                                majestic Asiatic Lion in the world.</p>
+                            <div class="park-actions">
+                                <a href="https://maps.google.com/?q=Gir+National+Park" target="_blank"
+                                    rel="noopener noreferrer" class="park-btn">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span>Map</span>
+                                </a>
+                                <a href="https://girlion.gujarat.gov.in/" target="_blank" rel="noopener noreferrer"
+                                    class="park-btn website">
+                                    🌐 Website
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -331,11 +444,13 @@
 
         <!-- Wildlife Explorer -->
         <section class="fade-in-section">
-            <div class="section-container" style="max-width: 100%; overflow: hidden; padding-left: max(5%, calc((100% - 1200px) / 2)); padding-right: 0;">
+            <div class="section-container"
+                style="max-width: 100%; overflow: hidden; padding-left: max(5%, calc((100% - 1200px) / 2)); padding-right: 0;">
                 <div class="section-header" style="text-align: left; padding-right: 5%;">
                     <span class="section-badge gold-bg">Fauna</span>
                     <h2>Wildlife Explorer</h2>
-                    <p class="section-subtitle" style="margin: 0;">Swipe to explore the iconic animals of the subcontinent.</p>
+                    <p class="section-subtitle" style="margin: 0;">Swipe to explore the iconic animals of the
+                        subcontinent.</p>
                 </div>
 
                 <div class="animal-slider">
@@ -344,7 +459,8 @@
                         <div class="animal-overlay">
                             <div class="animal-status">Endangered</div>
                             <h3 class="animal-name">Bengal Tiger</h3>
-                            <p style="font-size: 0.9rem; opacity: 0.9;">The national animal of India, known for its grace and power.</p>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">The national animal of India, known for its
+                                grace and power.</p>
                         </div>
                     </div>
 
@@ -353,7 +469,8 @@
                         <div class="animal-overlay">
                             <div class="animal-status">Endangered</div>
                             <h3 class="animal-name">Asiatic Lion</h3>
-                            <p style="font-size: 0.9rem; opacity: 0.9;">Found exclusively in the Gir Forest of Gujarat.</p>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">Found exclusively in the Gir Forest of Gujarat.
+                            </p>
                         </div>
                     </div>
 
@@ -362,7 +479,8 @@
                         <div class="animal-overlay">
                             <div class="animal-status" style="background: var(--primary-color);">Vulnerable</div>
                             <h3 class="animal-name">Snow Leopard</h3>
-                            <p style="font-size: 0.9rem; opacity: 0.9;">The ghost of the mountains, dwelling in the high Himalayas.</p>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">The ghost of the mountains, dwelling in the high
+                                Himalayas.</p>
                         </div>
                     </div>
 
@@ -371,16 +489,18 @@
                         <div class="animal-overlay">
                             <div class="animal-status">Endangered</div>
                             <h3 class="animal-name">Red Panda</h3>
-                            <p style="font-size: 0.9rem; opacity: 0.9;">A small arboreal mammal found in the eastern Himalayas.</p>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">A small arboreal mammal found in the eastern
+                                Himalayas.</p>
                         </div>
                     </div>
-                    
+
                     <div class="animal-card">
                         <div class="animated-placeholder animal-img">Indian Elephant</div>
                         <div class="animal-overlay">
                             <div class="animal-status">Endangered</div>
                             <h3 class="animal-name">Indian Elephant</h3>
-                            <p style="font-size: 0.9rem; opacity: 0.9;">A symbol of cultural heritage, deeply integrated in Indian history.</p>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">A symbol of cultural heritage, deeply integrated
+                                in Indian history.</p>
                         </div>
                     </div>
                 </div>
@@ -393,7 +513,10 @@
                 <div class="bio-text">
                     <span class="section-badge">Geography</span>
                     <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Biodiversity Map</h2>
-                    <p style="font-size: 1.1rem; line-height: 1.6; color: var(--text-color);">India is recognized as one of the 17 megadiverse countries, harboring nearly 8% of global biodiversity. From the cold deserts of Ladakh to the tropical rainforests of the Western Ghats, the variety of ecosystems is unparalleled.</p>
+                    <p style="font-size: 1.1rem; line-height: 1.6; color: var(--text-color);">India is recognized as one
+                        of the 17 megadiverse countries, harboring nearly 8% of global biodiversity. From the cold
+                        deserts of Ladakh to the tropical rainforests of the Western Ghats, the variety of ecosystems is
+                        unparalleled.</p>
                     <ul style="margin-top: 20px; list-style: none; padding: 0;">
                         <li style="margin-bottom: 10px;">✅ 4 Biodiversity Hotspots</li>
                         <li style="margin-bottom: 10px;">✅ 106 National Parks</li>
@@ -403,7 +526,8 @@
                 </div>
                 <div class="bio-visual">
                     <h3 style="font-family: 'Playfair Display', serif; margin-bottom: 10px;">Flora & Fauna Overview</h3>
-                    <div style="width: 100%; height: 250px; background: rgba(0,200,83,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--green); font-weight: bold;">
+                    <div
+                        style="width: 100%; height: 250px; background: rgba(0,200,83,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--green); font-weight: bold;">
                         [ Interactive Chart / Map Rendered Here ]
                     </div>
                     <div class="bio-stats">
@@ -440,7 +564,7 @@
                     <li><a href="index.html#quiz">Quiz</a></li>
                 </ul>
             </div>
-            
+
         </div>
         <div class="footer-credits" style="align-self: center;">
             <p>&copy; 2026 Incredible India Explorer. Created with Vanilla HTML, CSS & JavaScript.</p>
@@ -457,5 +581,3 @@
 </body>
 
 </html>
-
-
