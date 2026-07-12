@@ -1,16 +1,126 @@
 /**
  * router.js
- * Vanilla JavaScript Single Page Application Routing Engine
+ * Vanilla JavaScript Single Page Application Routing & Lifecycle Engine
+ * Fixes variable redeclaration crashes and manages execution life cycles.
  */
 
-class LifecycleManager {
+// ==========================================================================
+// 1. LIFECYCLE & CLEANUP ENGINE
+// ==========================================================================
+
+class RouteLifecycleManager {
     constructor() {
-        this.cleanups = [];
+        this.routeListeners = []; // Array of { target, type, listener, options, route }
+        this.routeTimers = [];      // Array of { id, type, route }
+        this.cleanups = [];         // Array of explicit cleanup functions
+        this.currentRoute = null;
+        this.isTracking = false;
+
+        this.initHooks();
     }
 
     /**
-     * Register a cleanup function to be called before the next route change.
-     * @param {Function} cleanupFn 
+     * Sets the active route string currently executing.
+     */
+    setCurrentRoute(route) {
+        this.currentRoute = route;
+    }
+
+    /**
+     * Toggles resource tracking for incoming addEventListener / setTimeout / setInterval.
+     */
+    startTracking() {
+        this.isTracking = true;
+    }
+
+    stopTracking() {
+        this.isTracking = false;
+    }
+
+    /**
+     * Hooks window/document event listeners and standard timers to catch leaks.
+     */
+    initHooks() {
+        const self = this;
+
+        // Override window.addEventListener
+        const originalWindowAddEventListener = window.addEventListener;
+        window.addEventListener = function(type, listener, options) {
+            if (self.isTracking && self.currentRoute) {
+                self.routeListeners.push({
+                    target: window,
+                    type,
+                    listener,
+                    options,
+                    route: self.currentRoute
+                });
+            }
+            originalWindowAddEventListener.call(window, type, listener, options);
+        };
+
+        // Override document.addEventListener
+        const originalDocumentAddEventListener = document.addEventListener;
+        document.addEventListener = function(type, listener, options) {
+            // Polyfill: If script tries to bind DOMContentLoaded/load after the document
+            // is already loaded, fire it asynchronously on the next tick.
+            if ((type === 'DOMContentLoaded' || type === 'load') && document.readyState !== 'loading') {
+                setTimeout(listener, 0);
+                return;
+            }
+
+            if (self.isTracking && self.currentRoute) {
+                self.routeListeners.push({
+                    target: document,
+                    type,
+                    listener,
+                    options,
+                    route: self.currentRoute
+                });
+            }
+            originalDocumentAddEventListener.call(document, type, listener, options);
+        };
+
+        // Override window.setTimeout
+        const originalSetTimeout = window.setTimeout;
+        window.setTimeout = function(handler, delay, ...args) {
+            const id = originalSetTimeout.call(window, handler, delay, ...args);
+            if (self.isTracking && self.currentRoute) {
+                self.routeTimers.push({
+                    id,
+                    type: 'timeout',
+                    route: self.currentRoute
+                });
+            }
+            return id;
+        };
+
+        // Override window.setInterval
+        const originalSetInterval = window.setInterval;
+        window.setInterval = function(handler, delay, ...args) {
+            const id = originalSetInterval.call(window, handler, delay, ...args);
+            if (self.isTracking && self.currentRoute) {
+                self.routeTimers.push({
+                    id,
+                    type: 'interval',
+                    route: self.currentRoute
+                });
+            }
+            return id;
+        };
+    }
+
+    /**
+     * Explicit listener registration (emulates the original router interface)
+     */
+    addEventListener(target, event, handler, options = false) {
+        target.addEventListener(event, handler, options);
+        this.registerCleanup(() => {
+            target.removeEventListener(event, handler, options);
+        });
+    }
+
+    /**
+     * Register a explicit custom cleanup function to be run on next transition.
      */
     registerCleanup(cleanupFn) {
         if (typeof cleanupFn === 'function') {
@@ -19,41 +129,276 @@ class LifecycleManager {
     }
 
     /**
-     * Execute all registered cleanups and clear the array.
+     * Cleans up all event listeners and timers allocated by the target route.
+     */
+    cleanupRoute(route) {
+        // Remove event listeners
+        this.routeListeners = this.routeListeners.filter(item => {
+            if (item.route === route) {
+                try {
+                    item.target.removeEventListener(item.type, item.listener, item.options);
+                } catch (e) {
+                    console.error(`[Lifecycle] Error removing listener on ${route}:`, e);
+                }
+                return false;
+            }
+            return true;
+        });
+
+        // Cancel active timers
+        this.routeTimers = this.routeTimers.filter(item => {
+            if (item.route === route) {
+                try {
+                    if (item.type === 'timeout') {
+                        clearTimeout(item.id);
+                    } else if (item.type === 'interval') {
+                        clearInterval(item.id);
+                    }
+                } catch (e) {
+                    console.error(`[Lifecycle] Error clearing timer on ${route}:`, e);
+                }
+                return false;
+            }
+            return true;
+        });
+    }
+
+    /**
+     * Evaluates all registered custom cleanup functions.
      */
     runCleanups() {
         this.cleanups.forEach(fn => {
             try {
                 fn();
             } catch (e) {
-                console.error("Error during cleanup:", e);
+                console.error("[Lifecycle] Error executing custom cleanup:", e);
             }
         });
         this.cleanups = [];
     }
+}
 
-    /**
-     * Add an event listener to window/document and automatically register its cleanup.
-     * @param {EventTarget} target (window or document)
-     * @param {string} event 
-     * @param {Function} handler 
-     * @param {Object|boolean} options 
-     */
-    addEventListener(target, event, handler, options = false) {
-        target.addEventListener(event, handler, options);
-        this.registerCleanup(() => {
-            target.removeEventListener(event, handler, options);
-        });
+// ==========================================================================
+// 2. ROUTE HISTORY TRACKER
+// ==========================================================================
+
+class RouteHistoryTracker {
+    constructor() {
+        this.history = [];
+    }
+
+    push(path) {
+        const entry = {
+            path,
+            timestamp: new Date().toISOString(),
+            referrer: this.history.length > 0 ? this.history[this.history.length - 1].path : document.referrer
+        };
+        this.history.push(entry);
+        if (this.history.length > 100) {
+            this.history.shift(); // Keep last 100 entries
+        }
+    }
+
+    getHistory() {
+        return [...this.history];
+    }
+
+    getLastRoute() {
+        if (this.history.length < 2) return null;
+        return this.history[this.history.length - 2];
     }
 }
 
-window.appLifecycle = new LifecycleManager();
+
+// ==========================================================================
+// 2. ROUTE CACHE ENGINE
+// ==========================================================================
+
+class RouteCache {
+    constructor(ttlMs = 300000) { // Default TTL: 5 Minutes
+        this.cache = new Map();
+        this.ttl = ttlMs;
+    }
+
+    set(path, data) {
+        this.cache.set(path, {
+            data,
+            timestamp: Date.now()
+        });
+    }
+
+    get(path) {
+        const item = this.cache.get(path);
+        if (!item) return null;
+
+        // Invalidate expired cache items
+        if (Date.now() - item.timestamp > this.ttl) {
+            this.cache.delete(path);
+            return null;
+        }
+
+        return item.data;
+    }
+
+    clear() {
+        this.cache.clear();
+    }
+}
+
+// ==========================================================================
+// 3. PREFETCHING ENGINE (HOVER HOOKS)
+// ==========================================================================
+
+class Prefetcher {
+    constructor(router) {
+        this.router = router;
+        this.prefetchedUrls = new Set();
+    }
+
+    init() {
+        document.body.addEventListener('mouseover', (e) => this.handleHover(e));
+        document.body.addEventListener('touchstart', (e) => this.handleHover(e));
+    }
+
+    handleHover(e) {
+        const link = e.target.closest('a');
+        if (link && link.href) {
+            const url = new URL(link.href);
+            const currentUrl = new URL(window.location.href);
+
+            // Fetch only internal links not matching target="_blank"
+            if (url.origin === currentUrl.origin && link.target !== '_blank') {
+                const path = url.pathname + url.search + url.hash;
+                if (!this.prefetchedUrls.has(path) && !this.router.cache.get(path)) {
+                    this.prefetch(path);
+                }
+            }
+        }
+    }
+
+    async prefetch(path) {
+        this.prefetchedUrls.add(path);
+        try {
+            const response = await fetch(path);
+            if (response.ok) {
+                const html = await response.text();
+                this.router.cache.set(path, html);
+                this.router.logger.debug(`Prefetched page: ${path}`);
+            }
+        } catch (e) {
+            this.router.logger.error(`Failed to prefetch page: ${path}`, e);
+        }
+    }
+}
+
+// ==========================================================================
+// 4. TRANSITION EFFECTS MANAGER
+// ==========================================================================
+
+class TransitionManager {
+    constructor(appRoot) {
+        this.appRoot = appRoot;
+    }
+
+    async transitionOut(type = 'fade') {
+        if (!this.appRoot) return;
+        this.appRoot.className = `page-transition-${type}-out`;
+        await new Promise(r => setTimeout(r, 250)); // Sync animation duration
+    }
+
+    transitionIn(type = 'fade') {
+        if (!this.appRoot) return;
+        this.appRoot.className = `page-transition-${type}-in`;
+        setTimeout(() => {
+            if (this.appRoot) {
+                this.appRoot.className = '';
+            }
+        }, 250);
+    }
+}
+
+function injectTransitionStyles() {
+    if (document.getElementById('spa-transition-styles')) return;
+
+    const style = document.createElement('style');
+    style.id = 'spa-transition-styles';
+    style.textContent = `
+        .page-transition-fade-out {
+            opacity: 0;
+            transition: opacity 0.25s ease-out;
+        }
+        .page-transition-fade-in {
+            opacity: 0;
+            animation: spaFadeIn 0.25s ease-in forwards;
+        }
+        @keyframes spaFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .page-transition-slide-out {
+            transform: translateX(-20px);
+            opacity: 0;
+            transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+        }
+        .page-transition-slide-in {
+            transform: translateX(20px);
+            opacity: 0;
+            animation: spaSlideIn 0.25s ease-in forwards;
+        }
+        @keyframes spaSlideIn {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .page-transition-zoom-out {
+            transform: scale(0.98);
+            opacity: 0;
+            transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+        }
+        .page-transition-zoom-in {
+            transform: scale(1.02);
+            opacity: 0;
+            animation: spaZoomIn 0.25s ease-in forwards;
+        }
+        @keyframes spaZoomIn {
+            from { transform: scale(1.02); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// ==========================================================================
+// 5. ROUTING PERFORMANCE LOGGER
+// ==========================================================================
+
+class RouteLogger {
+    constructor(enabled = true) {
+        this.enabled = enabled;
+    }
+
+    info(msg) {
+        if (this.enabled) console.log(`%c[Router] INFO: ${msg}`, 'color: #3b82f6; font-weight: bold;');
+    }
+
+    debug(msg) {
+        if (this.enabled) console.log(`%c[Router] DEBUG: ${msg}`, 'color: #10b981;');
+    }
+
+    error(msg, err) {
+        if (this.enabled) console.error(`[Router] ERROR: ${msg}`, err);
+    }
+}
+
+// ==========================================================================
+// 6. MAIN ROUTER ENGINE
+// ==========================================================================
 
 class Router {
     constructor() {
         this.appRoot = document.getElementById('app-root');
         if (!this.appRoot) {
-            // Find main and add id if it doesn't exist
             this.appRoot = document.querySelector('main');
             if (this.appRoot) {
                 this.appRoot.id = 'app-root';
@@ -62,45 +407,51 @@ class Router {
 
         this.loadedScripts = new Set();
         this.loadedStyles = new Set();
+        this.cache = new RouteCache();
+        this.logger = new RouteLogger();
+        this.prefetcher = new Prefetcher(this);
+        this.transitionManager = new TransitionManager(this.appRoot);
+        this.lifecycle = new RouteLifecycleManager();
+        this.historyTracker = new RouteHistoryTracker();
+        this.currentPath = window.location.pathname + window.location.search + window.location.hash;
 
-        // Track initially loaded scripts and styles
+        // Record initial script and style states
         document.querySelectorAll('script[src]').forEach(s => {
-            // we do not want to prevent reloading of scripts if they are dynamic, but app.js and router.js shouldn't reload.
-            // actually we only append if not present.
-            this.loadedScripts.add(s.getAttribute('src'))
+            this.loadedScripts.add(s.getAttribute('src'));
         });
-        document.querySelectorAll('link[rel="stylesheet"]').forEach(l => this.loadedStyles.add(l.getAttribute('href')));
+        document.querySelectorAll('link[rel="stylesheet"]').forEach(l => {
+            this.loadedStyles.add(l.getAttribute('href'));
+        });
 
+        // Set global access hooks
+        window.appLifecycle = this.lifecycle;
+
+        injectTransitionStyles();
         this.init();
     }
 
     init() {
-        // Handle browser back/forward
-        window.addEventListener('popstate', (e) => {
+        // Browser popstate hook
+        window.addEventListener('popstate', () => {
             this.handleRoute(window.location.pathname + window.location.search + window.location.hash, false);
         });
 
-        // Intercept link clicks
+        // Click intercept logic for routing links
         document.body.addEventListener('click', (e) => {
             const link = e.target.closest('a');
 
-            // Check if it's a valid internal link
             if (link && link.href && link.target !== '_blank') {
                 const url = new URL(link.href);
                 const currentUrl = new URL(window.location.href);
 
-                // Same origin, and not a mailto/tel link
                 if (url.origin === currentUrl.origin) {
-
-                    // If it's just a hash change on the SAME page, let default behavior happen
+                    // Let default browser scroll take place if target is a simple hash on same page
                     if (url.pathname === currentUrl.pathname && url.search === currentUrl.search) {
-                        return; // Let browser scroll
+                        return;
                     }
 
-                    // Otherwise, prevent default and navigate
                     e.preventDefault();
 
-                    // Push state only if URL actually changes
                     if (url.href !== currentUrl.href) {
                         this.handleRoute(url.pathname + url.search + url.hash, true);
                     }
@@ -108,58 +459,88 @@ class Router {
             }
         });
 
-        // Fire initial route event
+        // Initialize Hover prefetching
+        this.prefetcher.init();
+
+        // Dispatch initial router event load
         this.dispatchRouteEvent();
 
-        // Initialize Global Search Trigger
         if (typeof initializeGlobalSearch === 'function') {
             initializeGlobalSearch();
         }
     }
 
     async handleRoute(path, push = true) {
-        // Clean up previous route
-        window.appLifecycle.runCleanups();
+        const startTime = performance.now();
+        this.logger.info(`Navigating to: ${path}`);
+        this.historyTracker.push(path);
 
-        // Trigger before-route event
-        document.dispatchEvent(new CustomEvent('app:before-route', { detail: { path } }));
+        // Cleanup resources registered on the current route
+        if (this.currentPath) {
+            this.lifecycle.cleanupRoute(this.currentPath);
+        }
+        this.lifecycle.runCleanups();
 
-        if (this.appRoot) {
-            this.appRoot.classList.add('page-transitioning');
+        // Stop active audio synthesizers to prevent sound overlay leaks
+        if (typeof window.stopSoundscape === 'function') {
+            try {
+                window.stopSoundscape();
+            } catch (e) {
+                this.logger.error('Failed to cleanup soundscape', e);
+            }
         }
 
+        document.dispatchEvent(new CustomEvent('app:before-route', { detail: { path } }));
+
+        // Detect animation configuration
+        let transitionType = 'fade';
+        const activeLink = document.querySelector(`a[href="${path}"]`);
+        if (activeLink && activeLink.dataset.transition) {
+            transitionType = activeLink.dataset.transition;
+        }
+
+        // Apply visual transition-out effect
+        await this.transitionManager.transitionOut(transitionType);
+
         try {
-            const response = await fetch(path);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            let htmlString = this.cache.get(path);
+            let cacheHit = true;
 
-            const htmlString = await response.text();
+            if (!htmlString) {
+                cacheHit = false;
+                const response = await fetch(path);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                htmlString = await response.text();
+                this.cache.set(path, htmlString);
+            }
 
-            // Parse the fetched HTML
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlString, 'text/html');
 
-            // Update Title
             document.title = doc.title;
 
-            // Extract main content
             const newMain = doc.querySelector('main');
             if (newMain && this.appRoot) {
-                // Wait for fade out animation
-                await new Promise(r => setTimeout(r, 300));
-
+                // Swap main layouts
                 this.appRoot.innerHTML = newMain.innerHTML;
 
-                // Process new scripts and styles
-                this.processHead(doc);
+                // Sync new styles in document head
+                await this.processHead(doc);
+
+                // Set tracking route for scripts
+                this.currentPath = path;
+
+                // Process and evaluate new scripts
                 this.processBodyScripts(doc);
 
                 if (push) {
                     window.history.pushState(null, '', path);
                 }
 
-                this.appRoot.classList.remove('page-transitioning');
+                // Apply visual transition-in effect
+                this.transitionManager.transitionIn(transitionType);
 
-                // Handle hash scrolling if present
+                // Smooth scroll to element hash or page top
                 const hash = new URL(path, window.location.origin).hash;
                 if (hash) {
                     setTimeout(() => {
@@ -171,35 +552,34 @@ class Router {
                 } else {
                     window.scrollTo(0, 0);
                 }
-                // Dispatch route changed event
+
                 this.dispatchRouteEvent();
 
-                // Re-initialize Global Search Trigger on page transition
                 if (typeof initializeGlobalSearch === 'function') {
                     initializeGlobalSearch();
                 }
+
+                const elapsed = (performance.now() - startTime).toFixed(1);
+                this.logger.info(`Loaded ${path} in ${elapsed}ms [Cache: ${cacheHit ? 'HIT' : 'MISS'}]`);
             } else {
-                // Fallback if no main tag found
                 window.location.href = path;
             }
 
         } catch (error) {
-            console.error('Routing failed:', error);
-            // Fallback to normal navigation
+            this.logger.error(`Failed to handle route: ${path}`, error);
             window.location.href = path;
         }
     }
 
     processHead(doc) {
         const promises = [];
-        // Extract and inject new stylesheets
         doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
             const href = link.getAttribute('href');
             if (href && !this.loadedStyles.has(href)) {
                 const newLink = document.createElement('link');
                 newLink.rel = 'stylesheet';
                 newLink.href = href;
-                
+
                 const p = new Promise(resolve => {
                     newLink.onload = () => resolve();
                     newLink.onerror = () => resolve();
@@ -214,14 +594,13 @@ class Router {
     }
 
     processBodyScripts(doc) {
-        // Collect all scripts from the fetched page
         const scripts = [...doc.querySelectorAll('script')];
 
         scripts.forEach(oldScript => {
             const src = oldScript.getAttribute('src');
 
             if (src) {
-                // External script
+                // External script execution
                 if (!this.loadedScripts.has(src)) {
                     const newScript = document.createElement('script');
                     newScript.src = src;
@@ -234,16 +613,60 @@ class Router {
                     this.loadedScripts.add(src);
                 }
             } else {
-                // Inline script
-                const newScript = document.createElement('script');
-                newScript.textContent = oldScript.textContent;
-                document.body.appendChild(newScript);
+                // Inline script sandbox wrapper processing
+                const scriptText = oldScript.textContent;
+                if (scriptText.trim()) {
+                    const processedCode = this.preprocessInlineScript(scriptText);
+
+                    const newScript = document.createElement('script');
+                    newScript.setAttribute('data-route-script', this.currentPath);
+                    newScript.textContent = processedCode;
+
+                    // Activate resource tracking for event listeners and timers
+                    this.lifecycle.setCurrentRoute(this.currentPath);
+                    this.lifecycle.startTracking();
+
+                    try {
+                        document.body.appendChild(newScript);
+                    } catch (e) {
+                        this.logger.error("Failed to execute sandboxed script", e);
+                    } finally {
+                        this.lifecycle.stopTracking();
+                    }
+                }
             }
         });
     }
 
+    /**
+     * Formulates an IIFE closure wrapping page-specific inline scripts.
+     * Extracts top-level functions and variables, declaring them globally on window
+     * to prevent scope block failures or HTML onclick ReferenceErrors.
+     */
+    preprocessInlineScript(scriptText) {
+        // Extract function declarations: function name(...)
+        const fnMatches = [...scriptText.matchAll(/function\s+([a-zA-Z0-9_$]+)\s*\(/g)];
+        const declaredFns = fnMatches.map(m => m[1]);
+
+        // Extract top-level variable declarations: const name =, let name =, var name =
+        const varMatches = [...scriptText.matchAll(/^\s*(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=/gm)];
+        const declaredVars = varMatches.map(m => m[1]);
+
+        // Get unified list of declarations
+        const allExposed = [...new Set([...declaredFns, ...declaredVars])];
+
+        // Format declarations to attach directly to global window object
+        const exposedCode = allExposed.map(name => `try { window.${name} = ${name}; } catch(e) {}`).join('\n');
+
+        return `
+/* Sandboxed SPA Route Script */
+(function() {
+${scriptText}
+${exposedCode}
+})();`;
+    }
+
     dispatchRouteEvent() {
-        // Dispatch custom event for scripts to re-initialize
         const event = new CustomEvent('app:route-changed', {
             detail: { url: window.location.pathname }
         });
@@ -507,10 +930,12 @@ function updateFocus(items) {
     });
 }
 
+// Escapes regex symbols
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+// Highlights matches in search result items
 function highlightText(text, query) {
     if (!query) return text;
     const escapedQuery = escapeRegExp(query);
@@ -518,6 +943,7 @@ function highlightText(text, query) {
     return text.replace(regex, '<span class="search-result-highlight">$1</span>');
 }
 
+// Action when search result is selected
 function selectResult(url) {
     closeSearchModal();
     if (window.appRouter && typeof window.appRouter.handleRoute === 'function') {
@@ -527,6 +953,7 @@ function selectResult(url) {
     }
 }
 
+// Perform client-side indexing search
 function performSearch(query) {
     const resultsContainer = document.getElementById('search-results-container');
     if (!resultsContainer) return;
