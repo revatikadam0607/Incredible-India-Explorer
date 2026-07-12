@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline | Incredible India Explorer</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --primary-gold: #ffb01f;
+            --saffron: #ff6f3c;
+            --green: #138808;
+            --text-color: #f1f1f1;
+            --muted-text: #a0a0a0;
+            --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .offline-badge {
+            background: linear-gradient(135deg, var(--saffron), var(--primary-gold));
+            color: var(--bg-color);
+            font-weight: 800;
+            padding: 8px 18px;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(255, 176, 31, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 15px 0;
+            background: linear-gradient(to right, #ffb01f, #ff6f3c, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: var(--muted-text);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin: 0 0 35px 0;
+        }
+
+        /* Trivia Card */
+        .trivia-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trivia-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--saffron), var(--primary-gold), var(--green));
+        }
+
+        .trivia-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--primary-gold);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
+        }
+
+        .trivia-icon {
+            font-size: 1.2rem;
+        }
+
+        .trivia-text {
+            font-size: 1rem;
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--saffron), #ff9f43);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(255, 111, 60, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 111, 60, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="offline-badge">Connection Lost</div>
+        <h1>You are Offline</h1>
+        <p>It seems your internet connection has took a short break. Don't worry! While you are waiting to get back online, here is a quick piece of Indian history to explore:</p>
+        
+        <div class="trivia-card">
+            <div class="trivia-header">
+                <span class="trivia-icon">💡</span>
+                <span>Did You Know?</span>
+            </div>
+            <p class="trivia-text" id="trivia-content">Loading fascinating trivia...</p>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="window.location.reload()">
+                🔄 Try Again
+            </button>
+            <a href="index.html" class="btn btn-secondary">
+                🏠 Go Home
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const trivia = [
+            "India is the only country in the world that is home to both tigers and lions, with the Royal Bengal Tiger inhabiting multiple national parks and the Asiatic Lion finding its last natural refuge in Gir Forest, Gujarat.",
+            "The Jantar Mantar observatory in Jaipur, Rajasthan features the world's largest stone sundial, measuring 27 meters tall, built by Maharaja Sawai Jai Singh II in the early 18th century.",
+            "Indian railways is one of the world's largest rail networks, operating over 22,000 trains daily across 68,000 route kilometers, transporting over 23 million passengers every single day.",
+            "Ayurveda, often considered the oldest surviving system of healthcare in the world, originated in India over 5,000 years ago during the Vedic period.",
+            "The Lonar Crater Lake in Maharashtra is a unique saline soda lake created by a meteorite impact during the Pleistocene epoch, and is one of the very few basalt impact craters on Earth.",
+            "India is the world's largest producer, consumer, and exporter of spices, supplying more than 70% of global spices from its diverse spice plantations.",
+            "With over 19,500 languages and dialects spoken as mother tongues across the country, India represents one of the most diverse linguistic landscapes in human history.",
+            "India was the first country to develop extraction and purifying techniques for sugar, dating back to the Gupta Dynasty around 350 CE."
+        ];
+
+        // Pick a random trivia
+        const randomItem = trivia[Math.floor(Math.random() * trivia.length)];
+        document.getElementById('trivia-content').innerText = randomItem;
+    </script>
+</body>
+</html>
