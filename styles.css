@@ -12335,7 +12335,687 @@ button {
     align-items: center;
 }
 
-/* ========================================================================== 
+/* ==========================================================================
+   LITERATURE PAGE STYLES
+   ========================================================================== */
+.literature-page-body {
+    background:
+        radial-gradient(circle at 12% 8%, rgba(255, 176, 31, 0.1) 0%, transparent 26%),
+        radial-gradient(circle at 84% 16%, rgba(18, 136, 7, 0.08) 0%, transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(255, 153, 51, 0.07) 0%, transparent 32%),
+        var(--bg-dark-deep);
+}
+
+.literature-hero {
+    position: relative;
+    min-height: 430px;
+    height: auto;
+    padding: 100px 0 62px;
+    background:
+        radial-gradient(circle at 20% 22%, rgba(255, 176, 31, 0.18) 0%, transparent 20%),
+        radial-gradient(circle at 82% 28%, rgba(18, 136, 7, 0.12) 0%, transparent 20%),
+        radial-gradient(circle at 52% 82%, rgba(255, 153, 51, 0.1) 0%, transparent 24%),
+        linear-gradient(160deg, #101827 0%, #09111d 50%, #0a1411 100%);
+}
+
+.literature-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(180deg, transparent 0 18%, rgba(255, 255, 255, 0.035) 18% 19%, transparent 19% 36%, rgba(255, 255, 255, 0.035) 36% 37%, transparent 37% 54%, rgba(255, 255, 255, 0.035) 54% 55%, transparent 55% 72%, rgba(255, 255, 255, 0.035) 72% 73%, transparent 73% 100%);
+    background-size: 84px 84px, 84px 84px, 100% 100%;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+.literature-hero .sub-hero-overlay {
+    background: linear-gradient(180deg, rgba(7, 13, 23, 0.2) 0%, rgba(7, 13, 23, 0.92) 100%);
+}
+
+.literature-hero .sub-hero-content {
+    max-width: 960px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+}
+
+.literature-hero h1 {
+    max-width: 13ch;
+    line-height: 1.04;
+    margin-bottom: 8px;
+}
+
+.literature-hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.literature-hero-pills {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.literature-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+.literature-pill.epic {
+    color: var(--primary-gold);
+    border-color: rgba(255, 176, 31, 0.28);
+}
+
+.literature-pill.poetry {
+    color: var(--primary-green);
+    border-color: rgba(18, 136, 7, 0.28);
+}
+
+.literature-pill.modern {
+    color: var(--primary-saffron);
+    border-color: rgba(255, 153, 51, 0.3);
+}
+
+.literature-stats-section,
+.literature-filter-section,
+.literature-works-section,
+.literature-authors-section,
+.literature-ancient-section {
+    background: transparent;
+}
+
+.literature-stats-grid,
+.literature-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 24px;
+    align-items: stretch;
+}
+
+.literature-stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.literature-stat-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 100%;
+}
+
+.literature-stat-label {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+.literature-stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.literature-stat-detail {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.literature-filter-section .section-container {
+    padding-top: 70px;
+}
+
+.literature-filters-bar {
+    align-items: flex-end;
+}
+
+.literature-filters-bar .tab-container {
+    margin-bottom: 0;
+}
+
+.literature-filters-bar .search-box-wrapper {
+    width: min(100%, 360px);
+}
+
+.literature-works-section {
+    background: linear-gradient(to bottom, rgba(8, 13, 22, 0.96) 0%, rgba(10, 15, 24, 0.98) 100%);
+}
+
+.literature-authors-section {
+    background: linear-gradient(to bottom, rgba(10, 15, 24, 0.98) 0%, rgba(7, 13, 23, 0.98) 100%);
+}
+
+.literature-ancient-section {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top left, rgba(255, 176, 31, 0.08) 0%, transparent 22%),
+        radial-gradient(circle at 82% 18%, rgba(18, 136, 7, 0.06) 0%, transparent 20%),
+        linear-gradient(to bottom, rgba(8, 13, 22, 0.98) 0%, rgba(6, 11, 18, 0.98) 100%);
+}
+
+.literature-ancient-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 84px 84px;
+    opacity: 0.24;
+    pointer-events: none;
+}
+
+.literature-ancient-section .section-container {
+    position: relative;
+    z-index: 1;
+}
+
+.literature-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    min-height: 100%;
+    height: 100%;
+    min-width: 0;
+    cursor: pointer;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.literature-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 4px;
+    background: var(--literature-accent, var(--primary-gold));
+}
+
+.literature-card[data-category="epic"] {
+    --literature-accent: var(--primary-gold);
+}
+
+.literature-card[data-category="poetry"] {
+    --literature-accent: var(--primary-green);
+}
+
+.literature-card[data-category="modern"] {
+    --literature-accent: var(--primary-saffron);
+}
+
+.literature-card[data-category="regional"] {
+    --literature-accent: var(--primary-green);
+}
+
+.literature-card[data-category="philosophy"] {
+    --literature-accent: var(--primary-gold);
+}
+
+.literature-card[data-category="ancient"] {
+    --literature-accent: var(--primary-saffron);
+}
+
+.literature-card:hover,
+.literature-card:focus-visible {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-glow-active);
+    border-color: rgba(255, 176, 31, 0.28);
+}
+
+.literature-card:focus-visible {
+    outline: 2px solid rgba(255, 176, 31, 0.45);
+    outline-offset: 3px;
+}
+
+.literature-card-head {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.literature-card-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    flex: 0 0 auto;
+    border-radius: 22px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.08) 0%, transparent 30%),
+        linear-gradient(135deg, rgba(255, 176, 31, 0.12), rgba(255, 153, 51, 0.08));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.literature-card-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(7, 13, 23, 0.08) 100%);
+    pointer-events: none;
+}
+
+.literature-card-image,
+.literature-modal-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    transform: scale(1);
+    transition: opacity 0.35s ease, transform 0.5s ease;
+}
+
+.literature-card-media.is-loaded .literature-card-image,
+.literature-modal-avatar.is-loaded .literature-modal-image {
+    opacity: 1;
+}
+
+.literature-card-media:hover .literature-card-image,
+.literature-card:focus-visible .literature-card-image,
+.literature-modal-avatar:hover .literature-modal-image {
+    transform: scale(1.05);
+}
+
+.literature-card-fallback,
+.literature-modal-fallback {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    background:
+        radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.08), transparent 28%),
+        linear-gradient(145deg, rgba(11, 17, 30, 0.64), rgba(255, 176, 31, 0.2));
+}
+
+.literature-card-media.is-loaded .literature-card-fallback,
+.literature-modal-avatar.is-loaded .literature-modal-fallback {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.literature-card-media.is-missing .literature-card-image,
+.literature-modal-avatar.is-missing .literature-modal-image {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.literature-card-media.is-missing .literature-card-fallback,
+.literature-modal-avatar.is-missing .literature-modal-fallback {
+    opacity: 1;
+}
+
+.literature-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 24px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--text-light);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 24px rgba(0, 0, 0, 0.18);
+    background: linear-gradient(135deg, rgba(255, 176, 31, 0.16), rgba(255, 153, 51, 0.1));
+}
+
+.literature-avatar.epic {
+    background: linear-gradient(135deg, rgba(255, 176, 31, 0.18), rgba(255, 153, 51, 0.12));
+}
+
+.literature-avatar.poetry {
+    background: linear-gradient(135deg, rgba(18, 136, 7, 0.18), rgba(255, 176, 31, 0.1));
+}
+
+.literature-avatar.modern {
+    background: linear-gradient(135deg, rgba(255, 153, 51, 0.18), rgba(255, 176, 31, 0.1));
+}
+
+.literature-avatar.regional {
+    background: linear-gradient(135deg, rgba(18, 136, 7, 0.18), rgba(255, 153, 51, 0.1));
+}
+
+.literature-avatar.philosophy {
+    background: linear-gradient(135deg, rgba(255, 176, 31, 0.18), rgba(18, 136, 7, 0.1));
+}
+
+.literature-card-title h3 {
+    font-size: 1.45rem;
+    margin: 10px 0 6px;
+}
+
+.literature-card-title p {
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.literature-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.literature-badge.ancient {
+    color: var(--primary-saffron);
+    background: rgba(255, 153, 51, 0.12);
+    border-color: rgba(255, 153, 51, 0.22);
+}
+
+.literature-badge.epic {
+    color: var(--primary-gold);
+    background: rgba(255, 176, 31, 0.12);
+    border-color: rgba(255, 176, 31, 0.22);
+}
+
+.literature-badge.poetry {
+    color: var(--primary-green);
+    background: rgba(18, 136, 7, 0.12);
+    border-color: rgba(18, 136, 7, 0.22);
+}
+
+.literature-badge.modern {
+    color: var(--primary-saffron);
+    background: rgba(255, 153, 51, 0.12);
+    border-color: rgba(255, 153, 51, 0.22);
+}
+
+.literature-badge.regional {
+    color: var(--primary-green);
+    background: rgba(18, 136, 7, 0.12);
+    border-color: rgba(18, 136, 7, 0.22);
+}
+
+.literature-badge.philosophy {
+    color: var(--primary-gold);
+    background: rgba(255, 176, 31, 0.12);
+    border-color: rgba(255, 176, 31, 0.22);
+}
+
+.literature-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.literature-meta-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.literature-summary,
+.literature-significance {
+    color: var(--text-muted);
+    line-height: 1.65;
+}
+
+.literature-significance {
+    margin-top: auto;
+}
+
+.literature-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.literature-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.literature-card-footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.literature-card-note {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.literature-details-btn {
+    padding: 10px 18px;
+    font-size: 0.92rem;
+}
+
+.literature-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 34px 24px;
+}
+
+.literature-empty-state h3 {
+    font-size: 1.7rem;
+    margin-bottom: 10px;
+}
+
+.literature-empty-state p {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.literature-modal .modal-card {
+    max-width: 920px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.literature-modal-layout {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    min-height: 100%;
+}
+
+.literature-modal-hero {
+    padding: 42px 34px;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.1) 0%, transparent 28%),
+        linear-gradient(160deg, rgba(17, 27, 45, 1) 0%, rgba(7, 17, 29, 1) 55%, rgba(6, 20, 15, 1) 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+}
+
+.literature-modal-avatar {
+    width: min(100%, 360px);
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    flex: 0 0 auto;
+    border-radius: 30px;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 176, 31, 0.2), rgba(255, 153, 51, 0.12));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.literature-modal-avatar.epic {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 176, 31, 0.2), rgba(255, 153, 51, 0.12));
+}
+
+.literature-modal-avatar.poetry {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(18, 136, 7, 0.2), rgba(255, 176, 31, 0.12));
+}
+
+.literature-modal-avatar.modern {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 153, 51, 0.2), rgba(18, 136, 7, 0.12));
+}
+
+.literature-modal-avatar.regional {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(18, 136, 7, 0.2), rgba(255, 153, 51, 0.12));
+}
+
+.literature-modal-avatar.philosophy,
+.literature-modal-avatar.ancient {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16) 0%, transparent 28%),
+        linear-gradient(135deg, rgba(255, 176, 31, 0.22), rgba(18, 136, 7, 0.1));
+}
+
+.literature-modal-hero h3 {
+    font-size: 2.1rem;
+    margin: 6px 0 0;
+}
+
+.literature-modal-hero p {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.literature-modal-body {
+    padding: 42px 34px;
+}
+
+.literature-modal-section {
+    margin-bottom: 28px;
+}
+
+.literature-modal-section h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary-gold);
+    margin-bottom: 10px;
+}
+
+.literature-modal-section p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.literature-modal-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.literature-modal-meta-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px 18px;
+    display: grid;
+    gap: 4px;
+}
+
+.literature-modal-meta-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.literature-modal-meta-value {
+    font-size: 0.98rem;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.literature-highlight-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.literature-highlight-list li {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================================================
    DANCE PAGE STYLES
    ========================================================================== */
 .dance-page-body {
@@ -13301,6 +13981,43 @@ button {
     .dance-modal-hero,
     .dance-modal-body {
         padding: 24px 18px;
+    }
+
+    .literature-hero {
+        min-height: 360px;
+        padding: 88px 0 50px;
+    }
+
+    .literature-hero h1 {
+        font-size: 2.45rem;
+    }
+
+    .literature-stat-card,
+    .literature-card,
+    .literature-modal-body,
+    .literature-modal-hero {
+        padding: 20px;
+    }
+
+    .literature-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
+        font-size: 0.95rem;
+    }
+
+    .literature-modal-avatar {
+        width: 92px;
+        height: 92px;
+        font-size: 1.15rem;
+    }
+
+    .literature-modal-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .literature-card-footer {
+        align-items: flex-start;
     }
 }
 
@@ -15453,6 +16170,20 @@ button {
     .startup-saved-card {
         grid-column: span 2;
     }
+
+    .literature-modal-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .literature-modal-hero,
+    .literature-modal-body {
+        padding: 28px 20px;
+    }
+
+    .literature-modal-hero {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
 }
 
 @media (max-width: 768px) {
@@ -15518,6 +16249,41 @@ button {
 
     .startup-meta-list {
         grid-template-columns: 1fr;
+    }
+
+    .literature-hero {
+        min-height: 390px;
+        padding: 92px 0 56px;
+    }
+
+    .literature-hero h1 {
+        max-width: 11ch;
+        font-size: 2.9rem;
+    }
+
+    .literature-hero-actions {
+        width: min(100%, 380px);
+    }
+
+    .literature-hero-actions .btn {
+        width: 100%;
+    }
+
+    .literature-filters-bar {
+        justify-content: flex-start;
+    }
+
+    .literature-filters-bar .search-box-wrapper {
+        width: 100%;
+    }
+
+    .literature-card-grid,
+    .literature-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .literature-card-head {
+        gap: 12px;
     }
 }
 
@@ -17189,6 +17955,109 @@ body.light-theme .music-modal-body {
 body.light-theme .music-modal-meta-item {
     background: rgba(15, 23, 42, 0.03);
     border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .literature-page-body {
+    background:
+        radial-gradient(circle at top left, rgba(255, 176, 31, 0.08) 0%, transparent 28%),
+        radial-gradient(circle at 82% 16%, rgba(18, 136, 7, 0.08) 0%, transparent 24%),
+        radial-gradient(circle at 50% 110%, rgba(255, 153, 51, 0.06) 0%, transparent 34%),
+        var(--bg-dark-deep);
+}
+
+body.light-theme .literature-hero {
+    background:
+        radial-gradient(circle at 18% 24%, rgba(255, 176, 31, 0.15) 0%, transparent 22%),
+        radial-gradient(circle at 80% 30%, rgba(18, 136, 7, 0.11) 0%, transparent 22%),
+        radial-gradient(circle at 50% 84%, rgba(255, 153, 51, 0.08) 0%, transparent 28%),
+        linear-gradient(160deg, rgba(255, 255, 255, 0.98) 0%, rgba(247, 249, 252, 0.98) 55%, rgba(242, 247, 243, 0.98) 100%);
+}
+
+body.light-theme .literature-hero::before {
+    opacity: 0.24;
+}
+
+body.light-theme .literature-hero .sub-hero-overlay {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.88) 100%);
+}
+
+body.light-theme .literature-pill {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(15, 23, 42, 0.08);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+body.light-theme .literature-stats-section,
+body.light-theme .literature-filter-section,
+body.light-theme .literature-works-section,
+body.light-theme .literature-authors-section,
+body.light-theme .literature-ancient-section {
+    background: transparent;
+}
+
+body.light-theme .literature-works-section {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.98) 0%, hsl(210, 22%, 94%) 100%);
+}
+
+body.light-theme .literature-authors-section {
+    background: linear-gradient(to bottom, hsl(210, 22%, 94%) 0%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+body.light-theme .literature-ancient-section {
+    background:
+        radial-gradient(circle at top left, rgba(255, 176, 31, 0.08) 0%, transparent 22%),
+        radial-gradient(circle at 82% 18%, rgba(18, 136, 7, 0.06) 0%, transparent 20%),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.98) 0%, hsl(210, 22%, 94%) 100%);
+}
+
+body.light-theme .literature-ancient-section::before {
+    opacity: 0.12;
+}
+
+body.light-theme .literature-stat-card,
+body.light-theme .literature-card,
+body.light-theme .literature-modal .modal-card,
+body.light-theme .literature-modal-meta-item {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .literature-card-note,
+body.light-theme .literature-summary,
+body.light-theme .literature-significance,
+body.light-theme .literature-card-title p,
+body.light-theme .literature-stat-detail,
+body.light-theme .literature-modal-hero p,
+body.light-theme .literature-modal-section p,
+body.light-theme .literature-empty-state p {
+    color: var(--text-muted);
+}
+
+body.light-theme .literature-meta-chip,
+body.light-theme .literature-chip,
+body.light-theme .literature-highlight-list li {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .literature-modal-hero {
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.8) 0%, transparent 28%),
+        linear-gradient(160deg, rgba(255, 247, 231, 0.96) 0%, rgba(247, 249, 252, 0.98) 55%, rgba(238, 247, 241, 0.98) 100%);
+    border-right-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .literature-modal-avatar {
+    color: var(--text-light);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .literature-modal-body {
+    background: rgba(255, 255, 255, 0.98);
+}
+
+body.light-theme .literature-hero-actions .btn {
+    box-shadow: none;
 }
 
 
