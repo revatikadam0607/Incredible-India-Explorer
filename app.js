@@ -3,6 +3,52 @@
    Pure Vanilla JavaScript for dynamic content, modals, sliders, and games.
    ========================================================================== */
 
+window.setupFocusTrap = function(modalElement) {
+    if (!modalElement) return null;
+    const focusableSelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex="0"], [contenteditable]';
+    const focusableElements = Array.from(modalElement.querySelectorAll(focusableSelector));
+    const previousActiveElement = document.activeElement;
+    
+    if (focusableElements.length > 0) {
+        setTimeout(() => focusableElements[0].focus(), 50);
+    } else {
+        modalElement.setAttribute('tabindex', '-1');
+        setTimeout(() => modalElement.focus(), 50);
+    }
+    
+    const keydownHandler = function(e) {
+        if (e.key === 'Tab') {
+            const elements = Array.from(modalElement.querySelectorAll(focusableSelector));
+            if (elements.length === 0) return;
+            const first = elements[0];
+            const last = elements[elements.length - 1];
+            
+            if (e.shiftKey) { // Shift + Tab
+                if (document.activeElement === first || document.activeElement === modalElement) {
+                    last.focus();
+                    e.preventDefault();
+                }
+            } else { // Tab
+                if (document.activeElement === last) {
+                    first.focus();
+                    e.preventDefault();
+                }
+            }
+        }
+    };
+    
+    modalElement.addEventListener('keydown', keydownHandler);
+    
+    return {
+        deactivate: function() {
+            modalElement.removeEventListener('keydown', keydownHandler);
+            if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+                setTimeout(() => previousActiveElement.focus(), 50);
+            }
+        }
+    };
+};
+
 document.addEventListener('app:route-changed', () => {
     initNavigation();
     initThemeToggle();
@@ -337,6 +383,9 @@ function initInteractiveMap() {
     const highlightsGrid = document.getElementById('state-story-highlights-grid');
     const svgContainer = document.getElementById('state-svg-container');
 
+    let storyOverlayFocusTrap = null;
+    let comparisonOverlayFocusTrap = null;
+
     // State Regions Map
     const stateRegions = {
         "an": "south", "ap": "south", "ar": "northeast", "as": "northeast", "br": "east",
@@ -363,6 +412,7 @@ function initInteractiveMap() {
     const gElement = document.createElementNS(svgNamespace, 'g');
 
     // Render paths
+    // Render paths
     mapData.locations.forEach(loc => {
         const pathElement = document.createElementNS(svgNamespace, 'path');
         pathElement.setAttribute('d', loc.path);
@@ -370,8 +420,12 @@ function initInteractiveMap() {
         pathElement.setAttribute('data-id', loc.id);
         pathElement.setAttribute('data-name', loc.name);
 
-        // Hover effect listeners — rich tooltip
-        pathElement.addEventListener('mouseenter', () => {
+        // Keyboard Accessibility attributes
+        pathElement.setAttribute('tabindex', '0');
+        pathElement.setAttribute('role', 'button');
+        pathElement.setAttribute('aria-label', loc.name);
+
+        const showTooltip = () => {
             const tooltipStateName = document.getElementById('tooltip-state-name');
             const tooltipCapital = document.getElementById('tooltip-capital');
             const tooltipFood = document.getElementById('tooltip-food');
@@ -386,7 +440,14 @@ function initInteractiveMap() {
                 tooltipDesc.innerText = loc.description.substring(0, 120) + (loc.description.length > 120 ? '…' : '');
             }
             tooltip.style.opacity = '1';
-        });
+        };
+
+        const hideTooltip = () => {
+            tooltip.style.opacity = '0';
+        };
+
+        // Hover effect listeners — rich tooltip
+        pathElement.addEventListener('mouseenter', showTooltip);
 
         pathElement.addEventListener('mousemove', (e) => {
             const tooltipW = 300;
@@ -402,9 +463,23 @@ function initInteractiveMap() {
             tooltip.style.top = y + 'px';
         });
 
-        pathElement.addEventListener('mouseleave', () => {
-            tooltip.style.opacity = '0';
+        pathElement.addEventListener('mouseleave', hideTooltip);
+
+        // Keyboard focus and blur listeners
+        pathElement.addEventListener('focus', () => {
+            showTooltip();
+            const rect = pathElement.getBoundingClientRect();
+            const tooltipW = 300;
+            const tooltipH = tooltip.offsetHeight || 220;
+            let x = rect.left + window.scrollX + rect.width / 2;
+            let y = rect.top + window.scrollY + rect.height / 2;
+            if (x + tooltipW > window.innerWidth) x = rect.left + window.scrollX - tooltipW - 12;
+            if (y + tooltipH > window.innerHeight) y = rect.top + window.scrollY - tooltipH - 12;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
         });
+
+        pathElement.addEventListener('blur', hideTooltip);
 
         // Click interaction listener
         pathElement.addEventListener('click', () => {
@@ -418,6 +493,14 @@ function initInteractiveMap() {
 
             // Open state modal
             showStateDetails(loc);
+        });
+
+        // Keydown listener for space/enter keys
+        pathElement.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                pathElement.click();
+            }
         });
 
         gElement.appendChild(pathElement);
@@ -500,6 +583,10 @@ function initInteractiveMap() {
     if (comparisonBackBtn) {
         comparisonBackBtn.addEventListener('click', () => {
             comparisonOverlay.classList.remove('open');
+            if (comparisonOverlayFocusTrap) {
+                comparisonOverlayFocusTrap.deactivate();
+                comparisonOverlayFocusTrap = null;
+            }
         });
     }
 
@@ -644,6 +731,7 @@ function initInteractiveMap() {
         }
 
         comparisonOverlay.classList.add('open');
+        comparisonOverlayFocusTrap = window.setupFocusTrap(comparisonOverlay);
     }
 
     // Overlay Close Triggers
@@ -654,6 +742,10 @@ function initInteractiveMap() {
         if (e.key === 'Escape') {
             closeOverlay();
             comparisonOverlay.classList.remove('open');
+            if (comparisonOverlayFocusTrap) {
+                comparisonOverlayFocusTrap.deactivate();
+                comparisonOverlayFocusTrap = null;
+            }
         }
     });
 
@@ -702,6 +794,7 @@ function initInteractiveMap() {
 
         // Open Overlay
         storyOverlay.classList.add('open');
+        storyOverlayFocusTrap = window.setupFocusTrap(storyOverlay);
 
         // Update Quick Info Sidebar Panel
         infoPanel.className = "info-card active-state";
@@ -803,6 +896,10 @@ function initInteractiveMap() {
     function closeOverlay() {
         storyOverlay.classList.remove('open');
         stopSoundscape();
+        if (storyOverlayFocusTrap) {
+            storyOverlayFocusTrap.deactivate();
+            storyOverlayFocusTrap = null;
+        }
     }
 
     // Explore Random State Action
@@ -6102,6 +6199,13 @@ function initBharatGuide() {
         if (isSynthesizing) {
             window.speechSynthesis.cancel();
             isSynthesizing = false;
+        }
+        fabGuide.focus();
+    });
+
+    chatWindow.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            btnCloseChat.click();
         }
     });
 
