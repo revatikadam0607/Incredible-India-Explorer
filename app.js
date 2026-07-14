@@ -53,54 +53,74 @@ document.addEventListener('app:route-changed', () => {
     initNavigation();
     initThemeToggle();
     initRotatingText();
-    initRoadTripFlipCards();
 
     // Page detection routing
     const pathname = window.location.pathname;
 
     if (pathname.includes('cuisine.html')) {
-        initCuisinePage();
+        window.lazyLoadScript('js-modules/cuisine.js').then(() => initCuisinePage());
     } else if (pathname.includes('festivals.html')) {
-        initFestivalsPage();
+        window.lazyLoadScript('js-modules/festivals.js').then(() => initFestivalsPage());
     } else if (pathname.includes('culture.html')) {
-        initCulturePage();
+        window.lazyLoadScript('js-modules/culture.js').then(() => initCulturePage());
     } else if (pathname.includes('literature.html')) {
-        initLiteraturePage();
+        window.lazyLoadScript('js-modules/literature.js').then(() => initLiteraturePage());
     } else if (pathname.includes('dance.html')) {
-        initDancePage();
+        window.lazyLoadScript('js-modules/dance.js').then(() => initDancePage());
     } else if (pathname.includes('music.html')) {
-        initMusicPage();
+        window.lazyLoadScript('js-modules/music.js').then(() => initMusicPage());
     } else if (pathname.includes('sports.html')) {
-        initSportsPage();
+        window.lazyLoadScript('js-modules/sports.js').then(() => initSportsPage());
     } else if (pathname.includes('science.html')) {
-        initSciencePage();
+        window.lazyLoadScript('js-modules/science.js').then(() => initSciencePage());
     } else if (pathname.includes('personalities.html')) {
         initScrollEffects();
-        initPersonalitiesPage();
+        window.lazyLoadScript('js-modules/personalities.js').then(() => initPersonalitiesPage());
     } else if (pathname.includes('spiritual.html')) {
         initScrollEffects();
-        initSpiritualCarousel();
+        window.lazyLoadScript('js-modules/spiritual.js').then(() => initSpiritualCarousel());
     } else if (pathname.includes('startup.html')) {
-        initStartupPage();
+        window.lazyLoadScript('js-modules/startup.js').then(() => initStartupPage());
+    } else if (pathname.includes('travel.html')) {
+        window.lazyLoadScript('js-modules/roadtrip.js').then(() => initRoadTripFlipCards());
     } else if (pathname.includes('heritage.html')) {
-        console.log('âœ… Heritage page loaded successfully');
+        console.log('✅ Heritage page loaded successfully');
     } else if (pathname.includes('monuments.html')) {
-        console.log('âœ… Monuments page loaded successfully');
+        console.log('✅ Monuments page loaded successfully');
     } else if (pathname.includes('hidden-gems.html')) {
-        console.log('âœ… Hidden Gems page loaded successfully');
+        console.log('✅ Hidden Gems page loaded successfully');
     } else if (pathname.includes('railways.html')) {
-        console.log('âœ… Railways Explorer page loaded successfully');
+        console.log('✅ Railways Explorer page loaded successfully');
     } else if (pathname.includes('adventure.html')) {
         console.log('Adventure page loaded successfully');
     } else {
         // Main landing page (index.html or root)
         initScrollEffects();
-        initInteractiveMap();
-        initCuisineExplorer();
-        initFestivals();
-        initCultureSlider();
-        initQuiz();
-        initBharatGuide();
+
+        // Viewport-based lazy initialization of heavy landing page sections
+        const lazyInit = (elementId, initFunc) => {
+            const el = document.getElementById(elementId);
+            if (el && 'IntersectionObserver' in window) {
+                const obs = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            initFunc();
+                            obs.disconnect();
+                        }
+                    });
+                }, { rootMargin: '200px' });
+                obs.observe(el);
+            } else {
+                initFunc();
+            }
+        };
+
+        lazyInit('map-container', initInteractiveMap);
+        lazyInit('cuisine-grid', initCuisineExplorer);
+        lazyInit('festival-timeline', initFestivals);
+        lazyInit('slider-container', initCultureSlider);
+        lazyInit('quiz-card', initQuiz);
+        lazyInit('fab-guide', initBharatGuide);
     }
 });
 
@@ -1366,616 +1386,20 @@ function initQuiz() {
    SUB-PAGES INITIALIZATION LOGIC & MAPPINGS
    ========================================================================== */
 
-const cuisineDetails = {
-    "c1": {
-        spice: 45, richness: 90, sweetness: 40,
-        ingredients: ["Boneless Chicken", "Fresh Tomato Puree", "Butter & Fresh Cream", "Kashmiri Lal Mirch", "Garam Masala", "Kasuri Methi"],
-        story: "Originating in the 1950s at the Moti Mahal restaurant in Delhi, Butter Chicken was created by Kundan Lal Gujral. He cleverly mixed leftover tandoori chicken juices with a rich, buttery tomato gravy to keep the chicken moist, creating a global phenomenon."
-    },
-    "c2": {
-        spice: 80, richness: 70, sweetness: 10,
-        ingredients: ["Kabuli Chana (Chickpeas)", "Maida Flatbreads", "Pomegranate Seed Powder", "Amchoor (Mango Powder)", "Green Chiles & Ginger", "Carom Seeds"],
-        story: "A beloved classic born in the streets of Punjab, Chole Bhature is the ultimate indulgence. The chickpeas are slow-simmered in a dark, tea-infused spice blend, while the bhature dough is fermented to puff up into massive, golden, cloud-like balloons."
-    },
-    "c3": {
-        spice: 75, richness: 85, sweetness: 10,
-        ingredients: ["Mutton (Lamb Shoulder)", "Kashmiri Dry Red Chilies", "Fennel Powder", "Ginger Powder", "Maval (Cockscomb flower)", "Asafoetida"],
-        story: "Introduced to Kashmir by the Mughals, Rogan Josh is a staple of the royal Kashmiri Wazwan feast. The dish gets its signature crimson color not from hot heat, but from mild Kashmiri red chilies and cockscomb flower petals."
-    },
-    "c4": {
-        spice: 50, richness: 60, sweetness: 15,
-        ingredients: ["Fermented Rice Batter", "Mashed Potatoes", "Mustard Seeds & Curry Leaves", "Chana Dal", "Turmeric & Onion", "Coconut Chutney"],
-        story: "Originating in the temple city of Udupi, Karnataka, Masala Dosa is a masterpiece of textures. The paper-thin fermented rice crepe is roasted in ghee until crispy outside, wrapping around a soft, seasoned potato-onion mash."
-    },
-    "c5": {
-        spice: 90, richness: 85, sweetness: 10,
-        ingredients: ["Basmati Rice", "Marinated Meat (Chicken/Goat)", "Saffron Milk", "Fried Onions (Biryanis)", "Mint & Coriander Leaves", "Rose Water"],
-        story: "Perfected in the kitchens of the Nizams of Hyderabad, this legendary dish uses the raw (Kacchi) biryani method. Raw marinated meat is cooked in layers under seal ('Dum') with long-grain Basmati rice, infusing the rice with pure meat juices."
-    },
-    "c6": {
-        spice: 40, richness: 30, sweetness: 10,
-        ingredients: ["Parboiled Rice", "Urad Dal", "Toor Dal (Lentils)", "Tamarind Pulp", "Drumstick & Shallots", "Sambar Powder"],
-        story: "Idlis are ancient steamed cakes whose origins trace back to Southern India or Indonesia. Fermenting the black lentils and rice batter breaks down nutrients, making Idli and Sambar one of the healthiest and most digestible breakfasts globally."
-    },
-    "c7": {
-        spice: 65, richness: 50, sweetness: 5,
-        ingredients: ["Whole Wheat Flour", "Sattu (Roasted Chickpea)", "Roasted Eggplant", "Mustard Oil", "Garlic & Green Chiles", "Ajwain (Carom)"],
-        story: "Litti Chokha was once the survival food for peasant armies and revolutionaries in Bihar because of its long shelf-life. The dough balls stuffed with spiced sattu are slow-baked over dung fires, cracked open, dipped in ghee, and eaten with rustic chokha mash."
-    },
-    "c8": {
-        spice: 70, richness: 40, sweetness: 15,
-        ingredients: ["Rahu Fish Pieces", "Mustard Oil & Paste", "Panch Phoron (Five-spice)", "Turmeric & Ginger", "Potatoes & Cauliflower", "Green Chiles"],
-        story: "Machher Jhol is the ultimate comfort food for every Bengali home. It is a light, spicy fish stew that balances the pungency of mustard oil with fresh green chilies and a digestive blend of five spices, representing Bengal's riverine heritage."
-    },
-    "c9": {
-        spice: 0, richness: 30, sweetness: 95,
-        ingredients: ["Chhena (Fresh Milk Curds)", "Sugar Syrup", "Rose Water", "Semolina (Rava)", "Saffron Strands", "Cardamom Powder"],
-        story: "The origin of Rasgulla is a famous historical debate between Bengal and Odisha. In Bengal, Nobin Chandra Das popularized the soft, spongy variant in 1868, while in Odisha, the sweet has been offered to Goddess Lakshmi at Jagannath Temple for centuries."
-    },
-    "c10": {
-        spice: 55, richness: 30, sweetness: 35,
-        ingredients: ["Gram Flour (Besan)", "Citric Acid & Baking Soda", "Mustard Seeds", "Curry Leaves & Sesame", "Green Chilies", "Grated Coconut"],
-        story: "Khaman Dhokla is a steamed, airy, savory snack from Gujarat. The key is fermenting the gram flour batter and steaming it to perfection, followed by a hot tempering of mustard seeds, green chilies, and sugar water that keeps the cake moist."
-    },
-    "c11": {
-        spice: 85, richness: 60, sweetness: 5,
-        ingredients: ["Boiled Potatoes", "Gram Flour Batter", "Pav (Bread Roll)", "Dry Garlic-Coconut Chutney", "Salted Green Chili", "Mint-Coriander Chutney"],
-        story: "Invented in 1966 by Ashok Vaidya outside Mumbai's Dadar Station, Vada Pav was designed as a cheap, grab-and-go meal for textile mill workers. Today, it is Mumbai's iconic culinary identity, eaten by millions daily across all social classes."
-    },
-    "c12": {
-        spice: 0, richness: 90, sweetness: 80,
-        ingredients: ["Egg Yolks", "Thick Coconut Milk", "Pure Ghee", "Sugar", "Flour", "Nutmeg Grating"],
-        story: "Bebinca is a classic Indo-Portuguese dessert, often called the 'Queen of Goan Desserts'. Legend says it was invented by a nun named Bebiana at the Santa Monica Convent, who made layers to symbolize the seven hills of Lisbon or Goa."
-    },
-    "c13": {
-        spice: 60, richness: 35, sweetness: 10,
-        ingredients: ["Refined Flour Dough", "Minced Vegetables/Meat", "Soy Sauce & Ginger", "Szechuan Pepper", "Garlic & Chilies", "Sesame Oil"],
-        story: "Momos entered the culinary fabric of Sikkim and Northeast India through Tibetan traders and refugees. These steamed delicacies have adapted to local palates, featuring spicy red chutneys made from hot local 'Dalle Khursani' chilies."
-    },
-    "c14": {
-        spice: 95, richness: 50, sweetness: 0,
-        ingredients: ["Smoked Pork Pieces", "Anishi (Fermented Yam Leaves)", "Fermented Bamboo Shoots", "Raja Mircha (Ghost Pepper)", "Ginger-Garlic", "Local Herbs"],
-        story: "A core staple of the Naga tribal hearth, this dish features pork that is slow-smoked over kitchen woodfires for weeks. It is simmered with pungent, sour fermented bamboo shoots and seasoned with Raja Mircha, one of the spiciest chilies in the world."
-    },
-    "c15": {
-        spice: 70, richness: 45, sweetness: 5,
-        ingredients: ["Red Hill Rice", "Pork/Chicken Stock", "Ginger Paste", "Black Pepper", "Local Sesame Seeds", "Aromatic Khasi Herbs"],
-        story: "Jadoh is a highly sacred and popular rice dish of the Khasi tribe of Meghalaya. Cooked traditionally with red hill rice and pork or chicken, it is served during important festivals and family reunions as a mark of Khasi heritage and hospitality."
-    }
-};
+// Stubs for lazy-loaded pages
+function initCuisinePage() {}
+function initFestivalsPage() {}
 
-const festivalHighlights = {
-    "Diwali": [
-        { icon: "&#127982;", text: "Clay Diyas & Lighting" },
-        { icon: "&#127800;", text: "Flower & Powder Rangoli" },
-        { icon: "&#127852;", text: "Sharing Mithai (Sweets)" },
-        { icon: "&#127879;", text: "Night Sparklers & Fireworks" }
-    ],
-    "Holi": [
-        { icon: "&#127912;", text: "Organic Colors (Gulal)" },
-        { icon: "&#129767;", text: "Pichkaris & Water Balloons" },
-        { icon: "&#129371;", text: "Thandai & Gujiya Sweets" },
-        { icon: "&#128293;", text: "Holika Dahan Bonfires" }
-    ],
-    "Eid": [
-        { icon: "&#127769;", text: "Crescent Moon Sighting" },
-        { icon: "&#x1F54C;", text: "Congregational Prayers" },
-        { icon: "&#127852;", text: "Sweet Sheer Khurma Feast" },
-        { icon: "&#127873;", text: "Eidi (Gift-Giving)" }
-    ],
-    "Pongal": [
-        { icon: "&#127806;", text: "Harvest Sugarcane Stalks" },
-        { icon: "&#127982;", text: "Decorated Clay Boiling Pots" },
-        { icon: "&#9728;&#65039;", text: "Surya (Sun God) Worship" },
-        { icon: "&#128004;", text: "Decorating Cattle (Mattu)" }
-    ],
 
-    "Navratri": [
-        { icon: "&#128131;", text: "Garba & Dandiya Dances" },
-        { icon: "&#129535;", text: "Chaniya Choli Dressups" },
-        { icon: "&#127982;", text: "Ghatasthapana (Holy Jar)" },
-        { icon: "&#128293;", text: "Dussehra Effigy Burning" }
-    ],
-
-    "Bihu": [
-        { icon: "&#129345;", text: "Dhol & Pepa Music" },
-        { icon: "&#127806;", text: "Rongali Spring Dance" },
-        { icon: "&#129366;", text: "Pitha Rice Cake Feasts" },
-        { icon: "&#128293;", text: "Community Bonfires" }
-    ],
-};
-
-function initCuisinePage() {
-    const cuisineGrid = document.getElementById('cuisine-grid');
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const searchInput = document.getElementById('cuisine-search-input');
-
-    const drawer = document.getElementById('cuisine-drawer');
-    const drawerClose = document.getElementById('drawer-close');
-    const dRegion = document.getElementById('drawer-region-text');
-    const dTitle = document.getElementById('drawer-title');
-    const dState = document.getElementById('drawer-state-text');
-    const dImg = document.getElementById('drawer-img');
-    const dDesc = document.getElementById('drawer-description');
-    const dSpice = document.getElementById('fill-spice');
-    const dRich = document.getElementById('fill-richness');
-    const dSweet = document.getElementById('fill-sweetness');
-    const dIngredients = document.getElementById('drawer-ingredients');
-
-    let currentRegion = 'all';
-    let searchQuery = '';
-
-    render();
-
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentRegion = btn.getAttribute('data-region');
-            animateRender();
-        });
-    });
-
-    searchInput.addEventListener('input', (e) => {
-        searchQuery = e.target.value.toLowerCase().trim();
-        animateRender();
-    });
-
-    drawerClose.addEventListener('click', closeDrawer);
-    drawer.addEventListener('click', (e) => {
-        if (e.target === drawer) closeDrawer();
-    });
-
-    function closeDrawer() {
-        drawer.classList.remove('open');
-        document.body.classList.remove('no-scroll');
-        document.documentElement.classList.remove('no-scroll');
-    }
-
-    function animateRender() {
-        cuisineGrid.style.opacity = '0';
-        cuisineGrid.style.transform = 'translateY(15px)';
-        cuisineGrid.style.transition = 'opacity 0.25s, transform 0.25s';
-
-        setTimeout(() => {
-            render();
-            cuisineGrid.style.opacity = '1';
-            cuisineGrid.style.transform = 'translateY(0)';
-        }, 200);
-    }
-
-    function render() {
-        cuisineGrid.innerHTML = '';
-
-        let filtered = cuisinesData;
-        if (currentRegion !== 'all') {
-            filtered = filtered.filter(item => item.region === currentRegion);
-        }
-        if (searchQuery !== '') {
-            filtered = filtered.filter(item =>
-                item.name.toLowerCase().includes(searchQuery) ||
-                item.state.toLowerCase().includes(searchQuery) ||
-                item.description.toLowerCase().includes(searchQuery)
-            );
-        }
-
-        if (filtered.length === 0) {
-            cuisineGrid.innerHTML = `<div class="no-results" style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted); font-size: 1.1rem;">No cuisines match your criteria. Try adjusting the filter or search word.</div>`;
-            return;
-        }
-
-        filtered.forEach(dish => {
-            const card = document.createElement('div');
-            card.className = 'cuisine-card glass-card';
-
-            let badgeClass = 'saffron-bg';
-            if (dish.region === 'south') badgeClass = 'gold-bg';
-            if (dish.region === 'east') badgeClass = 'green-bg';
-            if (dish.region === 'northeast') badgeClass = 'gold-bg';
-
-            card.innerHTML = `
-                <div class="cuisine-card-image">
-                    <img src="${dish.image}" alt="${dish.name}" loading="lazy">
-                    <span class="cuisine-region-badge ${badgeClass}">${dish.region} India</span>
-                </div>
-                <div class="cuisine-card-body">
-                    <span class="cuisine-origin">${dish.state}</span>
-                    <h3>${dish.name}</h3>
-                    <p>${dish.description}</p>
-                </div>
-            `;
-
-            card.addEventListener('click', () => {
-                const details = cuisineDetails[dish.id] || {
-                    spice: 50, richness: 50, sweetness: 50,
-                    ingredients: ["Local spices", "Regional vegetables", "Traditional grains"],
-                    story: dish.description
-                };
-
-                dRegion.innerText = `${dish.region} India`;
-                dRegion.className = `drawer-badge ${badgeClass}`;
-                dTitle.innerText = dish.name;
-                dState.innerText = `Origin: ${dish.state}`;
-                dImg.src = dish.image;
-                dImg.alt = dish.name;
-                dDesc.innerText = details.story;
-
-                dSpice.style.width = details.spice + '%';
-                dRich.style.width = details.richness + '%';
-                dSweet.style.width = details.sweetness + '%';
-
-                dIngredients.innerHTML = '';
-                details.ingredients.forEach(ing => {
-                    const li = document.createElement('li');
-                    li.innerText = ing;
-                    dIngredients.appendChild(li);
-                });
-
-                drawer.classList.add('open');
-                document.body.classList.add('no-scroll');
-                document.documentElement.classList.add('no-scroll');
-            });
-
-            cuisineGrid.appendChild(card);
-        });
-
-        // Try Recipe Mode Logic
-        const btnTryRecipe = document.getElementById('btn-try-recipe');
-        const recipeOverlay = document.getElementById('recipe-mode-overlay');
-        const btnExitRecipe = document.getElementById('btn-exit-recipe');
-        const recipeTitle = document.getElementById('recipe-title');
-        const progressFill = document.getElementById('recipe-progress-fill');
-        const stepIndicator = document.getElementById('recipe-step-indicator');
-        const stepTitle = document.getElementById('step-title');
-        const stepInstruction = document.getElementById('step-instruction');
-        const btnPrevStep = document.getElementById('btn-prev-step');
-        const btnNextStep = document.getElementById('btn-next-step');
-
-        let currentRecipeSteps = [];
-        let currentStepIndex = 0;
-
-        if (btnTryRecipe) {
-            btnTryRecipe.onclick = () => {
-                recipeTitle.innerText = dTitle.innerText;
-
-                // Generate pseudo-steps based on ingredients
-                const ingredientsList = Array.from(dIngredients.querySelectorAll('li')).map(li => li.innerText);
-                currentRecipeSteps = [
-                    { title: "1. Preparation", text: `Gather and prepare the following ingredients: ${ingredientsList.slice(0, 2).join(', ')}.` },
-                    { title: "2. Marination & SautÃ©", text: `Mix the spices with the base ingredients. Slowly cook the ${ingredientsList.length > 2 ? ingredientsList[2] : "spices"} to release the aromas.` },
-                    { title: "3. Simmer & Cook", text: `Add the main elements and let the dish simmer on low heat until fully cooked. Let the flavors meld.` },
-                    { title: "4. Garnish & Serve", text: `Finish off with ${ingredientsList.length > 3 ? ingredientsList[3] : "fresh herbs"} and serve hot! Enjoy your authentic meal.` }
-                ];
-
-                currentStepIndex = 0;
-                updateRecipeUI();
-                recipeOverlay.classList.add('active');
-            };
-
-            btnExitRecipe.onclick = () => {
-                recipeOverlay.classList.remove('active');
-            };
-
-            btnPrevStep.onclick = () => {
-                if (currentStepIndex > 0) {
-                    currentStepIndex--;
-                    updateRecipeUI();
-                }
-            };
-
-            btnNextStep.onclick = () => {
-                if (currentStepIndex < currentRecipeSteps.length - 1) {
-                    currentStepIndex++;
-                    updateRecipeUI();
-                } else {
-                    // Finished
-                    recipeOverlay.classList.remove('active');
-                }
-            };
-
-            function updateRecipeUI() {
-                const step = currentRecipeSteps[currentStepIndex];
-                stepTitle.innerText = step.title;
-                stepInstruction.innerText = step.text;
-
-                const progress = ((currentStepIndex + 1) / currentRecipeSteps.length) * 100;
-                progressFill.style.width = `${progress}%`;
-                stepIndicator.innerText = `Step ${currentStepIndex + 1} of ${currentRecipeSteps.length}`;
-
-                btnPrevStep.disabled = currentStepIndex === 0;
-
-                if (currentStepIndex === currentRecipeSteps.length - 1) {
-                    btnNextStep.innerText = "Finish 🎉";
-                } else {
-                    btnNextStep.innerHTML = "Next Step &rarr;";
-                }
-
-                // Re-trigger animation
-                const card = document.getElementById('recipe-step-card');
-                card.classList.remove('animate-slide-up');
-                void card.offsetWidth; // trigger reflow
-                card.classList.add('animate-slide-up');
-            }
-        }
-    }
-}
-
-function initFestivalsPage() {
-    const festivalTimeline = document.getElementById('festival-timeline');
-    const overlay = document.getElementById('story-overlay');
-    const backBtn = document.getElementById('story-back-btn');
-    const audioBtn = document.getElementById('story-audio-btn');
-
-    const storyImg = document.getElementById('story-img');
-    const particlesContainer = document.getElementById('canvas-particles');
-    const shapeContainer = document.getElementById('canvas-shape-container');
-    const storySubtitle = document.getElementById('story-subtitle');
-    const storyTitle = document.getElementById('story-title');
-    const storyMainText = document.getElementById('story-main-text');
-    const highlightsGrid = document.getElementById('story-highlights-grid');
-
-    festivalTimeline.innerHTML = '';
-
-    festivalsData.forEach(fest => {
-        const card = document.createElement('div');
-        card.className = 'festival-card glass-card';
-        card.innerHTML = `
-            <img class="festival-card-img" src="${fest.image}" alt="${fest.name}" loading="lazy">
-            <div class="festival-card-content">
-                <span class="subtitle">${fest.subtitle}</span>
-                <h3>${fest.name}</h3>
-                <p>${fest.description}</p>
-            </div>
-        `;
-
-        card.addEventListener('click', () => {
-            storyImg.src = fest.image;
-            storyImg.alt = fest.name;
-            storySubtitle.innerText = fest.subtitle;
-            storyTitle.innerText = fest.name;
-
-            // Format story text as paragraph lines
-            const paragraphs = (fest.story || fest.description)
-                .split('\n\n')
-                .map(pText => `<p class="story-paragraph">${pText}</p>`)
-                .join('');
-            storyMainText.innerHTML = paragraphs;
-
-            // Reapply Drop Cap on first paragraph
-            const firstPara = storyMainText.querySelector('.story-paragraph');
-            if (firstPara) firstPara.classList.add('drop-cap');
-
-            // Set dynamic background color transition class
-            overlay.className = `story-overlay theme-${fest.name.toLowerCase()}`;
-
-            // Load highlights
-            highlightsGrid.innerHTML = '';
-            const highlights = festivalHighlights[fest.name] || [
-                { icon: "&#127881;", text: "Traditional Customs" },     
-                { icon: "&#127852;", text: "Festive Meals" },           
-                { icon: "&#10024;", text: "Joyous Decorations" },       
-                { icon: "&#129309;", text: "Community Gatherings" }    
-            ];
-
-            highlights.forEach(hl => {
-                const div = document.createElement('div');
-                div.className = 'highlight-bullet';
-                div.innerHTML = `<span class="bullet-icon">${hl.icon}</span><span>${hl.text}</span>`;
-                highlightsGrid.appendChild(div);
-            });
-
-            // Spawns custom CSS-animated shapes
-            shapeContainer.innerHTML = '';
-            if (fest.name === "Diwali") {
-                shapeContainer.innerHTML = `
-                    <div class="diya-graphic animate-slide-up">
-                        <div class="diya-flame" id="diya-flame-obj"></div>
-                        <div class="diya-body"></div>
-                    </div>
-                `;
-            } else if (fest.name === "Holi") {
-                let html = '<div class="holi-powders">';
-                const offsets = [
-                    { x: -70, y: -60, color: 'rgba(239, 68, 68, 0.65)', dx: -40, dy: -30 },
-                    { x: 70, y: -50, color: 'rgba(59, 130, 246, 0.65)', dx: 30, dy: -40 },
-                    { x: -50, y: 60, color: 'rgba(16, 185, 129, 0.65)', dx: -30, dy: 40 },
-                    { x: 50, y: 50, color: 'rgba(236, 72, 153, 0.65)', dx: 40, dy: 30 }
-                ];
-                offsets.forEach(offset => {
-                    html += `
-                        <div class="color-cloud" style="
-                            left: calc(50% + ${offset.x}px); 
-                            top: calc(50% + ${offset.y}px); 
-                            background: ${offset.color};
-                            width: ${Math.random() * 50 + 90}px;
-                            height: ${Math.random() * 50 + 90}px;
-                            --dx: ${offset.dx}px;
-                            --dy: ${offset.dy}px;
-                        "></div>
-                    `;
-                });
-                html += '</div>';
-                shapeContainer.innerHTML = html;
-            } else if (fest.name === "Eid") {
-                shapeContainer.innerHTML = `
-                    <div class="eid-lantern">
-                        <div class="lantern-cord"></div>
-                        <div class="lantern-body"></div>
-                    </div>
-                `;
-            } else if (fest.name === "Pongal") {
-                shapeContainer.innerHTML = `
-                    <div class="pongal-pot-graphic animate-slide-up">
-                        <div class="pongal-foam">
-                            <div class="foam-bubble"></div>
-                            <div class="foam-bubble"></div>
-                            <div class="foam-bubble"></div>
-                        </div>
-                        <div class="pongal-neck"></div>
-                        <div class="pongal-pot"></div>
-                    </div>
-                `;
-            } else if (fest.name === "Navratri") {
-                shapeContainer.innerHTML = `
-                    <div class="navratri-dandiya animate-slide-up" id="navratri-dandiya-sticks">
-                        <div class="dandiya-stick left"></div>
-                        <div class="dandiya-stick right"></div>
-                    </div>
-                `;
-            } else if (fest.name === "Bihu") {
-                shapeContainer.innerHTML = `
-                    <div class="bihu-dhol animate-slide-up">
-                        <div class="dhol-drum" id="bihu-dhol-drum"></div>
-                    </div>
-                `;
-            }
-
-            // Open overlay with animations
-            overlay.classList.add('open');
-
-            // Trigger scroll triggers
-            setupScrollReveals();
-
-            // Trigger themed particles spawning
-            spawnThemedParticles(fest.name, particlesContainer);
-
-            // Bind soundscape controllers
-            audioBtn.classList.remove('playing');
-            audioBtn.innerHTML = '<span class="audio-icon">&#128266;</span> Listen to Soundscape';
-            stopSoundscape();
-
-            audioBtn.onclick = () => {
-                if (audioBtn.classList.contains('playing')) {
-                    audioBtn.classList.remove('playing');
-                    audioBtn.innerHTML = '<span class="audio-icon">&#128266;</span> Listen to Soundscape';
-                    stopSoundscape();
-                } else {
-                    audioBtn.classList.add('playing');
-                    audioBtn.innerHTML = '<span class="audio-icon">&#128263;</span> Stop Soundscape';
-
-                    let drumEl = null;
-                    if (fest.name === "Bihu") {
-                        drumEl = document.getElementById('bihu-dhol-drum');
-                    } else if (fest.name === "Navratri") {
-                        drumEl = document.getElementById('navratri-dandiya-sticks');
-                    } else if (fest.name === "Diwali") {
-                        drumEl = document.getElementById('diya-flame-obj');
-                    }
-                    playSoundscape(fest.name, drumEl);
-                }
-            };
-        });
-
-        festivalTimeline.appendChild(card);
-    });
-
-    backBtn.addEventListener('click', () => {
-        overlay.classList.remove('open');
-        particlesContainer.innerHTML = '';
-        shapeContainer.innerHTML = '';
-        stopSoundscape();
-    });
-}
-
-function setupScrollReveals() {
-    const paragraphs = document.querySelectorAll('.story-paragraph');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('reveal');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-
-    paragraphs.forEach(p => {
-        p.classList.remove('reveal');
-        observer.observe(p);
-    });
-}
-
-function spawnThemedParticles(festName, container) {
-    container.innerHTML = '';
-
-    if (festName === "Diwali") {
-        for (let i = 0; i < 20; i++) {
-            const p = document.createElement('div');
-            p.className = 'diya-particle';
-            p.style.left = Math.random() * 100 + '%';
-            p.style.bottom = Math.random() * 50 + '%';
-            p.style.animationDelay = Math.random() * 5 + 's';
-            p.style.animationDuration = (Math.random() * 4 + 4) + 's';
-            container.appendChild(p);
-        }
-        for (let i = 0; i < 15; i++) {
-            const p = document.createElement('div');
-            p.className = 'sparkle-particle';
-            p.style.left = Math.random() * 80 + 10 + '%';
-            p.style.top = Math.random() * 80 + 10 + '%';
-            p.style.setProperty('--x', (Math.random() * 100 - 50) + 'px');
-            p.style.setProperty('--y', (Math.random() * 100 - 50) + 'px');
-            p.style.animationDelay = Math.random() * 2 + 's';
-            container.appendChild(p);
-        }
-    } else if (festName === "Holi") {
-        const colors = ['#ef4444', '#3b82f6', '#10b981', '#ec4899', '#f59e0b', '#8b5cf6'];
-        for (let i = 0; i < 15; i++) {
-            const p = document.createElement('div');
-            p.className = 'splash-particle';
-            p.style.left = Math.random() * 80 + 10 + '%';
-            p.style.top = Math.random() * 80 + 10 + '%';
-            const size = Math.random() * 30 + 15;
-            p.style.width = size + 'px';
-            p.style.height = size + 'px';
-            p.style.background = colors[Math.floor(Math.random() * colors.length)];
-            p.style.setProperty('--x', (Math.random() * 160 - 80) + 'px');
-            p.style.setProperty('--y', (Math.random() * 160 - 80) + 'px');
-            p.style.animationDelay = Math.random() * 3 + 's';
-            container.appendChild(p);
-        }
-    } else if (festName === "Eid") {
-        for (let i = 0; i < 25; i++) {
-            const p = document.createElement('div');
-            p.className = 'star-particle';
-            p.innerText = 'â˜…';
-            p.style.left = Math.random() * 100 + '%';
-            p.style.top = Math.random() * 100 + '%';
-            p.style.animationDelay = Math.random() * 3 + 's';
-            p.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            container.appendChild(p);
-        }
-    } else if (festName === "Pongal") {
-        for (let i = 0; i < 15; i++) {
-            const p = document.createElement('div');
-            p.className = 'steam-particle';
-            p.style.left = (Math.random() * 40 + 30) + '%';
-            p.style.bottom = '10%';
-            p.style.setProperty('--x', (Math.random() * 40 - 20) + 'px');
-            p.style.animationDelay = Math.random() * 3 + 's';
-            container.appendChild(p);
-        }
-    } else if (festName === "Navratri" || festName === "Bihu") {
-        for (let i = 0; i < 20; i++) {
-            const p = document.createElement('div');
-            p.className = 'leaf-particle';
-            p.innerText = festName === "Bihu" ? 'ðŸƒ' : 'ðŸŒ¸';
-            p.style.left = Math.random() * 100 + '%';
-            p.style.setProperty('--x', (Math.random() * 80 - 40) + 'px');
-            p.style.animationDelay = Math.random() * 5 + 's';
-            p.style.animationDuration = (Math.random() * 4 + 5) + 's';
-            container.appendChild(p);
-        }
-    }
-}
 
 /* ==========================================================================
    WEB AUDIO API SOUNDSCAPE SYNTHESIZER
    ========================================================================== */
-let audioCtx = null;
-let soundscapeActive = false;
-let audioTimeout = null;
-let currentFestivalPlaying = '';
-let activeAudioNodes = [];
+var audioCtx = null;
+var soundscapeActive = false;
+var audioTimeout = null;
+var currentFestivalPlaying = '';
+var activeAudioNodes = [];
 
 function initAudioSynth() {
     if (!audioCtx) {
@@ -2350,299 +1774,116 @@ function playStateSoundscape(stateName) {
     playStateChime();
 }
 
-function initCulturePage() {
-    const gridContainer = document.getElementById('culture-grid-container');
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const modal = document.getElementById('culture-modal');
-    const modalClose = document.getElementById('culture-modal-close');
-    const mBadge = document.getElementById('culture-modal-badge');
-    const mTitle = document.getElementById('culture-modal-title');
-    const mImg = document.getElementById('culture-modal-img');
-    const mDesc = document.getElementById('culture-modal-description');
 
-    let currentCategory = 'all';
+/* ==========================================================================
+   SUB-PAGES INITIALIZATION LOGIC STUBS
+   ========================================================================== */
+function initCulturePage() { console.log("Culture page stub called"); }
+function initSportsPage() { console.log("Sports page stub called"); }
+function initSciencePage() { console.log("Science page stub called"); }
+function initMusicPage() { console.log("Music page stub called"); }
+function initLiteraturePage() { console.log("Literature page stub called"); }
+function initDancePage() { console.log("Dance page stub called"); }
+function initStartupPage() { console.log("Startup page stub called"); }
+function initPersonalitiesPage() { console.log("Personalities page stub called"); }
+function initSpiritualCarousel() { console.log("Spiritual page stub called"); }
+function initRoadTripFlipCards() { console.log("Roadtrip page stub called"); }
 
-    render();
 
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentCategory = btn.getAttribute('data-category');
+function initBharatGuide() {
+    const fabGuide = document.getElementById('fab-guide');
+    const chatWindow = document.getElementById('guide-chat-window');
+    const btnCloseChat = document.getElementById('btn-close-chat');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const btnSendMsg = document.getElementById('btn-send-msg');
 
-            gridContainer.style.opacity = '0';
-            gridContainer.style.transform = 'translateY(15px)';
-            gridContainer.style.transition = 'opacity 0.25s, transform 0.25s';
+    if (!fabGuide) return; // Not on this page
 
-            setTimeout(() => {
-                render();
-                gridContainer.style.opacity = '1';
-                gridContainer.style.transform = 'translateY(0)';
-            }, 200);
-        });
-    });
+    // Knowledge Graph is now loaded from chatbot-data.js
 
-    modalClose.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
+    let isSynthesizing = false;
 
-    // Close modal on escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeModal();
-    });
-
-    function closeModal() {
-        modal.classList.remove('open');
-    }
-
-    function render() {
-        gridContainer.innerHTML = '';
-
-        const filtered = currentCategory === 'all'
-            ? cultureData
-            : cultureData.filter(item => item.category === currentCategory);
-
-        filtered.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'culture-card-standalone glass-card';
-            card.innerHTML = `
-                <img src="${item.image}" alt="${item.title}" loading="lazy">
-                <div class="cuisine-card-body">
-                    <span class="cuisine-origin">${item.category}</span>
-                    <h3>${item.title}</h3>
-                    <p>${item.description.substring(0, 120)}...</p>
-                </div>
-            `;
-
-            card.addEventListener('click', () => {
-                mBadge.innerText = item.category;
-                mBadge.className = `modal-badge ${item.category === 'dance' ? 'green-bg' : item.category === 'music' ? 'gold-bg' : 'saffron-bg'}`;
-                mTitle.innerText = item.title;
-                mImg.src = item.image;
-                mImg.alt = item.title;
-                mDesc.innerText = item.description;
-
-                modal.classList.add('open');
-            });
-
-            gridContainer.appendChild(card);
-        });
-    }
-}
-
-function initSportsPage() {
-    const athleteGrid = document.getElementById('sports-athlete-grid');
-    const searchInput = document.getElementById('sports-search-input');
-    const filterButtons = document.querySelectorAll('[data-sports-filter]');
-    const timelineGrid = document.getElementById('sports-timeline');
-    const timelineDetail = document.getElementById('sports-timeline-detail');
-    const modal = document.getElementById('sports-modal');
-    const modalClose = document.getElementById('sports-modal-close');
-    const modalAvatar = document.getElementById('sports-modal-avatar');
-    const modalCategory = document.getElementById('sports-modal-category');
-    const modalTitle = document.getElementById('sports-modal-title');
-    const modalSubtitle = document.getElementById('sports-modal-subtitle');
-    const modalStory = document.getElementById('sports-modal-story');
-    const modalHighlights = document.getElementById('sports-modal-highlights');
-    const modalStats = document.getElementById('sports-modal-stats');
-    const sportsSection = document.getElementById('sports-athletes-section');
-
-    if (!athleteGrid || !searchInput || !filterButtons.length || !timelineGrid || !timelineDetail || !modal || !modalClose) {
-        return;
-    }
-
-    // Sports page uses the same fade-in class as the homepage, but it does
-    // not run the homepage scroll observer. Reveal those sections immediately.
-    document.querySelectorAll('.fade-in-section').forEach(section => {
-        section.classList.add('is-visible');
-    });
-
-    const athleteData = [
-        {
-            id: 'sachin-tendulkar',
-            category: 'cricket',
-            name: 'Sachin Tendulkar',
-            subtitle: 'Master Blaster',
-            image: 'assets/sports/sachin-tendulkar.png',
-            summary: 'A benchmark for longevity, timing, and calm under pressure.',
-            story: 'Sachin Tendulkar became the face of Indian batting for more than two decades. His records, consistency, and composure helped turn cricket into a shared national passion.',
-            highlights: ['200 Test matches', '2011 World Cup winner', 'Most international runs'],
-            stats: [
-                { label: 'Role', value: 'Top-order batter' },
-                { label: 'Legacy', value: 'Cricket icon' },
-                { label: 'Era', value: '1989-2013' }
-            ]
-        },
-        {
-            id: 'ms-dhoni',
-            category: 'cricket',
-            name: 'M. S. Dhoni',
-            subtitle: 'Captain Cool',
-            image: 'assets/sports/ms-dhoni.png',
-            summary: 'A calm leader who delivered India across formats.',
-            story: 'M. S. Dhoni guided India to major white-ball titles and became known for sharp decision-making, calm finishing, and a fearless approach to leadership.',
-            highlights: ['2007 T20 World Cup', '2011 ODI World Cup', '2013 Champions Trophy'],
-            stats: [
-                { label: 'Role', value: 'Wicketkeeper-captain' },
-                { label: 'Leadership', value: 'Title-winning captain' },
-                { label: 'Style', value: 'Finisher' }
-            ]
-        },
-        {
-            id: 'harmanpreet-kaur',
-            category: 'cricket',
-            name: 'Harmanpreet Kaur',
-            subtitle: 'Modern match-winner',
-            image: 'assets/sports/harmanpreet-kaur.png',
-            summary: 'An aggressive leader shaping the next era of Indian womenâ€™s cricket.',
-            story: 'Harmanpreet Kaur is one of the most influential voices in Indian womenâ€™s cricket. Her power hitting and leadership have helped expand the sportâ€™s visibility and ambition.',
-            highlights: ['ICC tournament standout', 'India captain', 'Big-match temperament'],
-            stats: [
-                { label: 'Role', value: 'Batting all-rounder' },
-                { label: 'Focus', value: 'Power play leader' },
-                { label: 'Impact', value: 'Womenâ€™s cricket growth' }
-            ]
-        },
-        {
-            id: 'abhinav-bindra',
-            category: 'olympics',
-            name: 'Abhinav Bindra',
-            image: 'assets/sports/abhinav-bindra.png',
-            subtitle: 'Indiaâ€™s first individual Olympic gold medalist',
-            summary: 'A milestone figure in Indiaâ€™s Olympic story.',
-            story: 'At Beijing 2008, Abhinav Bindra won Indiaâ€™s first individual Olympic gold in shooting. That achievement changed the countryâ€™s expectations of what was possible in precision sport.',
-            highlights: ['2008 Olympic gold', 'World champion shooter', 'Enduring sporting benchmark'],
-            stats: [
-                { label: 'Sport', value: 'Shooting' },
-                { label: 'Gold', value: 'Olympic champion' },
-                { label: 'Era', value: '2000s' }
-            ]
-        },
-        {
-            id: 'pv-sindhu',
-            category: 'olympics',
-            name: 'P. V. Sindhu',
-            subtitle: 'Badminton trailblazer',
-            image: 'assets/sports/pv-sindhu.png',
-            summary: 'A consistent medal contender who raised the bar for Indian badminton.',
-            story: 'P. V. Sindhu became the first Indian woman to win two Olympic medals. Her speed, discipline, and clutch play turned badminton into a major national success story.',
-            highlights: ['Olympic silver and bronze', 'World Championships medalist', 'Elite badminton standard'],
-            stats: [
-                { label: 'Sport', value: 'Badminton' },
-                { label: 'Signature', value: 'Explosive rallies' },
-                { label: 'Legacy', value: 'Two-time Olympic medallist' }
-            ]
-        },
-        {
-            id: 'neeraj-chopra',
-            category: 'olympics',
-            name: 'Neeraj Chopra',
-            subtitle: 'Javelin pioneer',
-            image: 'assets/sports/neeraj-chopra.png',
-            summary: 'The athlete who opened a new chapter for Indian athletics.',
-            story: 'Neeraj Chopra won Olympic gold in javelin throw and inspired a wave of interest in track and field. His success showed that Indian athletes could dominate in throwing events on the world stage.',
-            highlights: ['2021 Olympic gold', 'World championship medal', 'Athletics breakthrough'],
-            stats: [
-                { label: 'Sport', value: 'Javelin throw' },
-                { label: 'Strength', value: 'Explosive power' },
-                { label: 'Impact', value: 'Athletics landmark' }
-            ]
-        },
-        {
-            id: 'anup-kumar',
-            category: 'indigenous',
-            name: 'Anup Kumar',
-            subtitle: 'Kabaddi leader',
-            image: 'assets/sports/anup-kumar.png',
-            summary: 'A composed raider and captain who defined modern kabaddi leadership.',
-            story: 'Anup Kumar helped kabaddi move from local grounds to national spotlight. His technique, reading of the mat, and leadership made him a reference point for the sport.',
-            highlights: ['Pro Kabaddi era star', 'National captain', 'Kabaddi strategist'],
-            stats: [
-                { label: 'Sport', value: 'Kabaddi' },
-                { label: 'Role', value: 'Raider-captain' },
-                { label: 'Legacy', value: 'Modern kabaddi icon' }
-            ]
-        },
-        {
-            id: 'pardeep-narwal',
-            category: 'indigenous',
-            name: 'Pardeep Narwal',
-            subtitle: 'Record-setting raider',
-            image: 'assets/sports/pradeep-narwal.png',
-            summary: 'One of kabaddiâ€™s most feared scorers in the league era.',
-            story: 'Pardeep Narwal became a symbol of kabaddiâ€™s fast, tactical evolution. His pace and scoring record helped the sport reach a wider audience through televised league play.',
-            highlights: ['Record raid totals', 'League standout', 'High-pressure scorer'],
-            stats: [
-                { label: 'Sport', value: 'Kabaddi' },
-                { label: 'Style', value: 'Explosive raids' },
-                { label: 'Impact', value: 'Fan favorite' }
-            ]
-        },
-        {
-            id: 'uday-deshpande',
-            category: 'indigenous',
-            name: 'Uday Deshpande',
-            subtitle: 'Mallakhamb revivalist',
-            image: 'assets/sports/uday-deshpande.png',
-            summary: 'A major figure in preserving and promoting mallakhamb.',
-            story: 'Uday Deshpande has been central to the modern revival of mallakhamb, the traditional strength-and-gymnastics discipline. His work kept a historic indigenous practice visible for new generations.',
-            highlights: ['Mallakhamb coach', 'Heritage revival', 'Strength and balance expert'],
-            stats: [
-                { label: 'Sport', value: 'Mallakhamb' },
-                { label: 'Focus', value: 'Heritage training' },
-                { label: 'Legacy', value: 'Living tradition' }
-            ]
+    // Toggle Chat
+    fabGuide.addEventListener('click', () => {
+        chatWindow.classList.toggle('open');
+        if (chatWindow.classList.contains('open')) {
+            chatInput.focus();
         }
-    ];
+    });
 
-    const timelineData = [
-        {
-            id: 'all',
-            category: 'all',
-            year: '1928',
-            title: 'India begins its hockey dynasty',
-            summary: 'A gold-medal run in Amsterdam helped establish India as a global hockey force and laid early Olympic sporting pride.',
-            detail: 'The 1928 Olympic gold in hockey became an early symbol of Indian sporting excellence. It set the tone for future Olympic ambition and gave the country a durable international identity in team sport.'
-        },
-        {
-            id: 'cricket-1983',
-            category: 'cricket',
-            year: '1983',
-            title: 'World Cup triumph at Lordâ€™s',
-            summary: 'Indiaâ€™s first Cricket World Cup win transformed cricket into a national obsession.',
-            detail: 'The 1983 World Cup victory under Kapil Dev reshaped Indian cricket forever. It proved that India could beat the best on the world stage and inspired a generation of players and fans.'
-        },
-        {
-            id: 'olympics-2008',
-            category: 'olympics',
-            year: '2008',
-            title: 'First individual Olympic gold',
-            summary: 'Abhinav Bindraâ€™s shooting gold in Beijing became a defining Olympic breakthrough.',
-            detail: 'Bindraâ€™s gold medal in 2008 changed the emotional ceiling of Indian sport. It showed that an individual Indian athlete could deliver gold at the highest level of global competition.'
-        },
-        {
-            id: 'indigenous-2014',
-            category: 'indigenous',
-            year: '2014',
-            title: 'Kabaddi returns to the mainstream',
-            summary: 'The league era brought indigenous sports like kabaddi into living rooms across the country.',
-            detail: 'Televised league competition gave kabaddi a fresh audience, bigger stages, and stronger youth participation. The format helped connect a traditional game to a modern sports ecosystem.'
-        },
-        {
-            id: 'olympics-2021',
-            category: 'olympics',
-            year: '2021',
-            title: 'Neeraj Chopra wins javelin gold',
-            summary: 'Indiaâ€™s first Olympic athletics gold became a landmark moment for track and field.',
-            detail: 'Neeraj Chopraâ€™s gold in javelin throw turned athletics into a real medal pathway for India. The victory inspired broader investment and interest in field events.'
+    btnCloseChat.addEventListener('click', () => {
+        chatWindow.classList.remove('open');
+        if (isSynthesizing) {
+            window.speechSynthesis.cancel();
+            isSynthesizing = false;
         }
-    ];
+    });
 
-    let activeFilter = 'all';
-    let activeTimelineId = 'all';
-    let lastFocusedTrigger = null;
-    let isModalOpen = false;
+    // Send Message
+    function sendMessage() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        // Add user message
+        addMessage(text, 'user-message');
+        chatInput.value = '';
+
+        // Determine bot response using external knowledge base
+        let response = "I'm sorry, I seem to be having trouble accessing my knowledge base. Let's try again later.";
+        if (typeof findBestResponse === 'function') {
+            response = findBestResponse(text);
+        }
+
+        // Show typing indicator
+        const typingId = showTypingIndicator();
+
+        setTimeout(() => {
+            removeTypingIndicator(typingId);
+            addMessage(response, 'bot-message');
+            speakResponse(response);
+        }, 1200 + Math.random() * 800);
+    }
+
+    btnSendMsg.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    // Chat UI helpers
+    function addMessage(text, className) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${className}`;
+        msgDiv.innerHTML = `<div class="message-content">${text}</div>`;
+        chatMessages.appendChild(msgDiv);
+        scrollToBottom();
+    }
+
+    function showTypingIndicator() {
+        const id = 'typing-' + Date.now();
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message bot-message';
+        msgDiv.id = id;
+        msgDiv.innerHTML = `
+            <div class="message-content typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+        chatMessages.appendChild(msgDiv);
+        scrollToBottom();
+        return id;
+    }
+
+    function removeTypingIndicator(id) {
+        const indicator = document.getElementById(id);
+        if (indicator) {
+            indicator.remove();
+        }
+    }
+
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
 
     renderTimeline();
     renderTimelineDetail(timelineData[0]);
@@ -6642,21 +5883,3 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-/* ==========================================================================
-    Road trip card flip function , travel.html
-   ========================================================================== */
-function initRoadTripFlipCards() {
-    document.querySelectorAll('.roadtrip-flip-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const flipCard = btn.closest('.roadtrip-card-flip');
-            flipCard.classList.toggle('flipped');
-        });
-    });
-
-    document.querySelectorAll('.roadtrip-card-back').forEach(back => {
-        back.addEventListener('click', () => {
-            back.closest('.roadtrip-card-flip').classList.remove('flipped');
-        });
-    });
-}
