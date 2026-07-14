@@ -117,6 +117,9 @@ function initNavigation() {
     const exploreDropdown = navMenu?.querySelector('.nav-dropdown .dropdown-menu');
     const currentPath = window.location.pathname;
 
+    if (navbar && navbar.dataset.listenerBound) return;
+    if (navbar) navbar.dataset.listenerBound = "true";
+
     // Sticky navbar on scroll
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
@@ -258,6 +261,9 @@ function initThemeToggle() {
     const themeBtn = document.getElementById('theme-toggle');
     if (!themeBtn) return;
 
+    if (themeBtn.dataset.listenerBound) return;
+    themeBtn.dataset.listenerBound = "true";
+
     const setThemeIcon = (isLightTheme) => {
         if (isLightTheme) {
             themeBtn.innerHTML = `
@@ -300,6 +306,11 @@ function initThemeToggle() {
 function initRotatingText() {
     const rotators = document.querySelectorAll('.rotating-text-wrapper');
     rotators.forEach(wrapper => {
+        // Clear any existing active interval to prevent background task memory leaks
+        if (wrapper.dataset.intervalId) {
+            clearInterval(parseInt(wrapper.dataset.intervalId, 10));
+        }
+
         const wordsStr = wrapper.getAttribute('data-words');
         if (!wordsStr) return;
 
@@ -309,15 +320,21 @@ function initRotatingText() {
         let currentIndex = 0;
         wrapper.innerHTML = `<span class="rotating-text">${words[0]}</span>`;
 
-        setInterval(() => {
+        const intervalId = setInterval(() => {
             const currentSpan = wrapper.querySelector('.rotating-text');
-            currentSpan.style.animation = 'slideOutFade 0.5s ease-in forwards';
+            if (currentSpan) {
+                currentSpan.style.animation = 'slideOutFade 0.5s ease-in forwards';
+            }
 
             setTimeout(() => {
+                const innerSpan = wrapper.querySelector('.rotating-text');
+                if (!innerSpan) return; // Guard in case it was detached
                 currentIndex = (currentIndex + 1) % words.length;
                 wrapper.innerHTML = `<span class="rotating-text">${words[currentIndex]}</span>`;
             }, 500);
         }, 3500); // Rotate every 3.5 seconds
+
+        wrapper.dataset.intervalId = intervalId.toString();
     });
 }
 
@@ -6181,6 +6198,10 @@ function initBharatGuide() {
     const btnSendMsg = document.getElementById('btn-send-msg');
 
     if (!fabGuide) return; // Not on this page
+
+    // Prevent duplicate event listener registrations on SPA page transitions
+    if (fabGuide.dataset.listenerBound) return;
+    fabGuide.dataset.listenerBound = "true";
 
     // Knowledge Graph is now loaded from chatbot-data.js
 
