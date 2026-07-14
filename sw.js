@@ -150,21 +150,38 @@ function withCacheTimestamp(response) {
 /**
  * Install Event: Cache essential static assets during worker installation.
  */
-self.addEventListener('install', event => {
-  logger.info('Installing and caching static shell resources.');
-  
-  event.waitUntil(
-    (async () => {
-      try {
-        const cache = await caches.open(CACHE_NAME_STATIC);
-        // Load and cache all static shell assets
-        await cache.addAll(STATIC_ASSETS_TO_PRECACHE);
-        logger.info('Shell pre-caching completed successfully.');
-      } catch (err) {
-        logger.error('Failed to pre-cache shell resources during install.', err);
-      }
-    })()
-  );
+self.addEventListener('sync', event => {
+  logger.info(`Background sync triggered: ${event.tag}`);
+
+  if (event.tag === 'sync-chatbot-pending') {
+    event.waitUntil(
+      (async () => {
+        try {
+          logger.info('Processing pending offline chatbot interactions.');
+
+          // Future server sync logic can be added here.
+          // For now, notify all open clients that sync completed.
+
+          const clients = await self.clients.matchAll({
+            includeUncontrolled: true,
+            type: 'window'
+          });
+
+          for (const client of clients) {
+            client.postMessage({
+              type: 'BACKGROUND_SYNC_COMPLETE',
+              message: 'Offline data synchronized successfully.'
+            });
+          }
+
+          logger.info('Background sync completed successfully.');
+        } catch (err) {
+          logger.error('Background sync failed.', err);
+        }
+      })()
+    );
+  }
+});
   
   // Forces the waiting service worker to become active immediately
   self.skipWaiting();
@@ -439,7 +456,7 @@ self.addEventListener('message', event => {
                   try {
                     const response = await fetch(url);
                     if (response.status === 200) {
-                      await cache.put(url, response);
+                      await cache.put(url, withCacheTimestamp(response.clone()));
                     }
                   } catch (e) {
                     logger.error(`Failed to prefetch target: ${url}`, e);

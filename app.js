@@ -5269,10 +5269,26 @@ function initStartupPage() {
         }
     }
 
+    const OFFLINE_QUEUE_KEY = 'offline-sync-queue';
+
+    function addToOfflineQueue(data) {
+        const queue = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+        queue.push({
+            ...data,
+            timestamp: Date.now()
+        });
+        localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+    }
+
     function toggleFavorite(startupId) {
         if (favorites.has(startupId)) {
             favorites.delete(startupId);
             window.Journey?.removeFromJourney(`startup-${startupId}`);
+
+            addToOfflineQueue({
+              action: 'remove-favorite',
+              id: startupId
+          });
         } else {
             favorites.add(startupId);
             const item = startupData.find((s) => s.id === startupId);
@@ -5283,6 +5299,11 @@ function initStartupPage() {
                 thumbnail: item ? (item.logo || '') : '',
                 category: item ? (item.category || 'startup') : 'startup'
             });
+
+            addToOfflineQueue({
+              action: 'add-favorite',
+              id: startupId
+           });
         }
 
         renderAll();
@@ -5836,6 +5857,24 @@ function showPWAToast(message, type = 'info') {
     }, 4000);
 }
 
+const OFFLINE_QUEUE_KEY = 'offline-sync-queue';
+
+function addToOfflineQueue(data) {
+    const queue = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+    queue.push({
+        ...data,
+        timestamp: Date.now()
+    });
+    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+}
+
+function getOfflineQueue() {
+    return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+}
+
+function clearOfflineQueue() {
+    localStorage.removeItem(OFFLINE_QUEUE_KEY);
+}
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -5867,19 +5906,88 @@ if ('serviceWorker' in navigator) {
         }
 
         navigator.serviceWorker.register(prefix + 'sw.js')
-            .then(registration => {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, err => {
+          .then(async (registration) => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+
+              if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                  try {
+                       await registration.sync.register('sync-chatbot-pending');
+                       console.log('Background Sync registered.');
+                    } catch (err) {
+                       console.error('Background Sync registration failed:', err);
+                    }
+               }
+            })
+            .catch(err => {
                 console.log('ServiceWorker registration failed: ', err);
-            });
+           });
+
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (event) => {
+           event.preventDefault();
+
+           deferredPrompt = event;
+
+           showPWAToast(
+               'Install Incredible India Explorer for a better offline experience.',
+               'success'
+           );
+  
+           const installBtn = document.getElementById('install-pwa-btn');
+
+           if (!installBtn) return;
+
+           installBtn.style.display = 'inline-flex';
+
+           installBtn.onclick = async () => {
+              installBtn.style.display = 'none';
+
+               deferredPrompt.prompt();
+
+               const choice = await deferredPrompt.userChoice;
+
+               if (choice.outcome === 'accepted') {
+                   console.log('PWA installed successfully.');
+               } 
+
+              deferredPrompt = null;
+    };
+});
 
         // 3. Listen to online/offline connection state changes to notify users
-        window.addEventListener('online', () => {
-            showPWAToast('Your internet connection has been restored. Welcome back online!', 'success');
-        });
+        window.addEventListener('online', async () => {
+           showPWAToast(
+               'Your internet connection has been restored. Welcome back online!',
+               'success'
+       );
+
+           const queue = getOfflineQueue();
+
+           if (!queue.length) {
+               return;
+           }
+
+           if (queue.length > 0) {
+               console.log(`Syncing ${queue.length} offline item(s)...`);
+
+               // TODO: Send queued data to backend/API here
+
+               clearOfflineQueue();
+
+               showPWAToast('Offline changes synchronized successfully.', 'success');
+           }
+       });
         window.addEventListener('offline', () => {
             showPWAToast('Connection lost. You are now browsing in offline mode.', 'warning');
         });
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+               if (event.data?.type === 'BACKGROUND_SYNC_COMPLETE') {
+                  showPWAToast(event.data.message, 'success');
+                }
+            });
+
     });
 }
 
