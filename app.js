@@ -83,6 +83,10 @@ document.addEventListener('app:route-changed', () => {
         window.lazyLoadScript('js-modules/startup.js').then(() => initStartupPage());
     } else if (pathname.includes('travel.html')) {
         window.lazyLoadScript('js-modules/roadtrip.js').then(() => initRoadTripFlipCards());
+    } else if (pathname.includes('trip-planner.html')) {
+        window.lazyLoadScript('trip-data.js')
+            .then(() => window.lazyLoadScript('js-modules/trip-planner.js'))
+            .then(() => initTripPlannerPage());
     } else if (pathname.includes('heritage.html')) {
         console.log('✅ Heritage page loaded successfully');
     } else if (pathname.includes('monuments.html')) {
