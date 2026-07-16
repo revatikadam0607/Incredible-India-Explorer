@@ -5896,118 +5896,93 @@ function clearOfflineQueue() {
     localStorage.removeItem(OFFLINE_QUEUE_KEY);
 }
 // Register Service Worker for PWA
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // 1. Try to detect root prefix from the script src attribute loading app.js
+(function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+
+    function detectPrefix() {
         const script = document.querySelector('script[src*="app.js"]');
-        let prefix = '';
         if (script) {
             const src = script.getAttribute('src');
             const match = src.match(/^(\.\.\/)+/);
-            if (match) {
-                prefix = match[0];
+            if (match) return match[0];
+        }
+        const subdirPatterns = ['/states/', '/forts/', '/freedom-timeline/', '/handloom/',
+            '/kingdoms/', '/postal-stamps/', '/traditional-games/', '/toys/',
+            '/geological-wonders/', '/innovation-timeline/'];
+        const isSubdir = subdirPatterns.some(p => window.location.pathname.includes(p));
+        return isSubdir ? '../' : './';
+    }
+
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        deferredPrompt = event;
+        showPWAToast('Install Incredible India Explorer for a better offline experience.', 'success');
+        const installBtn = document.getElementById('install-pwa-btn');
+        if (!installBtn) return;
+        installBtn.style.display = 'inline-flex';
+        installBtn.onclick = async () => {
+            installBtn.style.display = 'none';
+            deferredPrompt.prompt();
+            const choice = await deferredPrompt.userChoice;
+            if (choice.outcome === 'accepted') {
+                console.log('PWA installed successfully.');
             }
-        }
-        
-        // 2. Fallback: Detect prefix based on URL path segment depth
-        if (!prefix) {
-            const pathname = window.location.pathname;
-            const isSubdir = pathname.includes('/states/') || 
-                            pathname.includes('/forts/') || 
-                            pathname.includes('/freedom-timeline/') || 
-                            pathname.includes('/handloom/') || 
-                            pathname.includes('/kingdoms/') || 
-                            pathname.includes('/postal-stamps/') || 
-                            pathname.includes('/traditional-games/') || 
-                            pathname.includes('/toys/') || 
-                            pathname.includes('/geological-wonders/') || 
-                            pathname.includes('/innovation-timeline/');
-            prefix = isSubdir ? '../' : './';
-        }
+            deferredPrompt = null;
+        };
+    });
+
+    window.addEventListener('load', () => {
+        const prefix = detectPrefix();
 
         navigator.serviceWorker.register(prefix + 'sw.js')
-          .then(async (registration) => {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            .then(async (registration) => {
+                console.log('ServiceWorker registration successful with scope:', registration.scope);
 
-              if ('serviceWorker' in navigator && 'SyncManager' in window) {
-                  try {
-                       await registration.sync.register('sync-chatbot-pending');
-                       console.log('Background Sync registered.');
+                if ('SyncManager' in window) {
+                    try {
+                        await registration.sync.register('sync-chatbot-pending');
+                        console.log('Background Sync registered for chatbot-pending.');
                     } catch (err) {
-                       console.error('Background Sync registration failed:', err);
+                        console.error('Background Sync registration failed:', err);
                     }
-               }
+                }
+
+                registration.addEventListener('updatefound', () => {
+                    const installingWorker = registration.installing;
+                    if (installingWorker) {
+                        installingWorker.addEventListener('statechange', () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showPWAToast('A newer version is available. Close and reopen to update.', 'info');
+                            }
+                        });
+                    }
+                });
             })
             .catch(err => {
-                console.log('ServiceWorker registration failed: ', err);
-           });
+                console.error('ServiceWorker registration failed:', err);
+            });
 
-        let deferredPrompt = null;
-
-        window.addEventListener('beforeinstallprompt', (event) => {
-           event.preventDefault();
-
-           deferredPrompt = event;
-
-           showPWAToast(
-               'Install Incredible India Explorer for a better offline experience.',
-               'success'
-           );
-  
-           const installBtn = document.getElementById('install-pwa-btn');
-
-           if (!installBtn) return;
-
-           installBtn.style.display = 'inline-flex';
-
-           installBtn.onclick = async () => {
-              installBtn.style.display = 'none';
-
-               deferredPrompt.prompt();
-
-               const choice = await deferredPrompt.userChoice;
-
-               if (choice.outcome === 'accepted') {
-                   console.log('PWA installed successfully.');
-               } 
-
-              deferredPrompt = null;
-    };
-});
-
-        // 3. Listen to online/offline connection state changes to notify users
         window.addEventListener('online', async () => {
-           showPWAToast(
-               'Your internet connection has been restored. Welcome back online!',
-               'success'
-       );
+            showPWAToast('Your internet connection has been restored. Welcome back online!', 'success');
+            const queue = getOfflineQueue();
+            if (queue.length > 0) {
+                console.log('Syncing ' + queue.length + ' offline item(s)...');
+                clearOfflineQueue();
+                showPWAToast('Offline changes synchronized successfully.', 'success');
+            }
+        });
 
-           const queue = getOfflineQueue();
-
-           if (!queue.length) {
-               return;
-           }
-
-           if (queue.length > 0) {
-               console.log(`Syncing ${queue.length} offline item(s)...`);
-
-               // TODO: Send queued data to backend/API here
-
-               clearOfflineQueue();
-
-               showPWAToast('Offline changes synchronized successfully.', 'success');
-           }
-       });
         window.addEventListener('offline', () => {
             showPWAToast('Connection lost. You are now browsing in offline mode.', 'warning');
         });
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', (event) => {
-               if (event.data?.type === 'BACKGROUND_SYNC_COMPLETE') {
-                  showPWAToast(event.data.message, 'success');
-                }
-            });
 
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'BACKGROUND_SYNC_COMPLETE') {
+                showPWAToast(event.data.message, 'success');
+            }
+        });
     });
-}
+})();
 
