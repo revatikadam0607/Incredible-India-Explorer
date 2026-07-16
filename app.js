@@ -65,6 +65,24 @@ window.setupFocusTrap = function(modalElement) {
     };
 };
 
+/* Initialise the unified toast notification system */
+(function initToastSystem() {
+    var pathPrefix = (window.location.pathname.includes('/states/') ||
+        window.location.pathname.includes('/traditional-games/') ||
+        window.location.pathname.includes('/freedom-timeline/') ||
+        window.location.pathname.includes('/postal-stamps/') ||
+        window.location.pathname.includes('/handloom/')) ? '../' : '';
+    var script = document.createElement('script');
+    script.src = pathPrefix + 'js-modules/toast-system.js';
+    script.async = true;
+    script.onload = function () {
+        if (window.ToastNotifier) {
+            window.dispatchEvent(new CustomEvent('toast:ready'));
+        }
+    };
+    document.head.appendChild(script);
+})();
+
 document.addEventListener('app:route-changed', () => {
     initNavigation();
     initThemeToggle();
@@ -5848,33 +5866,38 @@ function injectPWAToastStyles() {
     document.head.appendChild(style);
 }
 
-function showPWAToast(message, type = 'info') {
+/* ==========================================================================
+   UNIFIED TOAST NOTIFICATION SYSTEM
+   Backward-compatible wrapper that uses ToastNotifier when available,
+   and falls back to a simple inline implementation.
+   ========================================================================== */
+
+function showToast(message, type, duration) {
+    if (window.ToastNotifier) {
+        var fn = window.ToastNotifier[type] || window.ToastNotifier.info;
+        fn(message, duration);
+        return;
+    }
     injectPWAToastStyles();
-    let toast = document.getElementById('pwa-toast');
+    var toast = document.getElementById('pwa-toast');
     if (!toast) {
         toast = document.createElement('div');
         toast.id = 'pwa-toast';
         toast.className = 'pwa-toast';
         document.body.appendChild(toast);
     }
-    
-    let icon = 'ℹ️';
-    if (type === 'success') {
-        icon = '✅';
-        toast.className = 'pwa-toast pwa-toast-success';
-    } else if (type === 'warning') {
-        icon = '⚠️';
-        toast.className = 'pwa-toast pwa-toast-warning';
-    } else {
-        toast.className = 'pwa-toast';
-    }
-    
-    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    var icon = 'ℹ️';
+    if (type === 'success') { icon = '✅'; toast.className = 'pwa-toast pwa-toast-success'; }
+    else if (type === 'warning') { icon = '⚠️'; toast.className = 'pwa-toast pwa-toast-warning'; }
+    else if (type === 'error') { icon = '❌'; toast.className = 'pwa-toast pwa-toast-error'; }
+    else { toast.className = 'pwa-toast'; }
+    toast.innerHTML = '<span>' + icon + '</span> <span>' + message + '</span>';
     toast.classList.add('show');
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 4000);
+    setTimeout(function () { toast.classList.remove('show'); }, duration || 4000);
+}
+
+function showPWAToast(message, type) {
+    showToast(message, type || 'info');
 }
 
 const OFFLINE_QUEUE_KEY = 'offline-sync-queue';

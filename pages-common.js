@@ -52,6 +52,14 @@ if (typeof window.setupFocusTrap !== 'function') {
     };
 }
 
+/* Initialise the unified toast notification system for pages using this loader */
+(function loadToastModule() {
+    var script = document.createElement('script');
+    script.src = 'js-modules/toast-system.js';
+    script.async = true;
+    document.head.appendChild(script);
+})();
+
 document.addEventListener('app:route-changed', () => {
     initSiteChrome();
 

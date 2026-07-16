@@ -588,6 +588,11 @@ class Router {
 
         } catch (error) {
             this.logger.error(`Failed to handle route: ${path}`, error);
+            try {
+                if (window.ToastNotifier) {
+                    window.ToastNotifier.error('Failed to load page. Redirecting to fallback.');
+                }
+            } catch (t) {}
             window.location.href = path;
         }
     }
