@@ -65,7 +65,36 @@ window.setupFocusTrap = function(modalElement) {
     };
 };
 
+// Global state for route-level listener/observer management
+window.__iiRouteState = window.__iiRouteState || {
+    observers: new Set(),
+    navigationBound: false,
+    scrollListenerBound: false,
+    navDocClickListenerBound: false,
+    lastRouteKey: null
+};
+
+function iiRegisterObserver(obs) {
+    if (!obs) return;
+    window.__iiRouteState.observers.add(obs);
+}
+
+function iiDisconnectRouteObservers() {
+    if (!window.__iiRouteState || !window.__iiRouteState.observers) return;
+    for (const obs of window.__iiRouteState.observers) {
+        try {
+            obs.disconnect();
+        } catch (e) {
+            // ignore
+        }
+    }
+    window.__iiRouteState.observers.clear();
+}
+
 document.addEventListener('app:route-changed', () => {
+    // Prevent accumulation of IntersectionObservers/listeners across SPA route changes
+    iiDisconnectRouteObservers();
+
     initNavigation();
     initThemeToggle();
     initRotatingText();
@@ -129,11 +158,13 @@ document.addEventListener('app:route-changed', () => {
                         }
                     });
                 }, { rootMargin: '200px' });
+
                 obs.observe(el);
             } else {
                 initFunc();
             }
         };
+
 
         lazyInit('map-container', initInteractiveMap);
         lazyInit('cuisine-grid', initCuisineExplorer);
@@ -5945,35 +5976,35 @@ if ('serviceWorker' in navigator) {
         let deferredPrompt = null;
 
         window.addEventListener('beforeinstallprompt', (event) => {
-           event.preventDefault();
+            event.preventDefault();
 
-           deferredPrompt = event;
+            deferredPrompt = event;
 
-           showPWAToast(
-               'Install Incredible India Explorer for a better offline experience.',
-               'success'
-           );
-  
-           const installBtn = document.getElementById('install-pwa-btn');
+            showPWAToast(
+                'Install Incredible India Explorer for a better offline experience.',
+                'success'
+            );
 
-           if (!installBtn) return;
+            const installBtn = document.getElementById('install-pwa-btn');
 
-           installBtn.style.display = 'inline-flex';
+            if (!installBtn) return;
 
-           installBtn.onclick = async () => {
-              installBtn.style.display = 'none';
+            installBtn.style.display = 'inline-flex';
 
-               deferredPrompt.prompt();
+            installBtn.onclick = async () => {
+                installBtn.style.display = 'none';
 
-               const choice = await deferredPrompt.userChoice;
+                deferredPrompt.prompt();
 
-               if (choice.outcome === 'accepted') {
-                   console.log('PWA installed successfully.');
-               } 
+                const choice = await deferredPrompt.userChoice;
 
-              deferredPrompt = null;
-    };
-});
+                if (choice.outcome === 'accepted') {
+                    console.log('PWA installed successfully.');
+                }
+
+                deferredPrompt = null;
+            };
+        });
 
         // 3. Listen to online/offline connection state changes to notify users
         window.addEventListener('online', async () => {
@@ -6007,7 +6038,10 @@ if ('serviceWorker' in navigator) {
                   showPWAToast(event.data.message, 'success');
                 }
             });
-
+        }
     });
 }
+
+
+
 
