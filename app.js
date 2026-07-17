@@ -5765,65 +5765,124 @@ function initPersonalitiesPage() {
       console.log('Page loaded successfully');
 
     } else {
-      // ---- Homepage (index.html or root) ----
-      if (window.IIE.Nav)        window.IIE.Nav.setupScrollReveals();
-      if (window.IIE.Map)        window.IIE.Map.init();
-      if (window.IIE.Home)       window.IIE.Home.initCuisineExplorer();
-      if (window.IIE.Home)       window.IIE.Home.initFestivals();
-      if (window.IIE.Home)       window.IIE.Home.initCultureSlider();
-      if (window.IIE.Quiz)       window.IIE.Quiz.init();
-      if (window.IIE.BharatGuide) window.IIE.BharatGuide.init();
+        toast.className = 'pwa-toast';
     }
-  }
+    
+    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 4000);
+}
 
-  // ---- SPA lifecycle: listen for route changes from router.js ----
-  document.addEventListener('app:route-changed', route);
+const OFFLINE_QUEUE_KEY = 'offline-sync-queue';
 
-  // ---- Start loading modules, then route once ----
-  loadModules(function() {
-    route();
-  });
+function addToOfflineQueue(data) {
+    const queue = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+    queue.push({
+        ...data,
+        timestamp: Date.now()
+    });
+    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+}
 
-  // ------------------------------------------------------------------------
-  //  BACKWARD COMPATIBILITY — router.js calls window.stopSoundscape()
-  // ------------------------------------------------------------------------
-  window.stopSoundscape = function() {
-    if (window.IIE && window.IIE.Soundscape) {
-      window.IIE.Soundscape.stopSoundscape();
+function getOfflineQueue() {
+    return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+}
+
+function clearOfflineQueue() {
+    localStorage.removeItem(OFFLINE_QUEUE_KEY);
+}
+// Register Service Worker for PWA
+(function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+
+    function detectPrefix() {
+        const script = document.querySelector('script[src*="app.js"]');
+        if (script) {
+            const src = script.getAttribute('src');
+            const match = src.match(/^(\.\.\/)+/);
+            if (match) return match[0];
+        }
+        const subdirPatterns = ['/states/', '/forts/', '/freedom-timeline/', '/handloom/',
+            '/kingdoms/', '/postal-stamps/', '/traditional-games/', '/toys/',
+            '/geological-wonders/', '/innovation-timeline/'];
+        const isSubdir = subdirPatterns.some(p => window.location.pathname.includes(p));
+        return isSubdir ? '../' : './';
     }
-  };
 
-  // ------------------------------------------------------------------------
-  //  SERVICE WORKER REGISTRATION (PWA)
-  // ------------------------------------------------------------------------
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('./sw.js').then(function(reg) {
-        console.log('ServiceWorker registered \u2014 scope:', reg.scope);
-      }, function(err) {
-        console.log('ServiceWorker registration failed:', err);
-      });
-    });
-  }
+    let deferredPrompt = null;
 
-  // ------------------------------------------------------------------------
-  //  INLINE: initRoadTripFlipCards (travel.html)
-  //  Too small for a module; kept here for backward compat.
-  // ------------------------------------------------------------------------
-  function initRoadTripFlipCards() {
-    document.querySelectorAll('.roadtrip-flip-btn').forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var flipCard = btn.closest('.roadtrip-card-flip');
-        if (flipCard) flipCard.classList.toggle('flipped');
-      });
+    window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        deferredPrompt = event;
+        showPWAToast('Install Incredible India Explorer for a better offline experience.', 'success');
+        const installBtn = document.getElementById('install-pwa-btn');
+        if (!installBtn) return;
+        installBtn.style.display = 'inline-flex';
+        installBtn.onclick = async () => {
+            installBtn.style.display = 'none';
+            deferredPrompt.prompt();
+            const choice = await deferredPrompt.userChoice;
+            if (choice.outcome === 'accepted') {
+                console.log('PWA installed successfully.');
+            }
+            deferredPrompt = null;
+        };
     });
-    document.querySelectorAll('.roadtrip-card-back').forEach(function(back) {
-      back.addEventListener('click', function() {
-        var flipCard = back.closest('.roadtrip-card-flip');
-        if (flipCard) flipCard.classList.remove('flipped');
-      });
+
+    window.addEventListener('load', () => {
+        const prefix = detectPrefix();
+
+        navigator.serviceWorker.register(prefix + 'sw.js')
+            .then(async (registration) => {
+                console.log('ServiceWorker registration successful with scope:', registration.scope);
+
+                if ('SyncManager' in window) {
+                    try {
+                        await registration.sync.register('sync-chatbot-pending');
+                        console.log('Background Sync registered for chatbot-pending.');
+                    } catch (err) {
+                        console.error('Background Sync registration failed:', err);
+                    }
+                }
+
+                registration.addEventListener('updatefound', () => {
+                    const installingWorker = registration.installing;
+                    if (installingWorker) {
+                        installingWorker.addEventListener('statechange', () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showPWAToast('A newer version is available. Close and reopen to update.', 'info');
+                            }
+                        });
+                    }
+                });
+            })
+            .catch(err => {
+                console.error('ServiceWorker registration failed:', err);
+            });
+
+        window.addEventListener('online', async () => {
+            showPWAToast('Your internet connection has been restored. Welcome back online!', 'success');
+            const queue = getOfflineQueue();
+            if (queue.length > 0) {
+                console.log('Syncing ' + queue.length + ' offline item(s)...');
+                clearOfflineQueue();
+                showPWAToast('Offline changes synchronized successfully.', 'success');
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            showPWAToast('Connection lost. You are now browsing in offline mode.', 'warning');
+        });
+
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'BACKGROUND_SYNC_COMPLETE') {
+                showPWAToast(event.data.message, 'success');
+            }
+        });
     });
-  }
+})();
 
 })();
