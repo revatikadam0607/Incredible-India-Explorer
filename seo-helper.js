@@ -146,7 +146,7 @@
       setMetaTag('og:description', description, true);
       setMetaTag('og:image', imageUrl, true);
       setMetaTag('og:url', absoluteUrl, true);
-      setMetaTag('og:type', relPath.includes('states/') ? 'place' : 'website', true);
+      setMetaTag('og:type', (relPath.includes('states/') || relPath.includes('state.html?state=')) ? 'place' : 'website', true);
       setMetaTag('og:site_name', 'Incredible India Explorer', true);
 
       // Twitter Card Tags
@@ -157,7 +157,7 @@
 
       // 5. Generate JSON-LD Structured Data
       let schema = null;
-      const isStatePage = relPath.includes('states/') || doc.body?.classList.contains('state-page-body');
+      const isStatePage = relPath.includes('states/') || relPath.includes('state.html?state=') || doc.body?.classList.contains('state-page-body');
 
       if (isStatePage) {
         schema = {

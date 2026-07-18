@@ -776,7 +776,7 @@ function initInteractiveMap() {
                     <strong>Key Fact:</strong> ${metricsA.fact}
                 </div>
                 
-                <button class="btn btn-primary" onclick="window.appRouter ? window.appRouter.handleRoute('states/${stateA.id}.html', true) : window.location.href='states/${stateA.id}.html'" style="font-size:0.9rem; padding:8px 18px;">Explore Full Page</button>
+                <button class="btn btn-primary" onclick="window.appRouter ? window.appRouter.handleRoute('state.html?state=${stateA.id}', true) : window.location.href='state.html?state=${stateA.id}'" style="font-size:0.9rem; padding:8px 18px;">Explore Full Page</button>
             `;
 
             colB.innerHTML = `
@@ -796,7 +796,7 @@ function initInteractiveMap() {
                     <strong>Key Fact:</strong> ${metricsB.fact}
                 </div>
                 
-                <button class="btn btn-primary" onclick="window.appRouter ? window.appRouter.handleRoute('states/${stateB.id}.html', true) : window.location.href='states/${stateB.id}.html'" style="font-size:0.9rem; padding:8px 18px;">Explore Full Page</button>
+                <button class="btn btn-primary" onclick="window.appRouter ? window.appRouter.handleRoute('state.html?state=${stateB.id}', true) : window.location.href='state.html?state=${stateB.id}'" style="font-size:0.9rem; padding:8px 18px;">Explore Full Page</button>
             `;
         }
 
@@ -822,7 +822,7 @@ function initInteractiveMap() {
     // View More Button Trigger - Navigate to individual state page via SPA router or standard href
     viewMoreBtn?.addEventListener('click', () => {
         const currentId = viewMoreBtn.getAttribute('data-active-id');
-        const targetPath = `states/${currentId}.html`;
+        const targetPath = `state.html?state=${currentId}`;
         if (window.appRouter && typeof window.appRouter.handleRoute === 'function') {
             window.appRouter.handleRoute(targetPath, true);
         } else {
