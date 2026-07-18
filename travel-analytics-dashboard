@@ -483,5 +483,6 @@ export default function TravelAnalyticsDashboard() {
           ))}
         </div>
       </div>
-
-      
+    </div>
+  );
+}
