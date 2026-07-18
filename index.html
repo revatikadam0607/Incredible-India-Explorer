@@ -19,6 +19,65 @@
     <style>
         .align-center { align-self: center; }
         .fw-600 { font-weight: 600; }
+        /* SW Update Banner */
+        .sw-update-banner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-bottom: 2px solid #ffb01f;
+            padding: 12px 20px;
+            text-align: center;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            transform: translateY(-100%);
+            transition: transform 0.35s ease;
+        }
+        .sw-update-banner.visible {
+            display: block;
+            transform: translateY(0);
+        }
+        .sw-update-banner p {
+            margin: 0 0 8px 0;
+            color: #f1f1f1;
+            font-size: 0.95rem;
+        }
+        .sw-update-banner .update-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .sw-update-banner .btn-update {
+            background: linear-gradient(135deg, #ff6f3c, #ff9f43);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .sw-update-banner .btn-update:hover {
+            transform: translateY(-1px);
+        }
+        .sw-update-banner .btn-dismiss {
+            background: transparent;
+            color: #a0a0a0;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .sw-update-banner .btn-dismiss:hover {
+            border-color: rgba(255,255,255,0.35);
+            color: #f1f1f1;
+        }
     </style>
     <title>Incredible India Explorer</title>
 
@@ -38,6 +97,15 @@
 </head>
 
 <body>
+
+    <!-- SW Update Available Banner -->
+    <div id="sw-update-banner" class="sw-update-banner" role="alert" aria-live="polite">
+        <p>A new version of Incredible India Explorer is available.</p>
+        <div class="update-actions">
+            <button id="btn-sw-update" class="btn-update">Update &amp; Reload</button>
+            <button id="btn-sw-dismiss" class="btn-dismiss">Later</button>
+        </div>
+    </div>
 
     <!-- Sticky Navigation Bar -->
     <header class="navbar" id="navbar">
@@ -540,10 +608,37 @@
     <!-- JavaScript Files -->
     <script src="data.js" defer></script>
     <script src="chatbot-data.js" defer></script>
+    <script src="sw-register.js" defer></script>
     <script src="app.js" defer></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="auth.js"></script>
     <script src="router.js" defer></script>
+
+    <!-- SW Update handler – runs after sw-register.js -->
+    <script>
+        document.addEventListener('sw:update', function () {
+            var banner = document.getElementById('sw-update-banner');
+            var updateBtn = document.getElementById('btn-sw-update');
+            var dismissBtn = document.getElementById('btn-sw-dismiss');
+            if (!banner) return;
+
+            banner.classList.add('visible');
+
+            if (updateBtn) {
+                updateBtn.addEventListener('click', function () {
+                    banner.classList.remove('visible');
+                    if (window.appSW && window.appSW.applyUpdate) {
+                        window.appSW.applyUpdate();
+                    }
+                });
+            }
+            if (dismissBtn) {
+                dismissBtn.addEventListener('click', function () {
+                    banner.classList.remove('visible');
+                });
+            }
+        });
+    </script>
 
     <button id="install-pwa-btn" class="pwa-install-btn" style="display:none;">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>

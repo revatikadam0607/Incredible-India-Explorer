@@ -5851,120 +5851,66 @@ function getOfflineQueue() {
 function clearOfflineQueue() {
     localStorage.removeItem(OFFLINE_QUEUE_KEY);
 }
-// Register Service Worker for PWA
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // 1. Try to detect root prefix from the script src attribute loading app.js
-        const script = document.querySelector('script[src*="app.js"]');
-        let prefix = '';
-        if (script) {
-            const src = script.getAttribute('src');
-            const match = src.match(/^(\.\.\/)+/);
-            if (match) {
-                prefix = match[0];
+// PWA Lifecycle Events (registration handled by sw-register.js)
+(function () {
+    if (!('serviceWorker' in navigator)) return;
+
+    // --- Before Install Prompt (App Install Banner) ---
+    var deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', function (event) {
+        event.preventDefault();
+        deferredPrompt = event;
+
+        showPWAToast('Install Incredible India Explorer for a better offline experience.', 'success');
+
+        var installBtn = document.getElementById('install-pwa-btn');
+        if (!installBtn) return;
+
+        installBtn.style.display = 'inline-flex';
+        installBtn.onclick = async function () {
+            installBtn.style.display = 'none';
+            deferredPrompt.prompt();
+            var choice = await deferredPrompt.userChoice;
+            if (choice.outcome === 'accepted') {
+                console.log('PWA installed successfully.');
             }
-        }
-        
-        // 2. Fallback: Detect prefix based on URL path segment depth
-        if (!prefix) {
-            const pathname = window.location.pathname;
-            const isSubdir = pathname.includes('/states/') || 
-                            pathname.includes('/forts/') || 
-                            pathname.includes('/freedom-timeline/') || 
-                            pathname.includes('/handloom/') || 
-                            pathname.includes('/kingdoms/') || 
-                            pathname.includes('/postal-stamps/') || 
-                            pathname.includes('/traditional-games/') || 
-                            pathname.includes('/toys/') || 
-                            pathname.includes('/geological-wonders/') || 
-                            pathname.includes('/innovation-timeline/');
-            prefix = isSubdir ? '../' : './';
-        }
+            deferredPrompt = null;
+        };
+    });
 
-        navigator.serviceWorker.register(prefix + 'sw.js')
-          .then(async (registration) => {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-
-              if ('serviceWorker' in navigator && 'SyncManager' in window) {
-                  try {
-                       await registration.sync.register('sync-chatbot-pending');
-                       console.log('Background Sync registered.');
-                    } catch (err) {
-                       console.error('Background Sync registration failed:', err);
-                    }
-               }
-            })
-            .catch(err => {
-                console.log('ServiceWorker registration failed: ', err);
-           });
-
-        let deferredPrompt = null;
-
-        window.addEventListener('beforeinstallprompt', (event) => {
-            event.preventDefault();
-
-            deferredPrompt = event;
-
-            showPWAToast(
-                'Install Incredible India Explorer for a better offline experience.',
-                'success'
-            );
-
-            const installBtn = document.getElementById('install-pwa-btn');
-
-            if (!installBtn) return;
-
-            installBtn.style.display = 'inline-flex';
-
-            installBtn.onclick = async () => {
-                installBtn.style.display = 'none';
-
-                deferredPrompt.prompt();
-
-                const choice = await deferredPrompt.userChoice;
-
-                if (choice.outcome === 'accepted') {
-                    console.log('PWA installed successfully.');
-                }
-
-                deferredPrompt = null;
-            };
-        });
-
-        // 3. Listen to online/offline connection state changes to notify users
-        window.addEventListener('online', async () => {
-           showPWAToast(
-               'Your internet connection has been restored. Welcome back online!',
-               'success'
-       );
-
-           const queue = getOfflineQueue();
-
-           if (!queue.length) {
-               return;
-           }
-
-           if (queue.length > 0) {
-               console.log(`Syncing ${queue.length} offline item(s)...`);
-
-               // TODO: Send queued data to backend/API here
-
-               clearOfflineQueue();
-
-               showPWAToast('Offline changes synchronized successfully.', 'success');
-           }
-       });
-        window.addEventListener('offline', () => {
-            showPWAToast('Connection lost. You are now browsing in offline mode.', 'warning');
-        });
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', (event) => {
-               if (event.data?.type === 'BACKGROUND_SYNC_COMPLETE') {
-                  showPWAToast(event.data.message, 'success');
-                }
+    // --- Background Sync registration (supplemental) ---
+    window.addEventListener('load', function () {
+        if ('SyncManager' in window && navigator.serviceWorker) {
+            navigator.serviceWorker.ready.then(function (reg) {
+                reg.sync.register('sync-chatbot-pending').catch(function () {});
+                reg.sync.register('sync-offline-queue').catch(function () {});
             });
         }
     });
-}
+
+    // --- Online / Offline connection toasts ---
+    window.addEventListener('online', function () {
+        showPWAToast('Your internet connection has been restored. Welcome back online!', 'success');
+
+        var queue = getOfflineQueue();
+        if (queue.length > 0) {
+            console.log('Syncing ' + queue.length + ' offline item(s)...');
+            clearOfflineQueue();
+            showPWAToast('Offline changes synchronized successfully.', 'success');
+        }
+    });
+
+    window.addEventListener('offline', function () {
+        showPWAToast('Connection lost. You are now browsing in offline mode.', 'warning');
+    });
+
+    // --- Listen for background sync completion messages ---
+    navigator.serviceWorker.addEventListener('message', function (event) {
+        if (event.data && event.data.type === 'BACKGROUND_SYNC_COMPLETE') {
+            showPWAToast(event.data.message, 'success');
+        }
+    });
+})();
 
 })();
