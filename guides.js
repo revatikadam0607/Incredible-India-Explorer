@@ -9,6 +9,7 @@
 
 import { authApi } from './auth-core.mjs';
 import * as Guides from './guides-core.mjs';
+import { injectCSRFToken, validateCSRFToken } from './csrf-protection.mjs';
 
 // ---------------------------------------------------------------------
 // small shared helpers
@@ -372,6 +373,12 @@ function renderEditorPage() {
     </form>
   `;
 
+  // Inject CSRF token into the guide editor form
+  const guideForm = root.querySelector('#guide-form');
+  if (guideForm) {
+    injectCSRFToken(guideForm);
+  }
+
   root.querySelectorAll('.editor-toolbar button').forEach((button) => {
     button.addEventListener('click', () => {
       document.execCommand(button.dataset.cmd, false, null);
@@ -392,6 +399,14 @@ function renderEditorPage() {
   }
 
   root.querySelector('#save-draft-btn').addEventListener('click', () => {
+    // Validate CSRF token before processing
+    const guideForm = root.querySelector('#guide-form');
+    if (!validateCSRFToken(guideForm)) {
+      showToast('Session expired. Please reload the page.', true);
+      injectCSRFToken(guideForm);
+      return;
+    }
+
     const form = readForm();
     const errorEl = root.querySelector('#form-error');
     errorEl.textContent = '';
@@ -418,6 +433,14 @@ function renderEditorPage() {
   });
 
   root.querySelector('#submit-btn').addEventListener('click', () => {
+    // Validate CSRF token before processing
+    const guideForm = root.querySelector('#guide-form');
+    if (!validateCSRFToken(guideForm)) {
+      showToast('Session expired. Please reload the page.', true);
+      injectCSRFToken(guideForm);
+      return;
+    }
+
     const form = readForm();
     const errorEl = root.querySelector('#form-error');
     errorEl.textContent = '';

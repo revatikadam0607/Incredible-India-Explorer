@@ -19,6 +19,7 @@ import {
   browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { authApi } from './auth-core.mjs';
+import { injectCSRFToken, validateCSRFToken } from './csrf-protection.mjs';
 
 // Expose core local auth functions to global window context for page scripts
 if (typeof window !== 'undefined') {
@@ -63,6 +64,9 @@ if (authCard) {
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
   const confirmPasswordInput = document.getElementById('confirmPassword');
+
+  // Inject CSRF token into the auth form
+  injectCSRFToken(authForm);
 
   function setMode(mode) {
     authCard.setAttribute('data-mode', mode);
@@ -180,6 +184,14 @@ if (authCard) {
   authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     clearMessage();
+
+    // Validate CSRF token before processing form
+    if (!validateCSRFToken(authForm)) {
+      showMessage('Session expired. Please reload the page and try again.');
+      // Re-inject a fresh token for the next attempt
+      injectCSRFToken(authForm);
+      return;
+    }
 
     const mode = authCard.getAttribute('data-mode');
     const email = emailInput.value.trim();

@@ -46,6 +46,18 @@ globalThis.CustomEvent = class CustomEvent {
   }
 };
 
+// Shim crypto.getRandomValues for Node.js CSRF tests
+if (!globalThis.crypto) {
+  globalThis.crypto = {
+    getRandomValues: (bytes) => {
+      for (let i = 0; i < bytes.length; i++) {
+        bytes[i] = Math.floor(Math.random() * 256);
+      }
+      return bytes;
+    }
+  };
+}
+
 const tests = [];
 function test(name, fn) { tests.push({ name, fn }); }
 
@@ -54,6 +66,7 @@ const { authApi } = await import('../auth-core.mjs');
 const { _resetLocalSessionCache } = await import('../auth-session.mjs');
 const storage = await import('../auth-storage.mjs');
 const tokenModule = await import('../auth-token.mjs');
+const csrf = await import('../csrf-protection.mjs');
 
 function resetStorage() {
   globalThis.window.localStorage.clear();
@@ -283,6 +296,187 @@ test('upgradeLocalUserToPremium upgrades user role', async () => {
   // Verify stored account role updated
   const accounts = storage.getStoredAccounts();
   assert.equal(accounts[0].role, 'premium');
+});
+
+// ---------------------------------------------------------------------
+// CSRF Protection Tests
+// ---------------------------------------------------------------------
+
+test('generateCSRFToken produces a 64-character hex string', () => {
+  const token = csrf.generateCSRFToken();
+  assert.equal(typeof token, 'string');
+  assert.equal(token.length, 96); // 48 bytes → 96 hex chars
+  assert.ok(/^[0-9a-f]+$/.test(token), 'token should be lowercase hex');
+});
+
+test('generateCSRFToken produces unique tokens on each call', () => {
+  const token1 = csrf.generateCSRFToken();
+  const token2 = csrf.generateCSRFToken();
+  assert.notEqual(token1, token2);
+});
+
+test('storeCSRFToken and getCSRFToken round-trip correctly', () => {
+  const token = csrf.generateCSRFToken();
+  csrf.storeCSRFToken(token, 60000); // 60 second TTL
+  const retrieved = csrf.getCSRFToken();
+  assert.equal(retrieved, token);
+});
+
+test('getCSRFToken returns null for expired token', async () => {
+  const token = csrf.generateCSRFToken();
+  csrf.storeCSRFToken(token, 1); // 1ms TTL — expires immediately
+  // Wait for expiry
+  await new Promise(r => setTimeout(r, 10));
+  const retrieved = csrf.getCSRFToken();
+  assert.equal(retrieved, null);
+});
+
+test('getCSRFToken returns null when no token stored', () => {
+  globalThis.window.sessionStorage.removeItem('incredible-india-csrf-token');
+  const retrieved = csrf.getCSRFToken();
+  assert.equal(retrieved, null);
+});
+
+test('ensureCSRFToken creates and returns a valid token', () => {
+  globalThis.window.sessionStorage.removeItem('incredible-india-csrf-token');
+  const token = csrf.ensureCSRFToken();
+  assert.equal(typeof token, 'string');
+  assert.equal(token.length, 96);
+  // Calling again should return the same token
+  const token2 = csrf.ensureCSRFToken();
+  assert.equal(token, token2);
+});
+
+/**
+ * Creates a minimal mock form element for testing.
+ * Avoids needing a full DOM shim in the Node.js test environment.
+ */
+function mockForm() {
+  const children = [];
+  return {
+    children,
+    querySelector(selector) {
+      const nameMatch = selector.match(/name="([^"]+)"/);
+      if (nameMatch) {
+        return children.find(el => el.name === nameMatch[1]) || null;
+      }
+      return null;
+    },
+    appendChild(el) {
+      children.push(el);
+    }
+  };
+}
+
+/**
+ * Creates a mock input element for the CSRF hidden field.
+ */
+function mockInput() {
+  const attrs = {};
+  return {
+    get type() { return attrs.type || 'text'; },
+    set type(v) { attrs.type = v; },
+    get name() { return attrs.name || ''; },
+    set name(v) { attrs.name = v; },
+    get value() { return attrs.value || ''; },
+    set value(v) { attrs.value = v; },
+    remove() {
+      const idx = this.parent ? this.parent.children.indexOf(this) : -1;
+      if (idx !== -1) this.parent.children.splice(idx, 1);
+    }
+  };
+}
+
+// Override document.createElement to return our mock input
+// (used by csrf.injectCSRFToken)
+if (!globalThis.document) {
+  globalThis.document = {
+    createElement(tag) {
+      if (tag === 'input') {
+        const el = mockInput();
+        return el;
+      }
+      return {};
+    }
+  };
+}
+
+test('injectCSRFToken adds a hidden field to a form', () => {
+  const form = mockForm();
+  const hidden = csrf.injectCSRFToken(form);
+  assert.ok(hidden);
+  assert.equal(hidden.type, 'hidden');
+  assert.equal(hidden.name, 'csrf_token');
+  assert.equal(hidden.value.length, 96);
+});
+
+test('injectCSRFToken updates existing hidden field value', () => {
+  resetStorage();
+  const form = mockForm();
+  const hidden1 = csrf.injectCSRFToken(form);
+  const firstValue = hidden1.value;
+  // Re-inject should update the same field
+  const hidden2 = csrf.injectCSRFToken(form);
+  assert.equal(hidden1, hidden2); // Same element
+  assert.equal(hidden2.value, firstValue); // Same token (not rotated until used)
+});
+
+test('validateCSRFToken returns true for matching token', () => {
+  resetStorage();
+  const form = mockForm();
+  csrf.injectCSRFToken(form);
+  assert.ok(csrf.validateCSRFToken(form));
+});
+
+test('validateCSRFToken returns false for missing token field', () => {
+  resetStorage();
+  const form = mockForm();
+  assert.equal(csrf.validateCSRFToken(form), false);
+});
+
+test('validateCSRFToken returns false for tampered token', () => {
+  resetStorage();
+  const form = mockForm();
+  csrf.injectCSRFToken(form);
+  // Tamper with the hidden field value
+  form.querySelector('input[name="csrf_token"]').value = 'tampered-token-value';
+  assert.equal(csrf.validateCSRFToken(form), false);
+});
+
+test('rotateCSRFToken clears stored token', () => {
+  resetStorage();
+  csrf.ensureCSRFToken();
+  assert.ok(csrf.getCSRFToken());
+  csrf.rotateCSRFToken();
+  assert.equal(csrf.getCSRFToken(), null);
+});
+
+test('clearCSRFToken clears stored token', () => {
+  resetStorage();
+  csrf.ensureCSRFToken();
+  csrf.clearCSRFToken();
+  assert.equal(csrf.getCSRFToken(), null);
+});
+
+test('validateCSRFToken rotates token on successful validation (one-time use)', () => {
+  resetStorage();
+  const form = mockForm();
+  csrf.injectCSRFToken(form);
+  assert.ok(csrf.validateCSRFToken(form));
+  // Token should be consumed
+  assert.equal(csrf.getCSRFToken(), null);
+});
+
+test('injectCSRFToken returns null for non-form element', () => {
+  const result = csrf.injectCSRFToken(null);
+  assert.equal(result, null);
+  const result2 = csrf.injectCSRFToken({});
+  assert.equal(result2, null);
+});
+
+test('validateCSRFToken returns false for non-form element', () => {
+  assert.equal(csrf.validateCSRFToken(null), false);
+  assert.equal(csrf.validateCSRFToken(undefined), false);
 });
 
 // ---- Runner ----
