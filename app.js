@@ -1,3 +1,19 @@
+// Automatically load SEO helper utility
+(function() {
+    if (!document.getElementById('seo-helper-script') && typeof window !== 'undefined') {
+        const script = document.createElement('script');
+        script.id = 'seo-helper-script';
+        const pathPrefix = (window.location.pathname.includes('/states/') ||
+                            window.location.pathname.includes('/traditional-games/') ||
+                            window.location.pathname.includes('/freedom-timeline/') ||
+                            window.location.pathname.includes('/postal-stamps/') ||
+                            window.location.pathname.includes('/handloom/')) ? '../' : '';
+        script.src = pathPrefix + 'seo-helper.js';
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+})();
+
 /* ==========================================================================
    INCREDIBLE INDIA EXPLORER - APPLICATION LOGIC
    Pure Vanilla JavaScript for dynamic content, modals, sliders, and games.
@@ -49,7 +65,88 @@ window.setupFocusTrap = function(modalElement) {
     };
 };
 
+// Global state for route-level listener/observer management
+window.__iiRouteState = window.__iiRouteState || {
+    observers: new Set(),
+    navigationBound: false,
+    scrollListenerBound: false,
+    navDocClickListenerBound: false,
+    lastRouteKey: null
+};
+
+function iiRegisterObserver(obs) {
+    if (!obs) return;
+    window.__iiRouteState.observers.add(obs);
+}
+
+function iiDisconnectRouteObservers() {
+    if (!window.__iiRouteState || !window.__iiRouteState.observers) return;
+    for (const obs of window.__iiRouteState.observers) {
+        try {
+            obs.disconnect();
+        } catch (e) {
+            // ignore
+        }
+    }
+    window.__iiRouteState.observers.clear();
+}
+/**
+ * Safe init helper — wraps a page init function in try-catch so a single
+ * failing section doesn't break the entire SPA route transition.
+ * Handles both sync and async (promise-returning) init functions.
+ */
+function safeInitFn(initFn, name) {
+    try {
+        const result = initFn();
+        if (result && typeof result.catch === 'function') {
+            result.catch(err => {
+                console.error(`[App] Async error in ${name}:`, err);
+                if (window.ToastNotifier) {
+                    window.ToastNotifier.error(`${name} encountered an error. Some features may not work.`);
+                }
+            });
+        }
+    } catch (err) {
+        console.error(`[App] Error initializing ${name}:`, err);
+        if (window.ToastNotifier) {
+            window.ToastNotifier.error(`${name} failed to load. Please refresh the page.`);
+        }
+    }
+}
+
+/**
+ * Error boundary for lazyLoadScript chains — logs the failure and shows a
+ * user-facing toast so the error is visible rather than a silent console line.
+ */
+function handleInitError(pageName, err) {
+    console.error(`[App] Failed to load ${pageName} page module:`, err);
+    if (window.ToastNotifier) {
+        window.ToastNotifier.error(`Could not load ${pageName} content. Please try again.`);
+    }
+}
+
+/* Initialise the unified toast notification system */
+(function initToastSystem() {
+    var pathPrefix = (window.location.pathname.includes('/states/') ||
+        window.location.pathname.includes('/traditional-games/') ||
+        window.location.pathname.includes('/freedom-timeline/') ||
+        window.location.pathname.includes('/postal-stamps/') ||
+        window.location.pathname.includes('/handloom/')) ? '../' : '';
+    var script = document.createElement('script');
+    script.src = pathPrefix + 'js-modules/toast-system.js';
+    script.async = true;
+    script.onload = function () {
+        if (window.ToastNotifier) {
+            window.dispatchEvent(new CustomEvent('toast:ready'));
+        }
+    };
+    document.head.appendChild(script);
+})();
+
 document.addEventListener('app:route-changed', () => {
+    // Prevent accumulation of IntersectionObservers/listeners across SPA route changes
+    iiDisconnectRouteObservers();
+
     initNavigation();
     initThemeToggle();
     initRotatingText();
@@ -58,35 +155,36 @@ document.addEventListener('app:route-changed', () => {
     const pathname = window.location.pathname;
 
     if (pathname.includes('cuisine.html')) {
-        window.lazyLoadScript('js-modules/cuisine.js').then(() => initCuisinePage());
+        window.lazyLoadScript('js-modules/cuisine.js').then(() => initCuisinePage()).catch(err => handleInitError('Cuisine', err));
     } else if (pathname.includes('festivals.html')) {
-        window.lazyLoadScript('js-modules/festivals.js').then(() => initFestivalsPage());
+        window.lazyLoadScript('js-modules/festivals.js').then(() => initFestivalsPage()).catch(err => handleInitError('Festivals', err));
     } else if (pathname.includes('culture.html')) {
-        window.lazyLoadScript('js-modules/culture.js').then(() => initCulturePage());
+        window.lazyLoadScript('js-modules/culture.js').then(() => initCulturePage()).catch(err => handleInitError('Culture', err));
     } else if (pathname.includes('literature.html')) {
-        window.lazyLoadScript('js-modules/literature.js').then(() => initLiteraturePage());
+        window.lazyLoadScript('js-modules/literature.js').then(() => initLiteraturePage()).catch(err => handleInitError('Literature', err));
     } else if (pathname.includes('dance.html')) {
-        window.lazyLoadScript('js-modules/dance.js').then(() => initDancePage());
+        window.lazyLoadScript('js-modules/dance.js').then(() => initDancePage()).catch(err => handleInitError('Dance', err));
     } else if (pathname.includes('music.html')) {
-        window.lazyLoadScript('js-modules/music.js').then(() => initMusicPage());
+        window.lazyLoadScript('js-modules/music.js').then(() => initMusicPage()).catch(err => handleInitError('Music', err));
     } else if (pathname.includes('sports.html')) {
-        window.lazyLoadScript('js-modules/sports.js').then(() => initSportsPage());
+        window.lazyLoadScript('js-modules/sports.js').then(() => initSportsPage()).catch(err => handleInitError('Sports', err));
     } else if (pathname.includes('science.html')) {
-        window.lazyLoadScript('js-modules/science.js').then(() => initSciencePage());
+        window.lazyLoadScript('js-modules/science.js').then(() => initSciencePage()).catch(err => handleInitError('Science', err));
     } else if (pathname.includes('personalities.html')) {
         initScrollEffects();
-        window.lazyLoadScript('js-modules/personalities.js').then(() => initPersonalitiesPage());
+        window.lazyLoadScript('js-modules/personalities.js').then(() => safeInitFn(initPersonalitiesPage, 'Personalities')).catch(err => handleInitError('Personalities', err));
     } else if (pathname.includes('spiritual.html')) {
         initScrollEffects();
-        window.lazyLoadScript('js-modules/spiritual.js').then(() => initSpiritualCarousel());
+        window.lazyLoadScript('js-modules/spiritual.js').then(() => safeInitFn(initSpiritualCarousel, 'Spiritual')).catch(err => handleInitError('Spiritual', err));
     } else if (pathname.includes('startup.html')) {
-        window.lazyLoadScript('js-modules/startup.js').then(() => initStartupPage());
+        window.lazyLoadScript('js-modules/startup.js').then(() => safeInitFn(initStartupPage, 'Startup')).catch(err => handleInitError('Startup', err));
     } else if (pathname.includes('travel.html')) {
-        window.lazyLoadScript('js-modules/roadtrip.js').then(() => initRoadTripFlipCards());
+        window.lazyLoadScript('js-modules/roadtrip.js').then(() => safeInitFn(initRoadTripFlipCards, 'Travel')).catch(err => handleInitError('Travel', err));
     } else if (pathname.includes('trip-planner.html')) {
         window.lazyLoadScript('trip-data.js')
             .then(() => window.lazyLoadScript('js-modules/trip-planner.js'))
-            .then(() => initTripPlannerPage());
+            .then(() => safeInitFn(initTripPlannerPage, 'Trip Planner'))
+            .catch(err => handleInitError('Trip Planner', err));
     } else if (pathname.includes('heritage.html')) {
         console.log('✅ Heritage page loaded successfully');
     } else if (pathname.includes('monuments.html')) {
@@ -102,29 +200,30 @@ document.addEventListener('app:route-changed', () => {
         initScrollEffects();
 
         // Viewport-based lazy initialization of heavy landing page sections
-        const lazyInit = (elementId, initFunc) => {
+        const lazyInit = (elementId, initFunc, name) => {
             const el = document.getElementById(elementId);
             if (el && 'IntersectionObserver' in window) {
                 const obs = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
-                            initFunc();
+                            safeInitFn(initFunc, name);
                             obs.disconnect();
                         }
                     });
                 }, { rootMargin: '200px' });
+
                 obs.observe(el);
             } else {
-                initFunc();
+                safeInitFn(initFunc, name);
             }
         };
 
-        lazyInit('map-container', initInteractiveMap);
-        lazyInit('cuisine-grid', initCuisineExplorer);
-        lazyInit('festival-timeline', initFestivals);
-        lazyInit('slider-container', initCultureSlider);
-        lazyInit('quiz-card', initQuiz);
-        lazyInit('fab-guide', initBharatGuide);
+        lazyInit('map-container', initInteractiveMap, 'Interactive Map');
+        lazyInit('cuisine-grid', initCuisineExplorer, 'Cuisine Explorer');
+        lazyInit('festival-timeline', initFestivals, 'Festivals');
+        lazyInit('slider-container', initCultureSlider, 'Culture Slider');
+        lazyInit('quiz-card', initQuiz, 'Quiz');
+        lazyInit('fab-guide', initBharatGuide, 'Bharat Guide');
     }
 });
 
@@ -747,7 +846,7 @@ function initInteractiveMap() {
                     <strong>Key Fact:</strong> ${metricsA.fact}
                 </div>
                 
-                <button class="btn btn-primary" onclick="window.appRouter ? window.appRouter.handleRoute('states/${stateA.id}.html', true) : window.location.href='states/${stateA.id}.html'" style="font-size:0.9rem; padding:8px 18px;">Explore Full Page</button>
+                <button class="btn btn-primary" onclick="window.appRouter ? window.appRouter.handleRoute('state.html?state=${stateA.id}', true) : window.location.href='state.html?state=${stateA.id}'" style="font-size:0.9rem; padding:8px 18px;">Explore Full Page</button>
             `;
 
             colB.innerHTML = `
@@ -767,7 +866,7 @@ function initInteractiveMap() {
                     <strong>Key Fact:</strong> ${metricsB.fact}
                 </div>
                 
-                <button class="btn btn-primary" onclick="window.appRouter ? window.appRouter.handleRoute('states/${stateB.id}.html', true) : window.location.href='states/${stateB.id}.html'" style="font-size:0.9rem; padding:8px 18px;">Explore Full Page</button>
+                <button class="btn btn-primary" onclick="window.appRouter ? window.appRouter.handleRoute('state.html?state=${stateB.id}', true) : window.location.href='state.html?state=${stateB.id}'" style="font-size:0.9rem; padding:8px 18px;">Explore Full Page</button>
             `;
         }
 
@@ -793,7 +892,7 @@ function initInteractiveMap() {
     // View More Button Trigger - Navigate to individual state page via SPA router or standard href
     viewMoreBtn?.addEventListener('click', () => {
         const currentId = viewMoreBtn.getAttribute('data-active-id');
-        const targetPath = `states/${currentId}.html`;
+        const targetPath = `state.html?state=${currentId}`;
         if (window.appRouter && typeof window.appRouter.handleRoute === 'function') {
             window.appRouter.handleRoute(targetPath, true);
         } else {
@@ -1779,19 +1878,6 @@ function playStateSoundscape(stateName) {
 }
 
 
-/* ==========================================================================
-   SUB-PAGES INITIALIZATION LOGIC STUBS
-   ========================================================================== */
-function initCulturePage() { console.log("Culture page stub called"); }
-function initSportsPage() { console.log("Sports page stub called"); }
-function initSciencePage() { console.log("Science page stub called"); }
-function initMusicPage() { console.log("Music page stub called"); }
-function initLiteraturePage() { console.log("Literature page stub called"); }
-function initDancePage() { console.log("Dance page stub called"); }
-function initStartupPage() { console.log("Startup page stub called"); }
-function initPersonalitiesPage() { console.log("Personalities page stub called"); }
-function initSpiritualCarousel() { console.log("Spiritual page stub called"); }
-function initRoadTripFlipCards() { console.log("Roadtrip page stub called"); }
 
 
 function initBharatGuide() {
@@ -1887,265 +1973,6 @@ function initBharatGuide() {
 
     function scrollToBottom() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    renderTimeline();
-    renderTimelineDetail(timelineData[0]);
-    setActiveTimelineButton(timelineGrid.querySelector('[data-timeline-id="all"]'));
-    renderAthletes();
-    setActiveFilterButton(activeFilter);
-
-    filterButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            activeFilter = btn.getAttribute('data-sports-filter') || 'all';
-            setActiveFilterButton(activeFilter);
-
-            const matchingMilestone = timelineData.find(item => item.category === activeFilter) || timelineData[0];
-            activeTimelineId = matchingMilestone.id;
-            setActiveTimelineButton(timelineGrid.querySelector(`[data-timeline-id="${matchingMilestone.id}"]`));
-            renderTimelineDetail(matchingMilestone);
-            renderAthletes();
-        });
-    });
-
-    searchInput.addEventListener('input', () => {
-        renderAthletes();
-    });
-
-    timelineGrid.addEventListener('click', (event) => {
-        const button = event.target.closest('[data-timeline-filter]');
-        if (!button) return;
-
-        const filter = button.getAttribute('data-timeline-filter') || 'all';
-        activeTimelineId = button.getAttribute('data-timeline-id') || 'all';
-        activeFilter = filter;
-        setActiveFilterButton(filter);
-        setActiveTimelineButton(button);
-
-        const milestone = timelineData.find(item => item.id === activeTimelineId) || timelineData[0];
-        renderTimelineDetail(milestone);
-        renderAthletes();
-        sportsSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-
-    modalClose.addEventListener('click', closeModal);
-    modal.addEventListener('click', (event) => {
-        if (event.target === modal) closeModal();
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (!isModalOpen) return;
-
-        if (event.key === 'Escape') {
-            event.preventDefault();
-            closeModal();
-            return;
-        }
-
-        if (event.key === 'Tab') {
-            trapModalFocus(event);
-        }
-    });
-
-    function setActiveFilterButton(filterValue) {
-        filterButtons.forEach(btn => {
-            const isActive = (btn.getAttribute('data-sports-filter') || 'all') === filterValue;
-            btn.classList.toggle('active', isActive);
-            btn.setAttribute('aria-pressed', String(isActive));
-        });
-    }
-
-    function setActiveTimelineButton(activeButton) {
-        const buttons = timelineGrid.querySelectorAll('[data-timeline-filter]');
-        buttons.forEach(btn => {
-            const isActive = activeButton ? btn === activeButton : false;
-            btn.classList.toggle('active', isActive);
-            btn.setAttribute('aria-pressed', String(isActive));
-        });
-    }
-
-    function renderAthletes() {
-        const query = searchInput.value.trim().toLowerCase();
-        const filteredAthletes = athleteData.filter(athlete => {
-            const matchesFilter = activeFilter === 'all' || athlete.category === activeFilter;
-            const matchesSearch = !query || [
-                athlete.name,
-                athlete.subtitle,
-                athlete.summary,
-                athlete.story,
-                athlete.category,
-                ...(athlete.highlights || [])
-            ].join(' ').toLowerCase().includes(query);
-            return matchesFilter && matchesSearch;
-        });
-
-        athleteGrid.innerHTML = '';
-
-        if (filteredAthletes.length === 0) {
-            athleteGrid.innerHTML = `
-                <div class="sports-empty-state glass-card">
-                    <h3>No athletes found</h3>
-                    <p>Try a different search term or switch back to All categories.</p>
-                    <button type="button" class="btn btn-primary" id="sports-reset-filters">Show All Athletes</button>
-                </div>
-            `;
-
-            const resetBtn = document.getElementById('sports-reset-filters');
-            resetBtn?.addEventListener('click', () => {
-                searchInput.value = '';
-                activeFilter = 'all';
-                activeTimelineId = 'all';
-                setActiveFilterButton('all');
-                setActiveTimelineButton(timelineGrid.querySelector('[data-timeline-id="all"]'));
-                renderTimelineDetail(timelineData[0]);
-                renderAthletes();
-            });
-            return;
-        }
-
-        filteredAthletes.forEach(athlete => {
-            const card = document.createElement('article');
-            card.className = 'athlete-card glass-card';
-            card.setAttribute('tabindex', '0');
-            card.setAttribute('role', 'button');
-            card.setAttribute('aria-label', `View details for ${athlete.name}`);
-            card.setAttribute('data-category', athlete.category);
-
-            card.innerHTML = `
-                <div class="athlete-card-header">
-                    <div class="athlete-media ${athlete.category}">
-                        <img src="${athlete.image}" alt="${athlete.name}" loading="lazy">
-                    </div>
-                    <div class="athlete-card-title">
-                        <span class="sports-badge ${athlete.category}">${getCategoryLabel(athlete.category)}</span>
-                        <h3>${athlete.name}</h3>
-                        <p>${athlete.subtitle}</p>
-                    </div>
-                </div>
-                <p class="athlete-summary">${athlete.summary}</p>
-                <div class="achievement-chip-row">
-                    ${athlete.highlights.map(item => `<span class="achievement-chip">${item}</span>`).join('')}
-                </div>
-                <div class="athlete-card-footer">
-                    <span class="card-sport-note">Click to explore career highlights</span>
-                    <button type="button" class="btn btn-secondary athlete-view-btn">View Details</button>
-                </div>
-            `;
-
-            card.addEventListener('click', () => openModal(athlete, card));
-            card.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    openModal(athlete, card);
-                }
-            });
-
-            athleteGrid.appendChild(card);
-        });
-    }
-
-    function renderTimeline() {
-        timelineGrid.innerHTML = '';
-
-        timelineData.forEach(item => {
-            const timelineButton = document.createElement('button');
-            timelineButton.type = 'button';
-            timelineButton.className = `sports-timeline-item glass-card ${item.category}`;
-            timelineButton.setAttribute('data-timeline-filter', item.category);
-            timelineButton.setAttribute('data-timeline-id', item.id);
-            timelineButton.setAttribute('aria-pressed', 'false');
-            timelineButton.innerHTML = `
-                <span class="timeline-year">${item.year}</span>
-                <span class="sports-badge ${item.category}">${getCategoryLabel(item.category)}</span>
-                <h3>${item.title}</h3>
-                <p>${item.summary}</p>
-            `;
-
-            timelineGrid.appendChild(timelineButton);
-        });
-    }
-
-    function renderTimelineDetail(item) {
-        timelineDetail.innerHTML = `
-            <div class="timeline-detail-head">
-                <span class="sports-badge ${item.category}">${getCategoryLabel(item.category)}</span>
-                <span class="timeline-detail-year">${item.year}</span>
-            </div>
-            <h3>${item.title}</h3>
-            <p>${item.detail}</p>
-        `;
-    }
-
-    function openModal(athlete, trigger) {
-        lastFocusedTrigger = trigger || document.activeElement;
-        isModalOpen = true;
-
-        modalCategory.className = `sports-badge ${athlete.category}`;
-        modalCategory.textContent = getCategoryLabel(athlete.category);
-        modalTitle.textContent = athlete.name;
-        modalSubtitle.textContent = athlete.subtitle;
-        modalStory.textContent = athlete.story;
-
-        modalHighlights.innerHTML = athlete.highlights.map(item => `<li>${item}</li>`).join('');
-        modalStats.innerHTML = athlete.stats.map(stat => `
-            <div class="modal-stat">
-                <span class="modal-stat-label">${stat.label}</span>
-                <span class="modal-stat-value">${stat.value}</span>
-            </div>
-        `).join('');
-
-        modalAvatar.className = `sports-modal-avatar ${athlete.category}`;
-        modalAvatar.innerHTML = `<img src="${athlete.image}" alt="${athlete.name}" loading="lazy">`;
-
-        modal.classList.add('open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-
-        requestAnimationFrame(() => {
-            modalClose.focus();
-        });
-    }
-
-    function closeModal() {
-        if (!isModalOpen) return;
-
-        modal.classList.remove('open');
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        isModalOpen = false;
-
-        if (lastFocusedTrigger && typeof lastFocusedTrigger.focus === 'function') {
-            lastFocusedTrigger.focus();
-        }
-    }
-
-    function trapModalFocus(event) {
-        const focusableElements = modal.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-
-        if (!focusableElements.length) return;
-
-        const focusable = Array.from(focusableElements).filter(el => !el.hasAttribute('disabled'));
-        if (!focusable.length) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-        }
-    }
-
-    function getCategoryLabel(category) {
-        if (category === 'cricket') return 'Cricket';
-        if (category === 'olympics') return 'Olympics';
-        if (category === 'indigenous') return 'Indigenous Sports';
-        return 'All';
     }
 }
 
@@ -2796,9 +2623,10 @@ function initMusicPage() {
     });
 
     artistGrid.addEventListener('click', event => {
-        const playButton = event.target.closest('[data-music-play]');
+        const playButton = event.target.closest('button[data-music-play]');
         if (playButton) {
             event.stopPropagation();
+            event.preventDefault();
             const card = playButton.closest('[data-artist-id]');
             const artistId = card?.getAttribute('data-artist-id');
             if (!artistId) return;
@@ -2807,7 +2635,7 @@ function initMusicPage() {
             return;
         }
 
-        const detailsButton = event.target.closest('[data-music-details]');
+        const detailsButton = event.target.closest('button[data-music-details]');
         const card = event.target.closest('[data-artist-id]');
 
         if (detailsButton && card) {
@@ -5452,150 +5280,6 @@ function initStartupPage() {
 }
 
 /* ==========================================================================
-   BHARAT GUIDE AI LOGIC
-   ========================================================================== */
-
-function initBharatGuide() {
-    const fabGuide = document.getElementById('fab-guide');
-    const chatWindow = document.getElementById('guide-chat-window');
-    const btnCloseChat = document.getElementById('btn-close-chat');
-    const chatMessages = document.getElementById('chat-messages');
-    const chatInput = document.getElementById('chat-input');
-    const btnSendMsg = document.getElementById('btn-send-msg');
-
-    if (!fabGuide) return; // Not on this page
-
-    // Prevent duplicate event listener registrations on SPA page transitions
-    if (fabGuide.dataset.listenerBound) return;
-    fabGuide.dataset.listenerBound = "true";
-
-    // Knowledge Graph is now loaded from chatbot-data.js
-
-    let isSynthesizing = false;
-
-    // Toggle Chat
-    fabGuide.addEventListener('click', () => {
-        chatWindow.classList.toggle('open');
-        if (chatWindow.classList.contains('open')) {
-            chatInput.focus();
-        }
-    });
-
-    btnCloseChat.addEventListener('click', () => {
-        chatWindow.classList.remove('open');
-        if (isSynthesizing) {
-            window.speechSynthesis.cancel();
-            isSynthesizing = false;
-        }
-        fabGuide.focus();
-    });
-
-    chatWindow.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            btnCloseChat.click();
-        }
-    });
-
-    // Send Message
-    function sendMessage() {
-        const text = chatInput.value.trim();
-        if (!text) return;
-
-        // Add user message
-        addMessage(text, 'user-message');
-        chatInput.value = '';
-
-        // Determine bot response using external knowledge base
-        let response = "I'm sorry, I seem to be having trouble accessing my knowledge base. Let's try again later.";
-        if (typeof findBestResponse === 'function') {
-            response = findBestResponse(text);
-        }
-
-        // Show typing indicator
-        const typingId = showTypingIndicator();
-
-        setTimeout(() => {
-            removeTypingIndicator(typingId);
-            addMessage(response, 'bot-message');
-            speakResponse(response);
-        }, 1200 + Math.random() * 800);
-    }
-
-    btnSendMsg.addEventListener('click', sendMessage);
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMessage();
-    });
-
-    // Chat UI helpers
-    function addMessage(text, className) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${className}`;
-        msgDiv.innerHTML = `<div class="message-content">${text}</div>`;
-        chatMessages.appendChild(msgDiv);
-        scrollToBottom();
-    }
-
-    function showTypingIndicator() {
-        const id = 'typing-' + Date.now();
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'message bot-message';
-        msgDiv.id = id;
-        msgDiv.innerHTML = `
-            <div class="message-content typing-indicator">
-                <span></span><span></span><span></span>
-            </div>
-        `;
-        chatMessages.appendChild(msgDiv);
-        scrollToBottom();
-        return id;
-    }
-
-    function removeTypingIndicator(id) {
-        const indicator = document.getElementById(id);
-        if (indicator) {
-            indicator.remove();
-        }
-    }
-
-    function scrollToBottom() {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    // Web Speech API (Text-to-Speech)
-    function speakResponse(text) {
-        if (!('speechSynthesis' in window)) return;
-
-        window.speechSynthesis.cancel(); // Cancel any ongoing speech
-
-        const utterance = new SpeechSynthesisUtterance(text);
-
-        // Try to find an Indian English voice for authenticity
-        const voices = window.speechSynthesis.getVoices();
-        const indianVoice = voices.find(v => v.lang.includes('en-IN') || v.name.includes('India'));
-
-        if (indianVoice) {
-            utterance.voice = indianVoice;
-        }
-
-        utterance.rate = 0.95;
-        utterance.pitch = 1.0;
-
-        isSynthesizing = true;
-        utterance.onend = () => { isSynthesizing = false; };
-
-        window.speechSynthesis.speak(utterance);
-    }
-
-    // Ensure voices are loaded (Chrome issue)
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.getVoices();
-        };
-    }
-}
-
-
-/* ==========================================================================
    PERSONALITIES TYPE CHANGE FUNC
    ========================================================================== */
 function initPersonalitiesPage() {
@@ -5624,374 +5308,4 @@ function initPersonalitiesPage() {
     filterCards('historical');
 }
 
-
-/* ==========================================================================
-   SPIRITUAL CARDS ANIMATION CARSOUL
-   ========================================================================== */
-
-const spiritualData = [
-
-    {
-        id: "s2",
-        name: "Taj Mahal",
-        location: "Agra, Uttar Pradesh",
-        rating: 4.9,
-        image: "assets/Taj_Mahal.png",
-        description: "An ivory-marble mausoleum built by Shah Jahan for Mumtaz Mahal — a monument to love recognized as one of the world's most extraordinary architectural achievements."
-    },
-    {
-        id: "s3",
-        name: "Golden Temple",
-        location: "Amritsar, Punjab",
-        rating: 4.9,
-        image: "assets/Golden_Temple.png",
-        description: "A spiritual sanctuary and one of the holiest Sikh shrines, symbolizing equality, devotion and human brotherhood."
-    },
-    {
-        id: "s6",
-        name: "Meenakshi Temple",
-        location: "Madurai, Tamil Nadu",
-        rating: 4.8,
-        image: "assets/Meenakshi_Temple.png",
-        description: "A Dravidian temple crowned with towering, painted gopurams depicting thousands of sculpted deities — a living center of worship for centuries."
-    },
-    {
-        id: "s7",
-        name: "Jama Masjid",
-        location: "New Delhi",
-        rating: 4.7,
-        image: "assets/Jama_Masjid.png",
-        description: "Commissioned by Shah Jahan, one of India's largest mosques, its red sandstone courtyard holding tens of thousands at Friday prayer."
-    },
-    {
-        id: "s8",
-        name: "Basilica of Bom Jesus",
-        location: "Old Goa",
-        rating: 4.6,
-        image: "assets/Basilica_of_Bom_Jesus.png",
-        description: "A UNESCO World Heritage Baroque church holding the mortal remains of St. Francis Xavier, its facade unplastered by design."
-    },
-    {
-        id: "s9",
-        name: "Kedarnath Temple",
-        location: "Uttarakhand",
-        rating: 4.9,
-        image: "assets/Kedarnath.png",
-        description: "Perched at 3,583m in the Garhwal Himalayas, one of the twelve Jyotirlingas — reached only on foot, mule, or by helicopter."
-    },
-    {
-        id: "s10",
-        name: "Hemis Monastery",
-        location: "Ladakh",
-        rating: 4.7,
-        image: "assets/Hemis_Monastery.png",
-        description: "The largest and wealthiest monastery in Ladakh, home to a masked Cham dance festival held once every twelve years."
-    }
-];
-
-function initSpiritualCarousel() {
-    const carousel = document.getElementById('spiritual-carousel');
-    const dotsContainer = document.getElementById('spiritual-dots');
-    const prevBtn = document.getElementById('spiritual-prev');
-    const nextBtn = document.getElementById('spiritual-next');
-    const detailTitle = document.getElementById('spiritual-detail-title');
-    const detailLoc = document.getElementById('spiritual-detail-location');
-    const detailDesc = document.getElementById('spiritual-detail-desc');
-    const exploreBtn = document.getElementById('spiritual-explore-btn');
-
-    if (!carousel) return;
-
-    const total = spiritualData.length;
-    let activeIndex = 2; // start on Golden Temple, matching the reference image
-    const VISIBLE_RANGE = 2; // shows activeIndex -2 ... +2 (5 cards)
-
-    // Build all card elements once; visibility/position is handled in render()
-    carousel.innerHTML = '';
-    spiritualData.forEach((item, index) => {
-        const card = document.createElement('div');
-        card.className = 'spiritual-card';
-        card.setAttribute('data-index', index);
-        card.style.backgroundImage = `url(${item.image})`;
-        card.innerHTML = `
-            <div class="spiritual-card-rating">★ ${item.rating}</div>
-            <div class="spiritual-card-overlay">
-                <h4>${item.name}</h4>
-                <div class="spiritual-card-loc">📍 ${item.location}</div>
-            </div>
-        `;
-        card.addEventListener('click', () => {
-            activeIndex = index;
-            render();
-        });
-        carousel.appendChild(card);
-    });
-
-    // Circular distance from activeIndex, shortest path around the loop
-    function getCircularOffset(index) {
-        let diff = index - activeIndex;
-        if (diff > total / 2) diff -= total;
-        if (diff < -total / 2) diff += total;
-        return diff;
-    }
-
-    function render() {
-        const panel = document.querySelector('.spiritual-detail-panel');
-        panel.classList.add('updating');
-
-        const cards = carousel.querySelectorAll('.spiritual-card');
-
-        cards.forEach((card, index) => {
-            const offset = getCircularOffset(index);
-            const absOffset = Math.abs(offset);
-
-            card.classList.remove('is-active');
-
-            if (absOffset > VISIBLE_RANGE) {
-                card.style.display = 'none';
-                return;
-            }
-
-            card.style.display = 'block';
-
-            const spacing = 200;
-            const scale = offset === 0 ? 1 : absOffset === 1 ? 0.8 : 0.62;
-            const opacity = offset === 0 ? 1 : absOffset === 1 ? 0.7 : 0.35;
-            const zIndex = 10 - absOffset;
-            const translateX = offset * spacing;
-
-            card.style.zIndex = zIndex;
-            card.style.opacity = opacity;
-            card.style.transform =
-                `translate(-50%, -50%) translateX(${translateX}px) scale(${scale})`;
-
-            if (offset === 0) card.classList.add('is-active');
-        });
-
-        const activeItem = spiritualData[activeIndex];
-        detailTitle.innerText = activeItem.name; // confirm you want this back
-        detailDesc.innerText = activeItem.description;
-
-        requestAnimationFrame(() => {
-            panel.classList.remove('updating');
-        });
-    }
-
-    function goNext() {
-        activeIndex = (activeIndex + 1) % total; // wraps to 0 at the end
-        render();
-    }
-
-    function goPrev() {
-        activeIndex = (activeIndex - 1 + total) % total; // wraps to last at the start
-        render();
-    }
-
-    nextBtn.addEventListener('click', goNext);
-    prevBtn.addEventListener('click', goPrev);
-
-    render();
-}
-
-// Toast notification styling injection for PWA offline/online states
-function injectPWAToastStyles() {
-    if (document.getElementById('pwa-toast-styles')) return;
-    const style = document.createElement('style');
-    style.id = 'pwa-toast-styles';
-    style.textContent = `
-        .pwa-toast {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background: hsl(222, 35%, 12%);
-            border: 1px solid rgba(255, 176, 31, 0.3);
-            border-radius: 8px;
-            padding: 12px 20px;
-            color: #f1f1f1;
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 10000;
-        }
-        .pwa-toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        .pwa-toast-success {
-            border-color: #138808;
-        }
-        .pwa-toast-warning {
-            border-color: #ff6f3c;
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-function showPWAToast(message, type = 'info') {
-    injectPWAToastStyles();
-    let toast = document.getElementById('pwa-toast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'pwa-toast';
-        toast.className = 'pwa-toast';
-        document.body.appendChild(toast);
-    }
-    
-    let icon = 'ℹ️';
-    if (type === 'success') {
-        icon = '✅';
-        toast.className = 'pwa-toast pwa-toast-success';
-    } else if (type === 'warning') {
-        icon = '⚠️';
-        toast.className = 'pwa-toast pwa-toast-warning';
-    } else {
-        toast.className = 'pwa-toast';
-    }
-    
-    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
-    toast.classList.add('show');
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 4000);
-}
-
-const OFFLINE_QUEUE_KEY = 'offline-sync-queue';
-
-function addToOfflineQueue(data) {
-    const queue = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
-    queue.push({
-        ...data,
-        timestamp: Date.now()
-    });
-    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
-}
-
-function getOfflineQueue() {
-    return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
-}
-
-function clearOfflineQueue() {
-    localStorage.removeItem(OFFLINE_QUEUE_KEY);
-}
-// Register Service Worker for PWA
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // 1. Try to detect root prefix from the script src attribute loading app.js
-        const script = document.querySelector('script[src*="app.js"]');
-        let prefix = '';
-        if (script) {
-            const src = script.getAttribute('src');
-            const match = src.match(/^(\.\.\/)+/);
-            if (match) {
-                prefix = match[0];
-            }
-        }
-        
-        // 2. Fallback: Detect prefix based on URL path segment depth
-        if (!prefix) {
-            const pathname = window.location.pathname;
-            const isSubdir = pathname.includes('/states/') || 
-                            pathname.includes('/forts/') || 
-                            pathname.includes('/freedom-timeline/') || 
-                            pathname.includes('/handloom/') || 
-                            pathname.includes('/kingdoms/') || 
-                            pathname.includes('/postal-stamps/') || 
-                            pathname.includes('/traditional-games/') || 
-                            pathname.includes('/toys/') || 
-                            pathname.includes('/geological-wonders/') || 
-                            pathname.includes('/innovation-timeline/');
-            prefix = isSubdir ? '../' : './';
-        }
-
-        navigator.serviceWorker.register(prefix + 'sw.js')
-          .then(async (registration) => {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-
-              if ('serviceWorker' in navigator && 'SyncManager' in window) {
-                  try {
-                       await registration.sync.register('sync-chatbot-pending');
-                       console.log('Background Sync registered.');
-                    } catch (err) {
-                       console.error('Background Sync registration failed:', err);
-                    }
-               }
-            })
-            .catch(err => {
-                console.log('ServiceWorker registration failed: ', err);
-           });
-
-        let deferredPrompt = null;
-
-        window.addEventListener('beforeinstallprompt', (event) => {
-           event.preventDefault();
-
-           deferredPrompt = event;
-
-           showPWAToast(
-               'Install Incredible India Explorer for a better offline experience.',
-               'success'
-           );
-  
-           const installBtn = document.getElementById('install-pwa-btn');
-
-           if (!installBtn) return;
-
-           installBtn.style.display = 'inline-flex';
-
-           installBtn.onclick = async () => {
-              installBtn.style.display = 'none';
-
-               deferredPrompt.prompt();
-
-               const choice = await deferredPrompt.userChoice;
-
-               if (choice.outcome === 'accepted') {
-                   console.log('PWA installed successfully.');
-               } 
-
-              deferredPrompt = null;
-    };
-});
-
-        // 3. Listen to online/offline connection state changes to notify users
-        window.addEventListener('online', async () => {
-           showPWAToast(
-               'Your internet connection has been restored. Welcome back online!',
-               'success'
-       );
-
-           const queue = getOfflineQueue();
-
-           if (!queue.length) {
-               return;
-           }
-
-           if (queue.length > 0) {
-               console.log(`Syncing ${queue.length} offline item(s)...`);
-
-               // TODO: Send queued data to backend/API here
-
-               clearOfflineQueue();
-
-               showPWAToast('Offline changes synchronized successfully.', 'success');
-           }
-       });
-        window.addEventListener('offline', () => {
-            showPWAToast('Connection lost. You are now browsing in offline mode.', 'warning');
-        });
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', (event) => {
-               if (event.data?.type === 'BACKGROUND_SYNC_COMPLETE') {
-                  showPWAToast(event.data.message, 'success');
-                }
-            });
-
-    });
-}
 
