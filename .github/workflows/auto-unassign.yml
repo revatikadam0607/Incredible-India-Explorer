@@ -80,7 +80,7 @@ jobs:
                 owner,
                 repo,
                 issue_number: issueNumber,
-                body: `This issue has been automatically unassigned from ${assigneeMentions} due to ${INACTIVITY_DAYS} days of inactivity (no comments or commits).\n\n---\n\n### Issue is Now Open\n\nAnyone is welcome to pick this up. Comment \`/claim\` to be assigned.\n\nIf you were previously assigned and are still working on this, please re-claim it and leave a brief status update so others know it is active.`,
+                body: `This issue has been automatically unassigned from ${assigneeMentions} due to ${INACTIVITY_DAYS} days of inactivity (no comments or commits).\n\n---\n\n### Issue is Now Open\n\nAnyone is welcome to pick this up. Comment ## I want to work on this to be assigned.\n\nIf you were previously assigned and are still working on this, please re-claim it and leave a brief status update so others know it is active.`,
               });
 
               console.log(`Unassigned ${assigneeMentions} from issue #${issueNumber}.`);
