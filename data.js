@@ -734,3 +734,8 @@ const quizQuestions = [
     "answer": "Andhra Pradesh"
   }
 ];
+
+
+if (typeof module !== 'undefined') {
+  module.exports = { mapData, cuisinesData, festivalsData, cultureData, quizQuestions };
+}

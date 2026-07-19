@@ -631,8 +631,8 @@ function initInteractiveMap() {
             // Highlight current
             pathElement.classList.add('highlighted-active');
 
-            // Open state modal
-            showStateDetails(loc);
+            // Open static page instead of modal
+            window.location.href = 'dist/states/' + loc.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.html';
         });
 
         // Keydown listener for space/enter keys
