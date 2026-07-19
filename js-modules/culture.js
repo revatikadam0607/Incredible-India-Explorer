@@ -6,6 +6,7 @@ function initCulturePage() {
     const mBadge = document.getElementById('culture-modal-badge');
     const mTitle = document.getElementById('culture-modal-title');
     const mImg = document.getElementById('culture-modal-img');
+    const mDesc = document.getElementById('culture-modal-description');
 const mState = document.getElementById('culture-modal-state');
     let currentCategory = 'all';
 
